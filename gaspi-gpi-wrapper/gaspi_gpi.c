@@ -1,4 +1,6 @@
-#include <GASPI.h>
+#include "gaspi.h"
+#include "GPI.h"
+#include <assert.h>
 
 
 
@@ -37,8 +39,9 @@ gaspi_proc_kill ( gaspi_rank_t rank
 
 
 gaspi_return_t
-gaspi_proc_rank (gaspi_rank_t rank)
+gaspi_proc_rank (gaspi_rank_t* rank)
 {
+  *rank = getRankGPI ();
 	return GASPI_SUCCESS;
 }
 
@@ -47,8 +50,9 @@ gaspi_proc_rank (gaspi_rank_t rank)
 
 
 gaspi_return_t
-gaspi_proc_num ( gaspi_rank_t proc_num )
+gaspi_proc_num ( gaspi_rank_t* proc_num )
 {
+  *proc_num = getNodeCountGPI ();
 	return GASPI_SUCCESS;
 }
 
@@ -67,7 +71,7 @@ gaspi_state_vec_get( gaspi_state_vector_t state_vector )
 
 
 gaspi_return_t
-gaspi_state_vec_reset( gaspi_state_vector_t state_vector ) 
+gaspi_state_vec_reset( gaspi_state_vector_t state_vector )
 {
 	return GASPI_SUCCESS;
 }
@@ -206,9 +210,11 @@ gaspi_segment_free ( gaspi_segment_id_t segment_id )
 
 gaspi_return_t
 gaspi_segment_ptr ( gaspi_segment_id_t segment_id
-                  , gaspi_pointer_t pointer
+                  , gaspi_pointer_t* pointer
                   )
 {
+  assert(segment_id == 0);
+  *pointer = getDmaMemPtrGPI ();
 	return GASPI_SUCCESS;
 }
 
@@ -237,6 +243,11 @@ gaspi_write ( gaspi_segment_id_t segment_id_local
             , gaspi_timeout_t timeout
             )
 {
+  assert(segment_id_local == 0);
+  assert(segment_id_remote == 0);
+  assert(timeout == GASPI_BLOCK);
+
+  writeDmaGPI (offset_local, offset_remote, size, rank, queue);
 	return GASPI_SUCCESS;
 }
 
@@ -267,6 +278,8 @@ gaspi_wait ( gaspi_queue_t queue
            , gaspi_timeout_t timeout
            )
 {
+  assert(timeout == GASPI_BLOCK);
+  waitDmaGPI (queue);
 	return GASPI_SUCCESS;
 }
 
@@ -580,6 +593,9 @@ gaspi_barrier ( gaspi_group_t group
               , gaspi_timeout_t timeout
               )
 {
+  assert(group == GASPI_GROUP_ALL);
+  assert(timeout == GASPI_BLOCK);
+  barrierGPI ();
 	return GASPI_SUCCESS;
 }
 
