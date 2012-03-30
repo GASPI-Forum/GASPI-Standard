@@ -200,6 +200,9 @@ typedef struct {
 
   void *             user_defined;
 
+  int                argc;
+  char *             argv[];
+
 } gaspi_configuration_t;
 
 //!

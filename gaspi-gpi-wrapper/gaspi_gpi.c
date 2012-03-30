@@ -10,7 +10,8 @@ gaspi_proc_init ( gaspi_configuration_t configuration
                 , gaspi_timeout_t timeout
                 )
 {
-	return GASPI_SUCCESS;
+  assert(timeout == GASPI_BLOCK);
+  return startGPI(configuration.argc, configuration.argv, "", (1UL << 30)) != 0 ? GASPI_ERROR : GASPI_SUCCESS;
 }
 
 
@@ -20,6 +21,8 @@ gaspi_proc_init ( gaspi_configuration_t configuration
 gaspi_return_t
 gaspi_proc_term (gaspi_timeout_t timeout )
 {
+  assert(timeout == GASPI_BLOCK);
+  shutdownGPI();
 	return GASPI_SUCCESS;
 }
 
