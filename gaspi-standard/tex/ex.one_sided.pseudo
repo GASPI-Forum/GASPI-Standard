@@ -1,0 +1,15 @@
+let nProc be the number of processes;
+let iProc be the unique id of this process;
+let src[iProc] be an array of size nProc;
+let dst[iProc] be an array of size nProc;
+
+foreach process p in [0,nProc):
+  write src[iProc][p] into dst[p][iProc];
+  //    ^^^^^^^^^^         ^^^^^^
+  //    | local            | remote if p != iProc
+
+wait for the completion of the writes;
+// now this process sent the data
+
+barrier;
+// now all processes sent the data

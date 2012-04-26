@@ -1,0 +1,8 @@
+do
+{
+  packet := fetch_and_add (1);
+  // increment the value by one, return the old value
+
+  if (packet < packet_max): process (packet);
+}
+while (packet < packet_max);

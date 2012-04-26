@@ -1,0 +1,20 @@
+** consumer:
+let buffer be one data buffer;
+while (!done)
+{
+  passive_receive into buffer;
+  process (buffer);
+}
+
+** producer:
+let buffer[0] and buffer[1] be two data buffers;
+set b to 0;
+while (!done)
+{
+  produce data in buffer[b];
+
+  wait for the completion of earlier passive_send;
+  passive_send data from buffer[b] to consumer;
+
+  set b to 1-b;
+}

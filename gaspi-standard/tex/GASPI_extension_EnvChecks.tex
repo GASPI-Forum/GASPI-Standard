@@ -1,0 +1,226 @@
+\subsection{Environment checks}
+\label{sec:EnvChecks}
+
+Given the heterogeneity of available systems, \GASPI{} provides
+routines to control the enviroment in which the application will
+run. These include test of the running software and hardware
+environment and definition or retrieval of configuration options.
+
+These routines allow the verification of the environment prior to the
+initialization (\gaspifunction{start}) phase.
+
+\subsubsection{\gaspifunction{get\_hostname}}
+
+For some environmental checks it is required to provide the hostname
+of a node, without any reference to ranks or groups. It is
+\gaspisemantic{synchronous} 
+\gaspisemantic{local} \gaspisemantic{blocking} procedure.
+It is a procedure
+which can be invoked in any of the \GASPI{} execution phases.
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_get_hostname (gaspi_num_t host_num
+                   , gaspi_hostname_t hostname)
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{in}{hostnum}{The number of the node to find the hostname }
+\parameterlistitem{out}{hostname}{The hostname of the rank}
+\parameterlistend
+\FStdRetDescNOTimeout
+\end{FDef}
+
+The procedure \gaspifunction{get\_hostname} retrieves the hostname of
+the node with number \parameter{host\_num} and places it at
+the \parameter{hostname} output parameter.
+
+In case of success, i.e. \GASPISUCC{}, the \parameter{hostname} holds
+the hostname used to identify the node.
+
+In case of error, for example an invalid rank number, the return value
+is \GASPIGERR{}.
+
+The procedure can be invoked in any of the \GASPI{} execution phases.
+
+\subsubsection{\gaspifunction{get\_num\_hosts}}
+
+For some environmental checks it is required to provide the hostname
+of a node, without any reference to ranks or groups. It is
+\gaspisemantic{synchronous} 
+\gaspisemantic{local} \gaspisemantic{blocking} procedure.
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_get_num_hosts ( gaspi_num_t num_hosts )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{out}{num\_hosts}{The number of hosts }
+\parameterlistend
+\FStdRetDescNOTimeout
+\end{FDef}
+
+The procedure \gaspifunction{get\_hostname} retrieves the number of
+hosts and places it at
+the \parameter{num\_hosts} output parameter.
+
+In case of success, i.e. \GASPISUCC{}, the \parameter{num\_hosts} holds
+the number of nodes visible to \GASPI{}.
+
+In case of error, for example an invalid rank number, the return value
+is \GASPIGERR{}.
+
+The procedure can be invoked in any of the \GASPI{} execution phases.
+
+\subsubsection{\gaspifunction{check\_shared\_libraries}}
+
+The \gaspifunction{check\_shared\_libraries} procedure is a
+\gaspisemantic{synchronous} 
+\gaspisemantic{local} \gaspisemantic{time-based blocking} procedure which checks if all shared
+libraries required by the application are found. The application runs
+on a clean environment and therefore some libraries might not be found
+as in the master node. This procedure ensures that everything is OK.
+It is supposed, to be run before the actual \GASPI{} start-up.
+It is a procedure
+which can be invoked in any of the \GASPI{} execution phases.
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_check_shared_libraries ( gaspi_hostname_t hostname
+                             , gaspi_timeout_t timeout
+                             )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{in}{hostname}{the hostname where to run the check}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+\FStdRetDesc
+\end{FDef}
+
+After successful procedure completion, i.e. return value \GASPISUCC{}
+all shared libraries have been found on the node \parameter{hostname}. 
+
+In case of error, the return value is \GASPIGERR{}. 
+
+In case of timeout, the return value is \GASPITIME{}.
+
+The procedure can be invoked in any of the \GASPI{} execution phases (c.f. \secref{SubSec:ExecPhases} ).
+
+\subsubsection{\gaspifunction{check\_port}}
+
+The \gaspifunction{check\_port} is a \gaspisemantic{synchronous} 
+\gaspisemantic{local} \gaspisemantic{time-based blocking}
+procedure which checks if the given port number for remote program
+start-up is available to use. It is a procedure
+which can be invoked in any of the \GASPI{} execution phases.
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_check_port ( gaspi_hostname_t hostname
+                 , gaspi_port_t port
+                 , gaspi_timeout_t timeout
+                 )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{in}{hostname}{The hostname where to run the check}
+\parameterlistitem{in}{port}{the port number to check}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+\FStdRetDesc
+\end{FDef}
+
+After successful procedure completion, i.e. return value \GASPISUCC{}
+the \parameter{port} is available on node \parameter{hostname} for
+remote program start-up.
+
+In case of error, the return value is \GASPIGERR{}. 
+
+In case of timeout, the return value is \GASPITIME{}.
+
+The procedure can be invoked in any of the \GASPI{} execution phases (c.f. \secref{SubSec:ExecPhases} ).
+
+\subsubsection{\gaspifunction{process\_find}}
+
+The \gaspifunction{process\_find} procedure is a \gaspisemantic{synchronous} 
+\gaspisemantic{non-local} \gaspisemantic{time-based blocking} procedure checks if there
+is a running \GASPI{} binary running on a given host.
+The procedure can be invoked in any of the \GASPI{} execution phases. 
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_process_find ( gaspi_hostname_t hostname
+                   , gaspi_bool_t running_process
+                   , gaspi_timeout_t timeout
+                   )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{in}{hostname}{the hostname where to run the check}
+\parameterlistitem{out}{running\_process}{running process boolean}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+\FStdRetDesc
+\end{FDef}
+
+With a successful procedure completion, i.e. return value
+\GASPISUCC{}, the remote \GASPI{} process check has been 
+completed successfully and the parameter \parameter{running\_process}
+indicates whether there is a running process or not.
+
+In case of error, the return value is \GASPIGERR{} and the output parameter
+\parameter{running\_process} has an undefined value.
+
+In case of timeout, the return value is \GASPITIME{} and the output parameter
+\parameter{running\_process} has an undefined value.
+
+
+
+\subsubsection{\gaspifunction{check\_network}}
+
+The \gaspifunction{check\_network} procedure is a \gaspisemantic{synchronous} 
+\gaspisemantic{local} \gaspisemantic{time-based blocking} procedure which checks if the network is
+running properly. It is a procedure
+which can be invoked in any of the \GASPI{} execution phases.
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_check_network ( gaspi_hostname_t hostname
+                    , gaspi_network_t network
+                    , gaspi_timeout_t timeout
+                    )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{in}{hostname}{the hostname where to run the check}
+\parameterlistitem{in}{network}{the network infrastructure to check}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+\FStdRetDesc
+\end{FDef}
+
+With a successful procedure completion, i.e. return value
+\GASPISUCC{}, there is certainty that the \parameter{network}
+infrastructure is up and running.
+
+In case of error, the return value is \GASPIGERR{}. 
+
+In case of timeout, the return value is \GASPITIME{}.
+
+\subsubsection{Example}
+
+Setup phase environment check example.
