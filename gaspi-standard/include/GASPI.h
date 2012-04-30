@@ -58,6 +58,14 @@ typedef unsigned short gaspi_queue_id_t;
 
 /*!
 \typedef
+\brief The GASPI flag ID type.
+\details
+*/
+
+typedef int gaspi_flag_id_t;
+
+/*!
+\typedef
 \brief The GASPI flag type.
 \details
 */
@@ -183,6 +191,8 @@ typedef struct {
   gaspi_number_t     queue_num;
   gaspi_number_t     queue_size_max;
   gaspi_size_t       message_size_max;
+  
+  gaspi_flag_id_t    notify_flag_num;
 
   gaspi_number_t     passive_queue_size_max;
   gaspi_size_t       passive_message_size_max;
@@ -579,9 +589,8 @@ gaspi_wait ( gaspi_queue_id_t queue
 
 
 \param [in] rank  the remote rank to notify
-\param [in] flag  the flag to be sent
-\param [in] segment\_id\_flag  the remote segment ID where the flag is sent to
-\param [in] offset\_flag  the remote offset where the flag is sent to
+\param [in] flag\_id  the remote flag ID where the flag is sent to
+\param [in] flag_value  the flag to be sent
 \param [in] queue  the queue to be used
 \param [in] timeout  the timeout
 \return gaspi_return_t
@@ -591,9 +600,8 @@ gaspi_wait ( gaspi_queue_id_t queue
 
 gaspi_return_t
 gaspi_notify ( gaspi_rank_t rank
-             , gaspi_flag_t flag
-             , gaspi_segment_id_t segment_id_flag
-             , gaspi_offset_t offset_flag
+             , gaspi_flag_id_t flag_id
+             , gaspi_flag_t flag_value
              , gaspi_queue_id_t queue
              , gaspi_timeout_t timeout
              );
@@ -602,9 +610,7 @@ gaspi_notify ( gaspi_rank_t rank
 /*!
 
 
-\param [in] comparator  value to compare to
-\param [in] segment\_id  the local segment ID where the flag to compare to resides
-\param [in] offset  the local offset where the flag to compare to resides
+\param [in] flag\_id  the local flag ID where the flag to compare to resides
 \param [in] timeout  the timeout
 \return gaspi_return_t
 \retval GASPI_SUCCESS: operation has successfully returned
@@ -612,15 +618,13 @@ gaspi_notify ( gaspi_rank_t rank
 \retval GASPI_ERROR: operation has terminated with an error*/
 
 gaspi_return_t
-gaspi_notify_wait ( gaspi_segment_id_t segment_id
-                  , gaspi_offset_t offset
+gaspi_notify_wait ( gaspi_flag_id_t flag_id
                   , gaspi_timeout_t timeout
                   );
 
 gaspi_return_t
-gaspi_notify_waitsome ( gaspi_segment_id_t segment_id
-                      , gaspi_offset_t offset_begin
-                      , gaspi_offset_t offset_end
+gaspi_notify_waitsome ( gaspi_flag_id_t flag_id_beg
+                      , gaspi_flag_id_t flag_num
                       , gaspi_timeout_t timeout
                       );
 
@@ -628,17 +632,15 @@ gaspi_notify_waitsome ( gaspi_segment_id_t segment_id
 /*!
 
 
-\param [in] flag\_val  flag value to be set
-\param [in] segment\_id  the local segment ID where the flag to reset resides
-\param [in] offset  the local offset where the flag to reset resides
+\param [in] flag\_id  the local flag ID to reset
+\param [out] flag\_val  old flag value
 \return gaspi_return_t
 \retval GASPI_SUCCESS: operation has successfully returned
 \retval GASPI_TIMEOUT: operation has run into timeout
 \retval GASPI_ERROR: operation has terminated with an error*/
 
 gaspi_return_t
-gaspi_notify_reset ( gaspi_segment_id_t segment_id
-                   , gaspi_offset_t offset
+gaspi_notify_reset ( gaspi_flag_id_t flag_id
                    , gaspi_flag_t* flag_val
                    );
 
@@ -646,14 +648,14 @@ gaspi_notify_reset ( gaspi_segment_id_t segment_id
 /*!
 
 
-\param [out] notify\_size  size of flag in bytes
+\param [out] flag\_max  number of flags
 \return gaspi_return_t
 \retval GASPI_SUCCESS: operation has successfully returned
 \retval GASPI_TIMEOUT: operation has run into timeout
 \retval GASPI_ERROR: operation has terminated with an error*/
 
 gaspi_return_t
-gaspi_notify_size ( gaspi_size_t* size_flag );
+gaspi_notify_flag_num ( gaspi_flag_id_t* flag_max );
 
 
 /*!
@@ -664,9 +666,8 @@ gaspi_notify_size ( gaspi_size_t* size_flag );
 \param [in] rank  the remote rank to be written to
 \param [in] segment\_id\_remote  the remote segment to be written to
 \param [in] offset\_remote  the remote offset to be written to
+\param [in] flag_id  the remote segment ID where the flag is sent to
 \param [in] flag  the flag to be sent
-\param [in] segment\_id\_flag  the remote segment ID where the flag is sent to
-\param [in] offset\_flag  the remote offset where the flag is sent to
 \param [in] size  the size of the message to be sent
 \param [in] queue  the queue to be used
 \param [in] timeout  the timeout
@@ -682,9 +683,8 @@ gaspi_write_notify ( gaspi_segment_id_t segment_id_local
                    , gaspi_segment_id_t segment_id_remote
                    , gaspi_offset_t offset_remote
                    , gaspi_size_t size
-                   , gaspi_flag_t flag
-                   , gaspi_segment_id_t segment_id_flag
-                   , gaspi_offset_t offset_flag
+                   , gaspi_flag_id_t flag_id
+                   , gaspi_flag_t flag_value
                    , gaspi_queue_id_t queue
                    , gaspi_timeout_t timeout
                    );
@@ -730,8 +730,8 @@ gaspi_write_list ( gaspi_number_t num
 \param [in] segment\_id\_remote[num]  list of remote segments to be written to
 \param [in] offset\_remote[num]  list of remote offsets to be written to
 \param [in] size[num]  list of sizes of the messages to be sent
-\param [in] flag  the flag to be sent
-\param [in] segment\_id\_flag  the remote segment ID where the flag is sent to
+\param [in] flag_id  the remote flag ID where the flag is sent to
+\param [in] flag_value  the flag to be sent
 \param [in] offset\_flag  the remote offset where the flag is sent to
 \param [in] queue  the queue to be used
 \param [in] timeout  the timeout
@@ -748,8 +748,8 @@ gaspi_write_list_notify ( gaspi_number_t num
                         , gaspi_segment_id_t* segment_id_remote
                         , gaspi_offset_t* offset_remote
                         , gaspi_size_t* size
-                        , gaspi_flag_t flag
-                        , gaspi_segment_id_t segment_id_flag
+                        , gaspi_flag_id_t flag_id
+                        , gaspi_flag_t flag_value
                         , gaspi_offset_t offset_flag
                         , gaspi_queue_id_t queue
                         , gaspi_timeout_t timeout

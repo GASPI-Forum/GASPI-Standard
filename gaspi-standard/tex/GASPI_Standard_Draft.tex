@@ -734,6 +734,11 @@ and it should be used to detect failures on remote processes.
 \end{TDef}
 
 \begin{TDef}
+\TDefDefn{unsigned short}{\gaspitype{flag\_id}}
+\TDefDesc{The \GASPI{} flag ID type.}
+\end{TDef}
+
+\begin{TDef}
 \TDefDefn{int}{\gaspitype{tag}}
 \TDefDesc{The \GASPI{} Tag type. Tag are used to discriminate
   different messages in the passive communication channel.}
@@ -938,6 +943,9 @@ typedef struct {
   gaspi_number_t     queue_size_max;
   gaspi_size_t       message_size_max;
 
+  /// notification flag parameter
+  gaspi_flag_id_t    notify_flag_num;
+
   /// passive comm parameter
   gaspi_number_t     passive_queue_size_max;
   gaspi_size_t       passive_message_size_max;
@@ -971,6 +979,8 @@ dependent maximum.
 \item[queue\_size\_max] the desired number of simultaneously allowed on-going requests on a one sided communication queue.
 There is a hardware/implementation dependent maximum.
 \item[message\_size\_max] the desired maximum size of a single message in the one sided communication channel.
+There is a hardware/implementation dependent maximum.
+\item[notify\_flag\_num] the desired number of intenal notification flag buffers for weak synchronization to be created. 
 There is a hardware/implementation dependent maximum.
 \item[passive\_queue\_size\_max] the desired number of simultaneously allowed on-going requests on the
 passive communication queue. There is a hardware/implementation dependent maximum.
@@ -1530,6 +1540,7 @@ connections are set up at initialization time. Hence, a subsequent
 call to \gaspifunction{connect} is superfluous in this case.
 \end{useradvice}
 
+
 \subsubsection{\gaspifunction{disconnect}}
 
 The \gaspifunction{disconnect} procedure
@@ -1584,7 +1595,6 @@ In case of error, the return value is \GASPIGERR{}.
 
 Invoking \gaspifunction{disconnect} in any other execution phase than the
 working phase yields undefined behavior.
-
  
 \subsection{State vector for individual processes}
 
@@ -3020,9 +3030,32 @@ starting on page \pageref{lst:wait_if_queue_full_h}.
 
 \subsection{Weak synchronization primitives}
 
-\begin{todo}
-\item short intro about weak synchronization
-\end{todo}
+
+\subsubsection{Introduction}
+
+The one-sided communication procedures have the characteristics that the 
+entire communication is managed by the local process only. The 
+remote process is not involved. This has the advantage that there
+is no inherent synchronization between the local and the remote 
+process in every communication request. However, at some point,
+the remote process needs the information, whether the data
+which has been sent to that process has arrived and is valid.
+
+Therefore, \GASPI{} provides so-called weak synchronization 
+primitives which allow to inform the remote side that
+the data has been sent by updating a flag on the remote
+side. These notification flags are supposed to be attached
+to the same queue to which the data payload has been 
+attached. Otherwise, causality is not guaranteed.  
+
+As counterpart, there are 
+routines which wait for an update of a single or even an entire set of 
+flags. This is not thread save. There is a thread safe atomic function
+to reset the local flag with a given ID which returns the value 
+of the flag before it is reset. 
+
+These notification procedures are also single sided and do
+involve only the local process.  
 
 %%%%%%%%%%%%%%%  notify
 
@@ -3036,9 +3069,8 @@ It is a \gaspisemantic{asynchronous} \gaspisemantic{non-local}
 \begin{verbatim}
 gaspi_return_t
 gaspi_notify ( gaspi_rank_t rank
-             , gaspi_flag_t flag
-             , gaspi_segment_id_t segment_id_flag
-             , gaspi_offset_t offset_flag
+             , gaspi_flag_id_t flag_id
+             , gaspi_flag_t flag_value
              , gaspi_queue_id_t queue
              , gaspi_timeout_t timeout
              )
@@ -3046,9 +3078,8 @@ gaspi_notify ( gaspi_rank_t rank
 \end{FDefSign}
 \parameterlistbegin
 \parameterlistitem{in}{rank}{the remote rank to notify}
-\parameterlistitem{in}{flag}{the flag to be sent}
-\parameterlistitem{in}{segment\_id\_flag}{the remote segment ID where the flag is sent to}
-\parameterlistitem{in}{offset\_flag}{the remote offset where the flag is sent to}
+\parameterlistitem{in}{flag\_id}{the remote flag ID where the flag value is sent to}
+\parameterlistitem{in}{flag\_val}{the flag value to be sent}
 \parameterlistitem{in}{queue}{the queue to be used}
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
@@ -3057,17 +3088,15 @@ gaspi_notify ( gaspi_rank_t rank
 \end{FDef}
 
 \gaspifunction{notify} posts a notification request which asynchronously transfers the notification
-\parameter{flag} of the local \GASPI{} process to a notification flag buffer of a
+\parameter{flag} of the local \GASPI{} process to an internal notification flag buffer of a
 remote \GASPI{} process. This notification request is posted to the communication queue \parameter{queue}.
-The remote notification flag buffer is specified by the triple \parameter{rank}, \parameter{segment\_id\_flag},
-\parameter{offset\_flag}.
+The remote notification flag buffer is specified by the pair \parameter{rank}, \parameter{flag\_id}.
 % The remote flag buffer is located at address \emph{flag\_buffer = segment\_base + offset\_flag} where
 % \emph{segment\_base} is the base address of the segment represented by \parameter{segment\_id\_flag}.
 
-A valid \gaspifunction{notify} communication request requires that  the
-remote segment is allocated, that there is a connection between the local
-and the remote \GASPI{} process and that the remote segment has been registered
-on the local \GASPI{} process. Otherwise, the communication request is invalid
+A valid \gaspifunction{notify} communication request requires that there is a 
+connection between the local and the remote \GASPI{} process. Otherwise, the 
+communication request is invalid
 and the procedure returns with \GASPIGERR{}.
 
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, the notification request has
@@ -3205,17 +3234,15 @@ procedure.
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_notify_waitsome ( gaspi_segment_id_t segment_id
-                      , gaspi_offset_t offset_begin
-                      , gaspi_size_t   flag_buffer_size
+gaspi_notify_waitsome ( gaspi_flag_id_t flag_id_beg
+                      , gaspi_flag_id_t flag_id_num
                       , gaspi_timeout_t timeout
                       )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{in}{segment\_id}{the local segment ID where the flags reside}
-\parameterlistitem{in}{offset\_begin}{the local offset where the first flag resides}
-\parameterlistitem{in}{flag\_buffer\_size}{the size of the flag buffer}
+\parameterlistitem{in}{flag\_id\_beg}{the local flag ID for the first flag to wait for}
+\parameterlistitem{in}{flag\_id\_num}{the number of flag ID's to wait for}
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
 \executionphasework
@@ -3224,14 +3251,12 @@ gaspi_notify_waitsome ( gaspi_segment_id_t segment_id
 
 \gaspifunction{notify\_waitsome} waits that at least one of a number
 of consecutive flags residing in the local
-partition of the global address space has a value that is not zero.
+internal buffer has a value that is not zero.
 
 The flag buffer is specified by the
-pair \parameter{segment\_id}, \parameter{offset\_begin}
-and \parameter{flag\_buffer\_size}. It contains $(\mbox{\it flag\_buffer\_size}
-/\mbox{\it size\_flag}$ many consecutive
-flags, where \emph{size\_flag} is the size of a single flag. This
-value is given by the function \gaspifunction{notify\_size}.
+pair \parameter{flag\_id\_beg}, \parameter{flag\_id\_num}. 
+It contains $\mbox{\it flag\_id\_num}$ many consecutive
+flags beginning at the flag with ID $\mbox{\it flag\_id\_beg}$.
 % The first
 % flag is located at the address \emph{segment\_base\_addr +
 %   offset\_begin}, where \emph{segment\_base\_addr} is the base address
@@ -3303,28 +3328,25 @@ initialization procedure which resets the given flag to zero. It is a
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_notify_reset ( gaspi_segment_id_t segment_id
-                   , gaspi_offset_t offset
+gaspi_notify_reset ( gaspi_flag_id_t flag_id
                    , gaspi_flag_t old_flag_val
                    )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{in}{segment\_id}{the local segment ID where the flag to reset resides}
-\parameterlistitem{in}{offset}{the local offset where the flag to reset resides}
+\parameterlistitem{in}{flag\_id}{the local flag ID to reset}
 \parameterlistitem{out}{old\_flag\_val}{flag value before reset}
 \parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
 
-\gaspifunction{notify\_reset} resets the flag which resides in the
-local segment with ID \parameter{segment\_id} at \parameter{offset} to
+\gaspifunction{notify\_reset} resets the flag with ID \parameter{flag\_id} to
 zero. The function \gaspifunction{notify\_reset} is an atomic
 operation: Threads can use \gaspifunction{notify\_reset} to safely
 extract the value of a specific flag.
 
-The flag buffer on the local side is specified by the pair \parameter{segment\_id}, \parameter{offset}.
+The flag buffer on the local side is specified by the flag ID \parameter{flag\_id}.
 % It is located at address \emph{flag\_buffer = segment\_base\_addr + offset},
 % where \emph{segment\_base\_addr} is the base address of the segment with the identifier \parameter{segment\_id}.
 % It is the address which is obtained by applying \gaspifunction{segment\_ptr}.
@@ -3343,34 +3365,44 @@ flag is undefined.
 
 %%%%%%%%%%%%% size flag
 
-\subsubsection{\gaspifunction{notify\_size}}
+\subsubsection{\gaspifunction{notify\_flag\_num}}
 
-Since the notification flag buffer passed to \gaspifunction{notify} and \gaspifunction{notify\_waitsome}
-resides in a segment, the size of a notification flag
-needs to be known in order to be able to manage the memory of the segment.
-\gaspifunction{notify\_size} returns the size of a notification flag in units of bytes.
-It is \gaspisemantic{synchronous} \gaspisemantic{local}
-\gaspisemantic{blocking} procedure.
+The \gaspifunction{notify\_flag\_num} procedure
+is a \gaspisemantic{synchronous}
+\gaspisemantic{local} \gaspisemantic{blocking}
+procedure which determines the number
+of available notification flags.
 
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_notify_size (gaspi_size_t size_flag)
+gaspi_notify_flag_num (gaspi_flag_id_t flag_max)
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{out}{notify\_size}{size of flag in bytes}
+\parameterlistitem{out}{flag\_max}{the maximum number of available notification flags}
 \parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
 
 
-After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, \parameter{size\_flag}
-contains the size of a notification flag in units of bytes.
+After successful procedure completion, i.\,e.\ return value \GASPISUCC{},
+\parameter{flag\_max} contains the maximum number of allowed notification flags provided
+by \GASPI{}. The value of \parameter{flag\_max} is related to the parameter
+\parameter{notify\_flag\_num} in the configuration structure which is retrieved to \gaspifunction{proc\_init} at
+startup. If the value of \parameter{notify\_flag\_num} is compliant with the system capabilities,
+\parameter{flag\_max} is equal to \parameter{notify\_flag\_num}. Otherwise, \parameter{flag\_max}
+is equal to the maximum compliant with the system capabilities. This value might be implementation
+specific.
 
-If the return value is \GASPIGERR{}, \parameter{size\_flag} has an undefined value.
+In case of error, the return value is \GASPIGERR{}. The parameter
+\parameter{flag\_max} has an undefined value.
+
+Invoking
+\gaspifunction{notify\_flag\_num} in any other execution phase than the working phase
+yields undefined behavior.
 
 
 \subsubsection{Examples}
@@ -3431,9 +3463,8 @@ gaspi_write_notify ( gaspi_segment_id_t segment_id_local
                    , gaspi_segment_id_t segment_id_remote
                    , gaspi_offset_t offset_remote
                    , gaspi_size_t size
-                   , gaspi_flag_t flag
-                   , gaspi_segment_id_t segment_id_flag
-                   , gaspi_offset_t offset_flag
+                   , gaspi_flag_id_t flag_id
+                   , gaspi_flag_t flag_value
                    , gaspi_queue_id_t queue
                    , gaspi_timeout_t timeout
                    )
@@ -3445,10 +3476,9 @@ gaspi_write_notify ( gaspi_segment_id_t segment_id_local
 \parameterlistitem{in}{rank}{the remote rank to be written to}
 \parameterlistitem{in}{segment\_id\_remote}{the remote segment to be written to }
 \parameterlistitem{in}{offset\_remote}{the remote offset to be written to}
-\parameterlistitem{in}{flag}{the flag to be sent}
-\parameterlistitem{in}{segment\_id\_flag}{the remote segment ID where the flag is sent to}
-\parameterlistitem{in}{offset\_flag}{the remote offset where the flag is sent to}
 \parameterlistitem{in}{size}{the size of the message to be sent}
+\parameterlistitem{in}{flag\_id}{the remote flag ID where the flag is sent to}
+\parameterlistitem{in}{flag\_value}{the value of the flag to be sent}
 \parameterlistitem{in}{queue}{the queue to be used}
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
@@ -3540,9 +3570,8 @@ gaspi_write_list_notify
                 , gaspi_segment_id_t segment_id_remote[num]
                 , gaspi_offset_t offset_remote[num]
                 , gaspi_size_t size[num]
-                , gaspi_flag_t flag
-                , gaspi_segment_id_t segment_id_flag
-                , gaspi_offset_t offset_flag
+                , gaspi_flag_id_t flag_id
+                , gaspi_flag_t flag_value
                 , gaspi_queue_id_t queue
                 , gaspi_timeout_t timeout
                 )
@@ -3556,9 +3585,8 @@ gaspi_write_list_notify
 \parameterlistitem{in}{segment\_id\_remote[num]}{list of remote segments to be written to }
 \parameterlistitem{in}{offset\_remote[num]}{list of remote offsets to be written to}
 \parameterlistitem{in}{size[num]}{list of sizes of the messages to be sent}
-\parameterlistitem{in}{flag}{the flag to be sent}
-\parameterlistitem{in}{segment\_id\_flag}{the remote segment ID where the flag is sent to}
-\parameterlistitem{in}{offset\_flag}{the remote offset where the flag is sent to}
+\parameterlistitem{in}{flag\_id}{the remote flage ID where the flag is sent to}
+\parameterlistitem{in}{flag\_value}{the value of the flag to be sent}
 \parameterlistitem{in}{queue}{the queue to be used}
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
