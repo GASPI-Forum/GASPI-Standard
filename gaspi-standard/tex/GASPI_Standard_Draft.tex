@@ -1960,39 +1960,39 @@ If the parameter  \parameter{build\_infrastructure} is not set, the procedure \g
 the infrastructure for all possible operations of the group. 
 \end{implementoradvice} 
 
-\subsection{Group destruction}
+\subsection{Group deletion}
 
-\subsubsection{\gaspifunction{group\_destroy}}
+\subsubsection{\gaspifunction{group\_delete}}
 
-The \gaspifunction{group\_destroy} procedure
+The \gaspifunction{group\_delete} procedure
 is a \gaspisemantic{synchronous} \gaspisemantic{local}
-\gaspisemantic{blocking} procedure which destroys
+\gaspisemantic{blocking} procedure which deletes
 a given group.
 
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_group_destroy (gaspi_group_t group)
+gaspi_group_delete (gaspi_group_t group)
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{in}{group}{the group to be destroyed}
+\parameterlistitem{in}{group}{the group to be deleted}
 \parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
 
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{},
-\parameter{group} is destroyed and cannot be used.
+\parameter{group} is deleted and cannot be used.
 
 In case of error, the return value is \GASPIGERR{}.
 
-Invoking \gaspifunction{group\_destroy} in any other execution phase than the
+Invoking \gaspifunction{group\_delete} in any other execution phase than the
 working phase yields undefined behavior.
 
 \begin{implementoradvice}
-If the parameter \parameter{build\_infrastructure} is not set, the procedure \gaspifunction{group\_destroy} must disconnect
+If the parameter \parameter{build\_infrastructure} is not set, the procedure \gaspifunction{group\_delete} must disconnect
 all connections which have been set up in the call to \gaspifunction{group\_commit} and free all 
 associated resources.
 \end{implementoradvice} 
@@ -2386,41 +2386,41 @@ close to the calling process. The allocation policy of the calling process shoul
 not be modified.
 \end{implementoradvice}
 
-\subsection{Segment destruction}
+\subsection{Segment deletion}
 
-\subsubsection{\gaspifunction{segment\_destroy}}
+\subsubsection{\gaspifunction{segment\_delete}}
 
 The \gaspisemantic{synchronous} \gaspisemantic{local}
-\gaspisemantic{blocking} procedure \gaspifunction{segment\_destroy} 
+\gaspisemantic{blocking} procedure \gaspifunction{segment\_delete} 
 releases the resources of a previously allocated memory segment.
 
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_segment_destroy (gaspi_segment_id_t segment_id)
+gaspi_segment_delete (gaspi_segment_id_t segment_id)
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{in}{segment\_id}{ The segment ID to be destroyed. }
+\parameterlistitem{in}{segment\_id}{ The segment ID to be deleted. }
 \parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
 
-\gaspifunction{segment\_destroy} releases the resources of the segment
+\gaspifunction{segment\_delete} releases the resources of the segment
 which is referenced by the \parameter{segment\_id} identifier.
 
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{},
-the segment is destroyed and the resources are released. It is a failure to use the segment for communication
-between two \GASPI{} processes after \gaspifunction{destroy} has been called.
+the segment is deleted and the resources are released. It is a failure to use the segment for communication
+between two \GASPI{} processes after \gaspifunction{delete} has been called.
 
-In case of return value \GASPIGERR{}, the segment destruction failed. The segment
+In case of return value \GASPIGERR{}, the segment deletion failed. The segment
 is in an undefined state. It cannot be used locally or
 for passive communication. Furthermore, the segment cannot be used for one sided
 communication requests which are invoked by other remote processes.
 
-Invoking \gaspifunction{segment\_destroy} in any other execution
+Invoking \gaspifunction{segment\_delete} in any other execution
 phase than the working phase yields undefined behavior.
 
 % \subsubsection{\gaspifunction{segment\_deregister}}
@@ -2483,9 +2483,9 @@ phase than the working phase yields undefined behavior.
 % synchronization, either by one of the collective operations or by an explicit notification.
 % \end{useradvice}
 %
-% \subsubsection{\gaspifunction{segment\_destroy}}
+% \subsubsection{\gaspifunction{segment\_delete}}
 %
-% \gaspifunction{segment\_destroy} is a \gaspisemantic{synchronous} \gaspisemantic{collective}
+% \gaspifunction{segment\_delete} is a \gaspisemantic{synchronous} \gaspisemantic{collective}
 % \gaspisemantic{time-based blocking} procedure. It is collective shortcut to \gaspifunction{connect},
 % \gaspifunction{segment\_alloc}, \gaspifunction{segment\_register} and \gaspifunction{barrier}
 % involving all of the members of a
@@ -2495,14 +2495,14 @@ phase than the working phase yields undefined behavior.
 % \begin{FDefSign}
 % \begin{verbatim}
 % gaspi_return_t
-% gaspi_segment_destroy ( gaspi_segment_id_t segment_id
+% gaspi_segment_delete ( gaspi_segment_id_t segment_id
 %                      , gaspi_group_t group
 %                      , gaspi_timeout_t timeout
 %                      )
 % \end{verbatim}
 % \end{FDefSign}
 % \parameterlistbegin
-% \parameterlistitem{in}{segment\_id}{The segment ID to be destroyed.}
+% \parameterlistitem{in}{segment\_id}{The segment ID to be deleted.}
 % \parameterlistitem{in}{group}{The group which should create the segment}
 % \parameterlistitem{in}{timeout}{The timeout for the operation}
 % \parameterlistend
@@ -2511,8 +2511,8 @@ phase than the working phase yields undefined behavior.
 % \end{FDef}
 %
 %
-% \gaspifunction{segment\_destroy} destroys and deregister the segment that is referenced by
-% the \parameter{segment\_id} identifier. \gaspifunction{segment\_destroy} makes the segment
+% \gaspifunction{segment\_delete} deletes and deregister the segment that is referenced by
+% the \parameter{segment\_id} identifier. \gaspifunction{segment\_delete} makes the segment
 % referenced by the \parameter{segment\_id} identifier visible and accessible to
 % all of the \GASPI{} processes forming the group \parameter{group}.
 %
@@ -2540,7 +2540,7 @@ phase than the working phase yields undefined behavior.
 % \item synchronization by a barrier
 % \end{itemize}
 %
-% In case of return value \GASPIGERR, the segment destruction failed in one of the above progress
+% In case of return value \GASPIGERR, the segment deletion failed in one of the above progress
 % steps.
 %
 % In case of the latter two return values, a check of the state vector
@@ -2548,7 +2548,7 @@ phase than the working phase yields undefined behavior.
 % whether the involved remote \GASPI{} processes are still healthy.
 %
 % Invoking
-% \gaspifunction{segment\_destroy} in any other execution phase than the working
+% \gaspifunction{segment\_delete} in any other execution phase than the working
 % phase yields undefined behavior.
 
 \subsection{Segment utilities}
@@ -3136,7 +3136,7 @@ more efficiently, if supported by the network infrastructure.
 % \subsubsection{\gaspifunction{notify\_wait}}
 % 
 % \begin{todo}
-% \item destroy \gaspifunction{notify\_wait}
+% \item delete \gaspifunction{notify\_wait}
 % \item perhaps just keep example
 % \end{todo}
 % 
