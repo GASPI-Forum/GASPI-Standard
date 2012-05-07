@@ -945,7 +945,7 @@ typedef struct {
   gaspi_size_t       message_size_max;
 
   /// notification parameter
-  gaspi_notification_id_t    notification_num;
+  gaspi_number_t     notification_num;
 
   /// passive comm parameter
   gaspi_number_t     passive_queue_size_max;
@@ -3076,7 +3076,7 @@ gaspi_notify ( gaspi_rank_t rank
 \parameterlistbegin
 \parameterlistitem{in}{rank}{the remote rank to notify}
 \parameterlistitem{in}{notification\_id}{the remote notification ID where the notification value is sent to}
-\parameterlistitem{in}{notification\_val}{the notification value to be sent}
+\parameterlistitem{in}{notification\_val}{the notification value ($>0$) to be sent}
 \parameterlistitem{in}{queue}{the queue to be used}
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
@@ -3232,7 +3232,7 @@ procedure.
 \begin{verbatim}
 gaspi_return_t
 gaspi_notify_waitsome ( gaspi_notification_id_t notification_begin
-                      , gaspi_notification_id_t notification_num
+                      , gaspi_number_t notification_num
                       , gaspi_timeout_t timeout
                       )
 \end{verbatim}
@@ -3254,6 +3254,8 @@ The notification buffer is specified by the
 pair \parameter{notification\_begin}, \parameter{notification\_num}. 
 It contains $\mbox{\it notification\_num}$ many consecutive
 notifications beginning at the notification with ID $\mbox{\it notification\_begin}$.
+
+If $\mbox{\it notification\_num}==0$ then \gaspifunction{notify\_waitsome} returns immediately with \GASPISUCC{}.
 % The first
 % notification is located at the address \emph{segment\_base\_addr +
 %   offset\_begin}, where \emph{segment\_base\_addr} is the base address
@@ -4961,6 +4963,117 @@ In case of error, the return value is \GASPIGERR{}.
 The procedure can be invoked in any of the \GASPI{} execution phases.
 
 \section{Profiling Interface}
+
+
+The profiling interface of \GASPI{} consists of two parts.
+The statistics part provides the means to allow the user to collect basic profiling data about a program run. 
+
+\subsection{Statistics}
+
+\subsubsection{\gaspifunction{statistic\_counter\_get}}
+
+The \gaspifunction{statistic\_counter\_get} procedure is a \gaspisemantic{synchronous}
+\gaspisemantic{local} \gaspisemantic{blocking}
+procedure which retrieves a statistical counter from the local \GASPI{} process.
+
+\GASPI{} provides a typed enumeration to determine a particular statistical counter.
+
+\begin{listing}[99]{2}
+typedef enum { GASPI_STATISTIC_BYTES_WRITTEN
+             , GASPI_STATISTIC_BYTES_READ 
+             , GASPI_STATISTIC_BYTES_SEND
+             , GASPI_STATISTIC_BYTES_RECEIVED
+             } gaspi_statistic_counter_t;
+\end{listing}
+
+A \GASPI{} implementation is free to extend the above enumeration.
+
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_statistic_counter_get ( gaspi_statistic_counter_t counter
+                            , gaspi_statistic_value_t value
+                            )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{in}{counter}{the counter to be retrieved}
+\parameterlistitem{out}{value}{the current value of the counter}
+\parameterlistend
+\executionphasework
+\FStdRetDescNOTimeout
+\end{FDef}
+
+After successful procedure completion, i.\,e.\ return value \GASPISUCC{}
+\parameter{value} contains the current value of the corresponding counter. 
+
+\subsubsection{\gaspifunction{statistic\_counter\_reset}}
+
+The \gaspifunction{statistic\_counter\_reset} procedure is a \gaspisemantic{synchronous}
+\gaspisemantic{local} \gaspisemantic{blocking}
+procedure which sets a statistical counter to 0.
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_statistic_counter_reset (gaspi_statistic_counter_t counter)
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{in}{counter}{the counter to be reset}
+\parameterlistend
+\executionphasework
+\FStdRetDescNOTimeout
+\end{FDef}
+
+\subsubsection{\gaspifunction{statistic\_counter\_collect}}
+
+
+The \gaspifunction{statistic\_counter\_collect} procedure is a \gaspisemantic{synchronous}
+\gaspisemantic{collective} \gaspisemantic{time-based blocking} procedure.
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_statistic_counter_collect ( gaspi_statistic_counter_t counter
+		                            , gaspi_statistic_value_t value
+		                            , gaspi_group_t group
+		                            , gaspi_timeout_t timeout
+		                            )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{in}{counter}{the counter to be retrieved}
+\parameterlistitem{out}{value}{the current value of the counter}
+\parameterlistitem{in}{group}{the group of ranks which participate in the collect operation}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+\executionphasework
+\FStdRetDesc
+\end{FDef}
+
+The behavior of \gaspifunction{statistic\_counter\_collect} is equivalent to a call to \gaspifunction{allreduce} (see \ref{SubSec:allreduce})
+with num = 1, operation = GASPI\_OP\_SUM and datatype = GASPI\_TYPE\_ULONG. 
+
+After successful procedure completion, i.\,e.\
+return value \GASPISUCC{}, \parameter{value} contains the sum of the values of the corresponding \parameter{counter} of all ranks being a member of \parameter{group}. 
+The counter values delivered by every participating rank are equivalent to the values which would be returned by local calls to \gaspifunction{statistic\_counter\_get}. 
+That is, local calls to \gaspifunction{statistic\_counter\_reset} are respected.
+
+Calls to \gaspifunction{statistic\_counter\_collect} do not contribute to the values of the collected counters at every rank.
+
+In case of \GASPITIME{}, the reduction operation is not finished yet,
+i.\,e.\ not all data is available that is needed to calculate the
+result. \parameter{value} has an undefined value.
+
+In case of error, the return value is \GASPIGERR{}. The error vector should be
+examined. \parameter{value} has an undefined value.
+
+
 
 \subsection{Requirements}
 
