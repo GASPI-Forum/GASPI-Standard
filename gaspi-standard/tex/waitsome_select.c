@@ -16,7 +16,7 @@ void waitsome ( const gaspi_notification_id_t id_begin
            )
          );
 
-  for (gaspi_flag_id_t i = 0; i < flag_num; ++i)
+  for (gaspi_notification_id_t i = 0; i < id_num; ++i)
     {
       gaspi_notification_t notification = 0;
 
@@ -24,7 +24,7 @@ void waitsome ( const gaspi_notification_id_t id_begin
       ASSERT (gaspi_notify_reset (id_begin + i, &notification));
 
       // re-check, other threads are notified too!
-      if (val != 0)
+      if (notification != 0)
         {
           process (i, notification);
         }

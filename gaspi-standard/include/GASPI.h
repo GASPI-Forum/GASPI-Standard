@@ -58,19 +58,19 @@ typedef unsigned short gaspi_queue_id_t;
 
 /*!
 \typedef
-\brief The GASPI flag ID type.
+\brief The GASPI notification ID type.
 \details
 */
 
-typedef int gaspi_flag_id_t;
+typedef int gaspi_notification_id_t;
 
 /*!
 \typedef
-\brief The GASPI flag type.
+\brief The GASPI notification value type.
 \details
 */
 
-typedef int gaspi_flag_t;
+typedef int gaspi_notification_t;
 
 /*!
 \typedef
@@ -192,7 +192,7 @@ typedef struct {
   gaspi_number_t     queue_size_max;
   gaspi_size_t       message_size_max;
   
-  gaspi_flag_id_t    notify_flag_num;
+  gaspi_notification_id_t    notify_flag_num;
 
   gaspi_number_t     passive_queue_size_max;
   gaspi_size_t       passive_message_size_max;
@@ -600,8 +600,8 @@ gaspi_wait ( gaspi_queue_id_t queue
 
 gaspi_return_t
 gaspi_notify ( gaspi_rank_t rank
-             , gaspi_flag_id_t flag_id
-             , gaspi_flag_t flag_value
+             , gaspi_notification_id_t flag_id
+             , gaspi_notification_t flag_value
              , gaspi_queue_id_t queue
              , gaspi_timeout_t timeout
              );
@@ -618,13 +618,13 @@ gaspi_notify ( gaspi_rank_t rank
 \retval GASPI_ERROR: operation has terminated with an error*/
 
 gaspi_return_t
-gaspi_notify_wait ( gaspi_flag_id_t flag_id
+gaspi_notify_wait ( gaspi_notification_id_t flag_id
                   , gaspi_timeout_t timeout
                   );
 
 gaspi_return_t
-gaspi_notify_waitsome ( gaspi_flag_id_t flag_id_beg
-                      , gaspi_flag_id_t flag_num
+gaspi_notify_waitsome ( gaspi_notification_id_t flag_id_beg
+                      , gaspi_notification_id_t flag_num
                       , gaspi_timeout_t timeout
                       );
 
@@ -640,8 +640,8 @@ gaspi_notify_waitsome ( gaspi_flag_id_t flag_id_beg
 \retval GASPI_ERROR: operation has terminated with an error*/
 
 gaspi_return_t
-gaspi_notify_reset ( gaspi_flag_id_t flag_id
-                   , gaspi_flag_t* flag_val
+gaspi_notify_reset ( gaspi_notification_id_t flag_id
+                   , gaspi_notification_t* flag_val
                    );
 
 
@@ -655,7 +655,7 @@ gaspi_notify_reset ( gaspi_flag_id_t flag_id
 \retval GASPI_ERROR: operation has terminated with an error*/
 
 gaspi_return_t
-gaspi_notify_flag_num ( gaspi_flag_id_t* flag_max );
+gaspi_notification_num ( gaspi_notification_id_t* flag_max );
 
 
 /*!
@@ -683,8 +683,8 @@ gaspi_write_notify ( gaspi_segment_id_t segment_id_local
                    , gaspi_segment_id_t segment_id_remote
                    , gaspi_offset_t offset_remote
                    , gaspi_size_t size
-                   , gaspi_flag_id_t flag_id
-                   , gaspi_flag_t flag_value
+                   , gaspi_notification_id_t flag_id
+                   , gaspi_notification_t flag_value
                    , gaspi_queue_id_t queue
                    , gaspi_timeout_t timeout
                    );
@@ -748,8 +748,8 @@ gaspi_write_list_notify ( gaspi_number_t num
                         , gaspi_segment_id_t* segment_id_remote
                         , gaspi_offset_t* offset_remote
                         , gaspi_size_t* size
-                        , gaspi_flag_id_t flag_id
-                        , gaspi_flag_t flag_value
+                        , gaspi_notification_id_t flag_id
+                        , gaspi_notification_t flag_value
                         , gaspi_offset_t offset_flag
                         , gaspi_queue_id_t queue
                         , gaspi_timeout_t timeout

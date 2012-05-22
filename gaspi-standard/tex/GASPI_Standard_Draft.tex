@@ -424,7 +424,7 @@ The following semantic terms are used throughout the document:
   most $n$ milliseconds for messages from other processes.
 \item[synchronous]
   A procedure is called synchronous if progress towards 
-  completion is only is achieved hwne the application is inside (executing) the procedure.
+  completion only is achieved as long as the application is inside (executing) the procedure.
 \begin{center}
 \begin{tikzpicture}
 \timeline{\baselineskip};
@@ -1116,7 +1116,8 @@ list of hosts on which the entire \GASPI{} application is running either by envi
 variables, a command line argument, a daemon or something other mechanism.
 The actual transfer of knowledge is implementation dependent.
 
-\gaspifunction{proc\_init} registers a given process with the other remote \GASPI{} processes.
+\gaspifunction{proc\_init} registers a given process with the other remote \GASPI{} processes
+and sets the corresponding entry in the state vector to a healthy state. 
 If the parameter \parameter{build\_infrastructure} of the passed configuration structure is set,
 also the communication infrastructure for passive and one-sided communication to all
 of the other processes is set up. Otherwise, there is no set up of communication infrastructure
@@ -1715,28 +1716,28 @@ For failure tolerant code, the state vector should be checked after each of the 
 procedure calls in case that they return with return value \GASPIGERR{} or \GASPITIME{}.
 \end{useradvice}
 
-\subsubsection{\gaspifunction{state\_vec\_reset}}
-
-After successful state recovery, it is desirable to reset the
-state vector to a global healthy state. This is achieved by the
-\gaspisemantic{local} \gaspisemantic{synchronous}
-\gaspisemantic{blocking} function \gaspifunction{state\_vec\_get}.
-
-\begin{FDef}
-\begin{FDefSign}
-\begin{verbatim}
-gaspi_return_t
-gaspi_state_vec_reset ()
-\end{verbatim}
-\end{FDefSign}
-\executionphasework
-\FStdRetDescNOTimeout
-\end{FDef}
-
-In case of successful completion, i.\,e.\ return
-value \GASPISUCC, the state vector is reset to GASPI\_STATE\_HEALTHY for all of the processes.
-
-In case of error, the return value is \GASPIGERR{} and the state vector is undefined.
+% \subsubsection{\gaspifunction{state\_vec\_reset}}
+% 
+% After successful state recovery, it is desirable to reset the
+% state vector to a global healthy state. This is achieved by the
+% \gaspisemantic{local} \gaspisemantic{synchronous}
+% \gaspisemantic{blocking} function \gaspifunction{state\_vec\_get}.
+% 
+% \begin{FDef}
+% \begin{FDefSign}
+% \begin{verbatim}
+% gaspi_return_t
+% gaspi_state_vec_reset ()
+% \end{verbatim}
+% \end{FDefSign}
+% \executionphasework
+% \FStdRetDescNOTimeout
+% \end{FDef}
+% 
+% In case of successful completion, i.\,e.\ return
+% value \GASPISUCC, the state vector is reset to GASPI\_STATE\_HEALTHY for all of the processes.
+% 
+% In case of error, the return value is \GASPIGERR{} and the state vector is undefined.
 
 %\subsubsection{Example}
 
@@ -2980,13 +2981,17 @@ If the procedure returns with \GASPIGERR{}, the wait request aborted abnormally.
 In both cases, \GASPITIME{} and \GASPIGERR{}, the \GASPI{} state vector
 should be checked in order to eliminate the possibility of a failure.
 If a failure is detected, all of the communication requests which have been
-posted to the given queue since the last \gaspifunction{wait} are in an undefined state.
+posted to the given queue since the last \gaspifunction{wait} are in an undefined state. Here,
+undefined state means that the local \GASPI{} process does not know which requests
+have been processed and which requests are still outstanding. A call to 
+\gaspifunction{queue\_purge} has to be invoked in order to reset the 
+queue.
 
 \begin{useradvice}
   Return value \GASPISUCC{} means, that the data of all posted write
   requests has been sent to the remote side. It does not mean, that
   the sent data has arrived at the remote side. However, write
-  accesses to the local source buffer are allowed again.
+  accesses to the local source buffer are allowed again. 
 \end{useradvice}
 
 \begin{useradvice}
@@ -3214,7 +3219,7 @@ more efficiently, if supported by the network infrastructure.
 \subsubsection{\gaspifunction{notify\_waitsome}}
 
 For the procedures with notification, \gaspifunction{notify}
-and \gaspifunction{write\_notify}, \gaspifunction{write\_list\_notify}
+and \gaspifunction{write\_notify}, \gaspifunction{notify\_waitsome}
 is the correspondent wait procedure for the receiver (notified) side.
 % Sometimes an applications needs to be notified about the change of one
 % out of a number of notifications. This could be achieved by busy iterating
@@ -3648,6 +3653,49 @@ Invoking
 \gaspifunction{queue\_size} in any other execution phase than the working phase yields
 undefined behavior.
 
+\subsubsection{\gaspifunction{queue\_purge}}
+
+The \gaspifunction{queue\_purge} procedure
+is a \gaspisemantic{synchronous}
+\gaspisemantic{local} \gaspisemantic{time-based blocking} procedure which purges a given 
+queue.
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_queue_purge ( gaspi_queue_id_t queue
+                  , gaspi_timeout_t timeout
+                  )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{in}{queue}{the queue to purge}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+\executionphasework
+\FStdRetDesc
+\end{FDef}
+
+This procedure should only be invoked in the situation in which a node failure is detected
+by inspecting the global health state with \gaspifunction{state\_vec\_get}.
+
+After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, the communication
+\parameter{queue} is purged. All communication requests posted to the queue \parameter{queue} are 
+eliminated from the queue. The local \GASPI{} process has no information about the 
+completion of communication requests posted to the given queue since the last invocation 
+of \gaspifunction{wait}.
+
+If the procedure returns with \GASPITIME{}, the purge request could not be completed
+during the given timeout. This might happen if there is another thread in a \gaspifunction{wait}
+for the same queue. A subsequent call of \gaspifunction{queue\_purge} has to be
+invoked in order to complete the call.
+
+If the procedure returns with \GASPIGERR{}, the purge request aborted abnormally.
+
+Invoking
+\gaspifunction{queue\_purge} in any other execution phase than the working phase yields
+undefined behavior.
 
 \subsection{examples}
 
@@ -3860,6 +3908,11 @@ In both cases, \GASPITIME{} and \GASPIGERR{}, the \GASPI{} state vector
 should be checked in order to eliminate the possibility of a failure.
 If a failure is detected, all of the \gaspifunction{passive\_send} requests which have been
 posted to the given queue since the last \gaspifunction{passive\_wait} are in an undefined state.
+Here,
+undefined state means that the local \GASPI{} process does not know which requests
+have been processed and which requests are still outstanding. A call to 
+\gaspifunction{passive\_queue\_purge} has to be invoked in order to reset the 
+passive queue.
 
 \begin{useradvice}
 Return value \GASPISUCC{} means, that the data of all posted passive communication requests has been sent
@@ -3976,6 +4029,46 @@ The queue is reset after a call of \gaspifunction{passive\_wait}.
 In case of error, the return value is \GASPIGERR{}. The value of \parameter{queue\_size}
 is undefined.
 
+\subsubsection{\gaspifunction{passive\_queue\_purge}}
+
+The \gaspifunction{passive\_queue\_purge} procedure
+is a \gaspisemantic{synchronous}
+\gaspisemantic{local} \gaspisemantic{time-based blocking} procedure which purges the passive 
+queue.
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_passive_queue_purge ( gaspi_timeout_t timeout )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+\executionphasework
+\FStdRetDesc
+\end{FDef}
+
+This procedure should only be invoked in the situation in which a node failure is detected
+by inspecting the global health state with \gaspifunction{state\_vec\_get}.
+
+After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, the passive communication
+queue is purged. All communication requests posted to the passive queue are 
+eliminated. The local \GASPI{} process has no information about the 
+completion of communication requests posted to the passive queue since the last invocation 
+of \gaspifunction{passive\_wait}.
+
+If the procedure returns with \GASPITIME{}, the purge request could not be completed
+during the given timeout. This might happen if there is another thread in a \gaspifunction{passive\_wait}. 
+A subsequent call of \gaspifunction{passive\_queue\_purge} has to be
+invoked in order to complete the call.
+
+If the procedure returns with \GASPIGERR{}, the purge request aborted abnormally.
+
+Invoking
+\gaspifunction{passive\_queue\_purge} in any other execution phase than the working phase yields
+undefined behavior.
 
 \section{Global atomics}
 
@@ -4165,7 +4258,7 @@ timeout.
 \subsection{Introduction and overview}
 
 Collective operations are collective with respect to a given group.
-Successful collective procedure completion is achieved only if all
+A necessary condition for successful collective procedure completion is that all
 \GASPI{} processes forming the given group have invoked the operation.
 
 Collective operations support both synchronous and asynchronous implementations as
@@ -4187,9 +4280,11 @@ For example, two allreduce operations for one group can not run at the same time
 an allreduce and a barrier can run at the same time.
 
 The timeout is a necessary condition in order to be able to write
-failure tolerant code. Timeout $=0$ makes progress in the operation
-if possible. However, the procedure returns as soon as the progress
-is achieved.
+failure tolerant code. \GASPITEST{} (Timeout $=0$) makes an atomic portion 
+of progress in the operation if possible. If progress is possible, the procedure returns as 
+soon as the atomic portion of progress is achieved. Otherwise, the procedure returns
+immediately. Here, an atomic portion of progress is defined as 
+the smallest set of non-dividable instructions in the current state of the collective operation. 
 
 Reduction operations can be defined by the application via callback
 functions.
@@ -4413,9 +4508,9 @@ typedef enum { GASPI_OP_MIN
 \end{listing}
 
 \begin{description}
-\item[GASPI\_OP\_MIN] determines the minimum of all elements.
-\item[GASPI\_OP\_MAX] determines the maximum of all elements.
-\item[GASPI\_OP\_SUM] sums up all elements.
+\item[GASPI\_OP\_MIN] determines the minimum of the elements of each column of the input vector.
+\item[GASPI\_OP\_MAX] determines the maximum of the elements of each column of the input vector.
+\item[GASPI\_OP\_SUM] sums up all elements of each column of the input vector.
 \end{description}
 
 

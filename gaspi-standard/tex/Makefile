@@ -16,6 +16,8 @@ ps:
 
 pdf:
 	pdflatex $(STDFILE) 
+	pdflatex $(STDFILE)
+	pdflatex $(STDFILE)
 
 .PHONY: clean
 

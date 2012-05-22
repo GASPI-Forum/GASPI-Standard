@@ -17,6 +17,7 @@ OBJ += wait_if_queue_full.o
 OBJ += hello_world.o
 OBJ += signal_handler/signal.o
 OBJ += all_to_all/alltoall_write.o
+OBJ += all_to_all/alltoall_read.o
 OBJ += ../tex/waitsome_select.o
 OBJ += ../tex/notify_wait.o
 
