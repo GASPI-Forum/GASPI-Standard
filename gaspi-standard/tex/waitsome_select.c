@@ -2,32 +2,27 @@
 #include <success_or_die.h>
 
 extern void process ( const gaspi_notification_id_t id
-                    , const gaspi_notification_t val );
+                    , const gaspi_notification_t val
+                    );
 
-void waitsome ( const gaspi_notification_id_t id_begin
-              , const gaspi_notification_id_t id_num
-              )
+void blocking_waitsome ( const gaspi_notification_id_t id_begin
+                       , const gaspi_notification_id_t id_num
+                       )
 {
+  ASSERT (gaspi_notify_waitsome (id_begin, id_num, GASPI_BLOCK));
 
-  ASSERT ( gaspi_notify_waitsome
-           ( id_begin
-           , id_num
-           , GASPI_BLOCK
-           )
-         );
-
-  for (gaspi_notification_id_t i = 0; i < id_num; ++i)
+  for (gaspi_notification_id_t i = id_begin; i < id_begin + id_num; ++i)
     {
-      gaspi_notification_t notification = 0;
+      gaspi_notification_t val = 0;
 
       // atomic reset
-      ASSERT (gaspi_notify_reset (id_begin + i, &notification));
+      ASSERT (gaspi_notify_reset (i, &val));
 
       // re-check, other threads are notified too!
-      if (notification != 0)
+      if (val != 0)
         {
-          process (i, notification);
+          process (i, val);
         }
-        
+
     }
 }
