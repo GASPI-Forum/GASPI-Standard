@@ -240,7 +240,12 @@ basicstyle=\ttfamily
 %%%%%%%%%%%                              Document                                 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title{\GASPI{}: Global Address Space Programming Interface\\~\\Specification of a general purpose API for communication.\\~\\version 0.91}
+\title{\GASPI{}: Global Address Space Programming Interface\\
+~\\
+Specification of a general purpose API for communication\\
+~\\
+draft, version 0.91
+}
 
 \author{Daniel Gr\"unewald et al.}
 
@@ -260,9 +265,16 @@ basicstyle=\ttfamily
 %   once and not again and again.
 % \end{todo}
 
+\section{About the document}
+
+This is a draft version for comment only. There are parts of a
+complete specification missing, for example you will find (nearly)
+nothing about language bindings. However, most of the ideas for a new
+PGAS API are included in this draft version and it should give you a
+good impression of how it will look like.
+
 \section{Introduction to \GASPI{}}
 \label{sec::Intro}
-
 
 \subsection{Overview and Goals}
 \label{subsec::Overview}
@@ -339,8 +351,7 @@ From the application requirements the following design goals have been deduced:
 \item GPI is the base and we should improve from there where necessary
 \end{itemize}
 
-\subsection{Organization of this document}
-
+%\subsection{Organization of this document}
 
 \section{\GASPI{} terms and conventions}
 
@@ -3587,7 +3598,7 @@ gaspi_read_list ( gaspi_number_t num
 
 \parameter{num} new entries are inserted into the given queue.
 
-\subsubsection{Examples}
+%\subsubsection{Examples}
 
 \subsection{Communication utilities}
 
