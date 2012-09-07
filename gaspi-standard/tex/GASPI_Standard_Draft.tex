@@ -13,7 +13,7 @@
 \usepackage{tikz}\usetikzlibrary{automata,arrows,snakes,shapes}
 \usepackage{amssymb}
 \usepackage{amsmath}
-\usepackage{microtype}
+% \usepackage{microtype}
 \usepackage{fixltx2e}
 \usepackage{numprint}
 \usepackage{booktabs}
@@ -313,7 +313,7 @@ ITWM (Fraunhofer Virtual Machine, FVM), which has been developed since
 commercial product (called GPI) which is used in the industry projects
 of the Fraunhofer ITWM. GPI offers a highly efficient and scalable
 programming model for Partitioned Global Address Spaces and has
-replaces MPI completely at Fraunhofer ITWM. In 2011 the partners of
+replaced MPI completely at Fraunhofer ITWM. In 2011 the partners of
 Fraunhofer ITWM, Fraunhofer SCAI, TUD, T-Systems SfR, DLR, KIT, FZJ,
 DWD and Scapos have initiated and launched the \GASPI{} project to
 define a novel specification for a PGAS API (\GASPI{}, based on GPI) and to
@@ -1155,11 +1155,11 @@ in the list. The \GASPI{} process running on the first host in the list has rank
 In case of a node failure, a \GASPI{} process can be started on a new host, freshly allocated
 or selected from a set of pre-allocated spare hosts,
 by providing the list of machines in which the failed node is substituted by the new host.
-The newly \GASPI{} process has than the rank of the \GASPI{} process which
+The newly \GASPI{} process then has the rank of the \GASPI{} process which
 has been running on the failed node.
 
 In case of the subsequent start of additional \GASPI{} processes, the newly started
-\GASPI{} processes registers with the other remote \GASPI{} processes.
+\GASPI{} process registers with the other remote \GASPI{} processes.
 Note, that a subsequent change of the number of running
 \GASPI{} processes invalidates \GASPIGROUPALL{} for the old running processes.
 Also the return value of \gaspifunction{proc\_num} is changed.
@@ -1183,7 +1183,7 @@ it to the \gaspifunction{proc\_init} procedure.
 After successful procedure completion, \gaspifunction{proc\_init} returns
 \GASPISUCC{} and it guarantees that the application has been started
 on all hosts. In case that the \parameter{build\_infrastructure}
-is set, return value \GASPISUCC{} also implies thatt the infrastructure is up and ready to be used.
+is set, return value \GASPISUCC{} also implies that the infrastructure is up and ready to be used.
 
 % The parameters \parameter{argc} and \parameter{argv} are not
 % forwarded to the remote binaries. In order to forwarded them the \parameter{command\_line}
@@ -1239,7 +1239,7 @@ the network.
 A successful procedure completion does not mean that any communication or collective
 operation can already be used. Connections might be needed to be established.
 A segment has to be allocated for passive communication
-capabilites. If one-sided communication is supposed to be used, than the segment has to
+capabilities. If one-sided communication is supposed to be used, than the segment has to
 registered in addition. If collective operations are needed,  a group has to be created and
 committed. Only global atomic operations are feasible right from the beginning.
 \end{useradvice}
@@ -1517,7 +1517,7 @@ In order be able to communicate between two \GASPI{} processes, the communicatio
 infrastructure has to be established. This is
 achieved with the \gaspisemantic{synchronous} \gaspisemantic{non-local}
 \gaspisemantic{time-based blocking} procedure \gaspifunction{connect}.
-It is bound to the working phase of the \GASPI{} lifecycle.
+It is bound to the working phase of the \GASPI{} life cycle.
 
 \begin{FDef}
 \begin{FDefSign}
@@ -1547,7 +1547,7 @@ if \gaspifunction{connect} is invoked by only one of the connection partners.
 In case of successful procedure completion, i.\,e.\ return value \GASPISUCC,
 the communication infrastructure is established. If there is
 an allocated segment, the segment can be used as a destination for passive
-communication between the two nodes. In case that the the connection has been established already,
+communication between the two nodes. In case that the connection has been established already,
 e.\,g.\ by the connection partner, the return value is \GASPISUCC{}.
 
 In case of return value \GASPITIME, the communication infrastructure could not
@@ -1580,7 +1580,7 @@ is a \gaspisemantic{synchronous} \gaspisemantic{local}
 \gaspisemantic{blocking} procedure which disconnects a given
 a given group and frees all associated ressources.
 
-It is bound to the working phase of the \GASPI{} lifecycle.
+It is bound to the working phase of the \GASPI{} life cycle.
 
 \begin{FDef}
 \begin{FDefSign}
@@ -1605,7 +1605,7 @@ if \gaspifunction{disconnect} is invoked by only one of the connection partners.
 
 In case of successful procedure completion, i.\,e.\ return value \GASPISUCC,
 the communication infrastructure is disconnected. Associated resources are freed.
-In case that the the connection has been disconnected already,
+In case that the connection has been disconnected already,
 e.\,g.\ by the connection partner, the return value is \GASPISUCC{}.
 
 In case of error the return value is \GASPIGERR{}.
@@ -2113,7 +2113,7 @@ Since segment allocation is expensive and the total number of supported
 segments is limited due to hardware constraints, the \GASPI{} memory
 management paradigm is the following.
 \GASPI{} provides only a few relatively large segments.
-Allocations inside of the preallocated segment memory are managed
+Allocations inside of the pre-allocated segment memory are managed
 by the application.
 
 Every \GASPI{} process may possess a certain number of segments (not necessarily equal to the number in the other ranks) that may be accessed as common memory,
@@ -2600,7 +2600,7 @@ respective segments have been registered on the local process.
 
 % \subsubsection{Introduction and overview}
 Since a segment is an entire contiguous block of virtual memory,
-allocations inside of the preallocated segment memory need to be
+allocations inside of the pre-allocated segment memory need to be
 managed.
 
 \GASPI{} does not provide dedicated memory management functionality
@@ -2618,7 +2618,7 @@ addresses, since memory addresses of memory segments could be and
 normally are different on different \GASPI{} processes.
 
 A local buffer is specified by the pair \parameter{segment\_id}, \parameter{offset}.
-The rank parameter is superfluos since it can be derived from the rank of the local \GASPI{} process.
+The rank parameter is superfluous since it can be derived from the rank of the local \GASPI{} process.
 The buffer  is located at address
 \begin{equation}
 \mbox{buffer\_address} = \mbox{base\_addr}\left(\, \mbox{segment\_id} \,\right) + \mbox{offset} \nonumber
@@ -2679,7 +2679,7 @@ communication patterns:
 
 \begin{itemize}
 \item \gaspifunction{write}
-\item \gaspifunction{write\_notfiy}
+\item \gaspifunction{write\_notify}
 \item \gaspifunction{write\_list}
 \item \gaspifunction{write\_list\_notify}
 \end{itemize}

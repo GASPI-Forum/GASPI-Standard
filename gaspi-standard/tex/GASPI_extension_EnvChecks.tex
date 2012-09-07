@@ -2,7 +2,7 @@
 \label{sec:EnvChecks}
 
 Given the heterogeneity of available systems, \GASPI{} provides
-routines to control the enviroment in which the application will
+routines to control the environment in which the application will
 run. These include test of the running software and hardware
 environment and definition or retrieval of configuration options.
 
@@ -11,7 +11,7 @@ initialization (\gaspifunction{start}) phase.
 
 \subsubsection{\gaspifunction{get\_hostname}}
 
-For some environmental checks it is required to provide the hostname
+For some environmental checks it is required to provide the host name
 of a node, without any reference to ranks or groups. It is
 \gaspisemantic{synchronous} 
 \gaspisemantic{local} \gaspisemantic{blocking} procedure.
@@ -27,8 +27,8 @@ gaspi_get_hostname (gaspi_num_t host_num
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{in}{hostnum}{The number of the node to find the hostname }
-\parameterlistitem{out}{hostname}{The hostname of the rank}
+\parameterlistitem{in}{hostnum}{The number of the node to find the host name }
+\parameterlistitem{out}{hostname}{The host name of the rank}
 \parameterlistend
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -38,7 +38,7 @@ the node with number \parameter{host\_num} and places it at
 the \parameter{hostname} output parameter.
 
 In case of success, i.e. \GASPISUCC{}, the \parameter{hostname} holds
-the hostname used to identify the node.
+the host name used to identify the node.
 
 In case of error, for example an invalid rank number, the return value
 is \GASPIGERR{}.
@@ -47,7 +47,7 @@ The procedure can be invoked in any of the \GASPI{} execution phases.
 
 \subsubsection{\gaspifunction{get\_num\_hosts}}
 
-For some environmental checks it is required to provide the hostname
+For some environmental checks it is required to provide the host name
 of a node, without any reference to ranks or groups. It is
 \gaspisemantic{synchronous} 
 \gaspisemantic{local} \gaspisemantic{blocking} procedure.
@@ -99,7 +99,7 @@ gaspi_check_shared_libraries ( gaspi_hostname_t hostname
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{in}{hostname}{the hostname where to run the check}
+\parameterlistitem{in}{hostname}{the host name where to run the check}
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
 \FStdRetDesc
@@ -133,7 +133,7 @@ gaspi_check_port ( gaspi_hostname_t hostname
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{in}{hostname}{The hostname where to run the check}
+\parameterlistitem{in}{hostname}{The host name where to run the check}
 \parameterlistitem{in}{port}{the port number to check}
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
@@ -168,7 +168,7 @@ gaspi_process_find ( gaspi_hostname_t hostname
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{in}{hostname}{the hostname where to run the check}
+\parameterlistitem{in}{hostname}{the host name where to run the check}
 \parameterlistitem{out}{running\_process}{running process boolean}
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
@@ -206,7 +206,7 @@ gaspi_check_network ( gaspi_hostname_t hostname
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{in}{hostname}{the hostname where to run the check}
+\parameterlistitem{in}{hostname}{the host name where to run the check}
 \parameterlistitem{in}{network}{the network infrastructure to check}
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
