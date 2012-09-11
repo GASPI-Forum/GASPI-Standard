@@ -13,7 +13,7 @@
 \usepackage{tikz}\usetikzlibrary{automata,arrows,snakes,shapes}
 \usepackage{amssymb}
 \usepackage{amsmath}
-\usepackage{microtype}
+% \usepackage{microtype}
 \usepackage{fixltx2e}
 \usepackage{numprint}
 \usepackage{booktabs}
@@ -975,7 +975,7 @@ typedef struct {
   gaspi_size_t       transfer_size_max;
 
   // notification parameter
-  gaspi_number_t     notify_flag_num;
+  gaspi_number_t     notification_num;
 
   // passive comm parameter
   gaspi_number_t     passive_queue_size_max;
@@ -985,7 +985,7 @@ typedef struct {
   gaspi_number_t     counter_num;
 
   // collective comm parameter
-  gaspi_size_t       allreduce_buf_size_max;
+  gaspi_size_t       allreduce_buf_size;
   gaspi_number_t     allreduce_elem_max;
 
   // network selection parameter
@@ -1020,7 +1020,7 @@ There is a hardware/implementation dependent maximum.
 \item[transfer\_size\_max] the desired maximum size of a single data
   transfer in the one-sided communication channel.
 There is a hardware/implementation dependent maximum.
-\item[notify\_flag\_num] the desired number of internal notification buffers for weak synchronisation to be created.
+\item[notification\_num] the desired number of internal notification buffers for weak synchronisation to be created.
 There is a hardware/implementation dependent maximum.
 \item[passive\_queue\_size\_max] the desired number of simultaneously allowed on-going requests on the
 passive communication queue. There is a hardware/implementation dependent maximum.
@@ -1031,7 +1031,7 @@ There is a hardware/implementation dependent maximum.
 There is a hardware/implementation dependent maximum.
 \item[allreduce\_elem\_max] the maximum number of elements in \gaspifunction{allreduce}
 There is a hardware/implementation dependent maximum.
-\item[allreduce\_buf\_size\_max] the size of the internal buffer of \gaspifunction{allreduce\_user}.
+\item[allreduce\_buf\_size] the size of the internal buffer of \gaspifunction{allreduce\_user}.
 There is a hardware/implementation dependent maximum.
 \item[network] the network type to be used
 \item[build\_infrastructure] boolean to set whether the communication infrastructure should
@@ -4625,7 +4625,7 @@ The internal buffer size can be queried through \gaspifunction{allreduce\_buf\_s
 
 \subsubsection{User defined reduction operations}
 
-The user defined reduction operation need to have the
+The user defined reduction operations need to have the
 following prototypes:
 
 \begin{FDef}
@@ -4757,11 +4757,11 @@ gaspi_segment_max (gaspi_number_t segment_max)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_queue_num (gaspi_number_t queue_max)
+gaspi_queue_num (gaspi_number_t queue_num)
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{out}{queue\_max}{the maximum number of available queues}
+\parameterlistitem{out}{queue\_num}{the number of available queues}
 \parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
@@ -4774,13 +4774,13 @@ gaspi_queue_num (gaspi_number_t queue_max)
 \begin{verbatim}
 gaspi_return_t
 gaspi_queue_size_max ( gaspi_queue_id_t queue
-                     , gaspi_number_t queue_size
+                     , gaspi_number_t queue_size_max
                      )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
 \parameterlistitem{in}{queue}{the queue to probe}
-\parameterlistitem{out}{queue\_size}{the number of simultaneous requests allowed}
+\parameterlistitem{out}{queue\_size\_max}{the maximum number of simultaneous requests allowed}
 \parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
@@ -4792,11 +4792,11 @@ gaspi_queue_size_max ( gaspi_queue_id_t queue
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_transfer_size_max (gaspi_size_t transfer_size)
+gaspi_transfer_size_max (gaspi_size_t transfer_size_max)
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{out}{transfer\_size}{the maximum transfer size allowed for a single request}
+\parameterlistitem{out}{transfer\_size\_max}{the maximum transfer size allowed for a single request}
 \parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
@@ -4808,11 +4808,11 @@ gaspi_transfer_size_max (gaspi_size_t transfer_size)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_notification_num (gaspi_number_t notification_max)
+gaspi_notification_num (gaspi_number_t notification_num)
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{out}{notification\_max}{Maximum number of available notifications available}
+\parameterlistitem{out}{notification\_num}{the number of available notifications}
 \parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
@@ -4827,11 +4827,11 @@ gaspi_notification_num (gaspi_number_t notification_max)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_passive_queue_size_max (gaspi_number_t queue_size)
+gaspi_passive_queue_size_max (gaspi_number_t queue_size_max)
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{out}{queue\_size}{Maximum number of requests allowed in the passive communication queue}
+\parameterlistitem{out}{queue\_size\_max}{maximum number of requests allowed in the passive communication queue}
 \parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
@@ -4843,11 +4843,11 @@ gaspi_passive_queue_size_max (gaspi_number_t queue_size)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_passive_transfer_size_max (gaspi_size_t transfer_size)
+gaspi_passive_transfer_size_max (gaspi_size_t transfer_size_max)
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{out}{transfer\_size}{maximal transfer size per single passive communication request}
+\parameterlistitem{out}{transfer\_size\_max}{maximal transfer size per single passive communication request}
 \parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
@@ -4861,33 +4861,17 @@ gaspi_passive_transfer_size_max (gaspi_size_t transfer_size)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_counter_num (gaspi_number_t counter_max)
+gaspi_counter_num (gaspi_number_t counter_num)
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{out}{counter\_max}{The number of global atomic counters available}
+\parameterlistitem{out}{counter\_num}{The number of global atomic counters available}
 \parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
 
 \subsection{Getter functions for collective communication}
-
-\subsubsection{\gaspifunction{allreduce\_elem\_max}}
-
-\begin{FDef}
-\begin{FDefSign}
-\begin{verbatim}
-gaspi_return_t
-gaspi_allreduce_elem_max (gaspi_number_t elem_max)
-\end{verbatim}
-\end{FDefSign}
-\parameterlistbegin
-\parameterlistitem{out}{elem\_max}{the maximum number of elements allowed in \gaspifunction{allreduce}}
-\parameterlistend
-\executionphasework
-\FStdRetDescNOTimeout
-\end{FDef}
 
 \subsubsection{\gaspifunction{allreduce\_buf\_size}}
 
@@ -4900,6 +4884,22 @@ gaspi_allreduce_buf_size (gaspi_size_t buf_size)
 \end{FDefSign}
 \parameterlistbegin
 \parameterlistitem{out}{buf\_size}{the size of the internal buffer in \gaspifunction{allreduce\_user}}
+\parameterlistend
+\executionphasework
+\FStdRetDescNOTimeout
+\end{FDef}
+
+\subsubsection{\gaspifunction{allreduce\_elem\_max}}
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_allreduce_elem_max (gaspi_number_t elem_max)
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{out}{elem\_max}{the maximum number of elements allowed in \gaspifunction{allreduce}}
 \parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
