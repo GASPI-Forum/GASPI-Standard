@@ -3630,7 +3630,7 @@ gaspi_read_list ( gaspi_number_t num
 The \gaspifunction{queue\_size} procedure
 is a \gaspisemantic{synchronous}
 \gaspisemantic{local} \gaspisemantic{blocking} procedure which determines the number
-of communication requests posted to a given queue.
+of open communication requests posted to a given queue.
 
 \begin{FDef}
 \begin{FDefSign}
@@ -3643,7 +3643,7 @@ gaspi_queue_size ( gaspi_queue_id_t queue
 \end{FDefSign}
 \parameterlistbegin
 \parameterlistitem{in}{queue}{the queue to probe}
-\parameterlistitem{out}{queue\_size}{the number of requests posted to the queue}
+\parameterlistitem{out}{queue\_size}{the number of open requests posted to the queue}
 \parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
@@ -3651,7 +3651,7 @@ gaspi_queue_size ( gaspi_queue_id_t queue
 
 
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, the parameter
-\parameter{queue\_size} contains the number of requests posted to the queue \parameter{queue}.
+\parameter{queue\_size} contains the number of open requests posted to the queue \parameter{queue}.
 In a threaded program this result is uncertain, since another thread may have
 posted an additional request in the meantime or issued a wait call.
 
