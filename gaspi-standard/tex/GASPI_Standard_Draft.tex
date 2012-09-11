@@ -888,8 +888,8 @@ into several consecutive phases:
 \begin{itemize}
 \item \textbf{Setup}
   \begin{description}
-  \item Setting up configuration parameters
-  \item Performing environment checks
+  \item Setting up configuration parameters (optional)
+  \item Performing environment checks (optional)
   \end{description}
 \item \textbf{Initialization}
   \begin{description}
@@ -1423,6 +1423,7 @@ gaspi_proc_term (gaspi_timeout_t timeout)
 \parameterlistbegin
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
+\executionphaseshutdown
 \FStdRetDesc
 \end{FDef}
 
@@ -1536,6 +1537,7 @@ gaspi_connect ( gaspi_rank_t rank
 \parameterlistitem{in}{rank}{ the remote rank with which the communication infrastructure is established}
 \parameterlistitem{in}{timeout}{The timeout for the operation}
 \parameterlistend
+\executionphasework
 \FStdRetDesc
 \end{FDef}
 
@@ -1598,6 +1600,7 @@ gaspi_disconnect ( gaspi_rank_t rank
 \parameterlistitem{in}{rank}{ the remote rank from which the communication infrastructure is disconnected}
 \parameterlistitem{in}{timeout}{The timeout for the operation}
 \parameterlistend
+\executionphasework
 \FStdRetDesc
 \end{FDef}
 
