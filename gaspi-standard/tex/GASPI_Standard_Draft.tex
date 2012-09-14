@@ -292,7 +292,7 @@ execution model. To that end \GASPI{} leverages one-sided RDMA driven
 communication in a Partitioned Global Address Space. In contrast to
 other efforts in the PGAS community, \GASPI{} is neither a new
 language (like e.\,g.\ Chapel from Cray), nor an extension to a
-langauge (like e.\,g.\ Co-Array Fortran). Instead---very much in the
+language (like e.\,g.\ Co-Array Fortran). Instead---very much in the
 spirit of MPI---it complements existing languages like C/C++ or
 Fortran with a PGAS API which enables the application to leverage the
 concept of the Partitioned Global Adress Space.  In contrast to
@@ -769,7 +769,7 @@ and can be used to detect failures on remote processes.
 
 \begin{TDef}
 \TDefDefn{int}{\gaspitype{tag}}
-\TDefDesc{The \GASPI{} Tag type. Tags are used to discriminate
+\TDefDesc{The \GASPI{} tag type. Tags are used to discriminate
   different messages in the passive communication channel.}
 \end{TDef}
 
@@ -882,7 +882,7 @@ even if only a single program is started.
 
 There is also the concept of segments. Segments are memory regions
 that may be globally available, to be written to or read from. In general,
-the execution of a \GASPI{} process can be considered as splitted
+the execution of a \GASPI{} process can be considered as split
 into several consecutive phases:
 
 \begin{itemize}
@@ -1033,9 +1033,9 @@ There is a hardware/implementation dependent maximum.
 There is a hardware/implementation dependent maximum.
 \item[allreduce\_buf\_size] the size of the internal buffer of \gaspifunction{allreduce\_user}.
 There is a hardware/implementation dependent maximum.
-\item[network] the network type to be used
+\item[network] the network type to be used.
 \item[build\_infrastructure] boolean to set whether the communication infrastructure should
-be build up at startup time. The default value is true.
+be built up at startup time. The default value is true.
 %\item[param\_check] boolean to set whether a parameter check of the \GASPI{} routines is done
 \item[user\_defined] some user defined information that is application / implementation dependent.
 \end{description}
@@ -1157,7 +1157,7 @@ in the list. The \GASPI{} process running on the first host in the list has rank
 In case of a node failure, a \GASPI{} process can be started on a new host, freshly allocated
 or selected from a set of pre-allocated spare hosts,
 by providing the list of machines in which the failed node is substituted by the new host.
-The newly \GASPI{} process then has the rank of the \GASPI{} process which
+The new \GASPI{} process then has the rank of the \GASPI{} process which
 has been running on the failed node.
 
 In case of the subsequent start of additional \GASPI{} processes, the newly started
@@ -1363,7 +1363,7 @@ gaspi_proc_num (gaspi_rank_t proc_num)
 If successful, the return value is \GASPISUCC{} and
 \gaspifunction{proc\_num} retrieves the total number
 of processes that have been initialized and places this number in
-the \parameter{rank\_num}.
+the \parameter{proc\_num}.
 
 In case of error, the return value is \GASPIGERR{} and the value of
 \parameter{proc\_num} is undefined.
@@ -1446,7 +1446,7 @@ an undefined state.
 
 \subsubsection{\gaspifunction{proc\_kill}}
 
-\gaspifunction{proc\_kill} sends a interrupt signal to a
+\gaspifunction{proc\_kill} sends an interrupt signal to a
 given \GASPI{} process.
 It is a \gaspisemantic{synchronous} \gaspisemantic{non-local}
 \gaspisemantic{time-based blocking} procedure.
@@ -1490,7 +1490,7 @@ In case of error, i.\,e.\ return value \GASPIGERR, the state of the remote
 \begin{useradvice}
 The kill signal terminates a \GASPI{} process in an uncontrolled way.
 In order to provide a clean shutdown in this case, it is advisable
-to register a user defined signal callback function which guarantees
+to be register a user defined signal callback function which guarantees
 a clean shutdown.
 \end{useradvice}
 
@@ -1633,7 +1633,7 @@ the connection is disconnected and can no longer be used.
 \subsubsection{Introduction}
 
 A necessary pre-condition for realising a failure tolerant code is a detailed
-knowledge about the state of the communication partners of each local
+know\-ledge about the state of the communication partners of each local
 \GASPI{} process.
 
 \GASPI{} provides a predefined type to describe the state of a remote \GASPI{} process,
@@ -1656,9 +1656,9 @@ process is corrupted, i.\,e.\ there is no communication possible.
   program.}
 \end{TDef}
 
-There are procedures to query for the state of the communication partners
+There are procedures to query the state of the communication partners
 after a given communication request and also to reset the state after
-successful recovery. These are described in the following sub sections.
+successful recovery. These are described in the following subsections.
 
 \subsubsection{\gaspifunction{state\_vec\_get}}
 
@@ -2107,7 +2107,7 @@ non-uniform memory access (\emph{NUMA}) partitions, solid state
 devices (\emph{SSD}s), graphical processing unit (\emph{GPU}) memory
 or many integrated cores (\emph{MIC}) memory.
 
-The \GASPI{} memory segments are thus an abstraction that representing
+The \GASPI{} memory segments are thus an abstraction representing
 any kind of memory level, mapping the variety of hardware layers to the
 software layer. A segment is a contiguous block of virtual memory.
 In the spirit of the PGAS approach, these \GASPI{}
@@ -2177,8 +2177,8 @@ gaspi_segment_alloc ( gaspi_segment_id_t segment_id
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{in}{segment\_id}{ The segment ID to be created. The segment ID's need to be
-                                     unique for each \GASPI{} process}
+\parameterlistitem{in}{segment\_id}{ The segment ID to be created. The segment IDs need to be
+                                     unique on each \GASPI{} process}
 \parameterlistitem{in}{size}{The size of the segment in bytes}
 \parameterlistitem{opt}{alloc\_policy}{optional parameter characterizing the allocation policy}
 \parameterlistend
@@ -2726,7 +2726,7 @@ has been registered on the local \GASPI{} process.
 
 The simplest form of a write operation is \gaspifunction{write} which
 is a single communication call to write data to a remote location.
-sIt is an \gaspisemantic{asynchronous} \gaspisemantic{non-local}
+It is an \gaspisemantic{asynchronous} \gaspisemantic{non-local}
 \gaspisemantic{time-based blocking} procedure.
 
 \begin{FDef}
@@ -2830,7 +2830,7 @@ posted requests to be finished. Or one tries to use another queue.
 
 The simplest form of a read operation is \gaspifunction{read} which
 is a single communication call to read data from a remote location.
-It is a \gaspisemantic{asynchronous} \gaspisemantic{non-local}
+It is an \gaspisemantic{asynchronous} \gaspisemantic{non-local}
 \gaspisemantic{time-based blocking} procedure.
 
 \begin{FDef}
@@ -2883,7 +2883,7 @@ A valid \gaspifunction{read} communication request requires that the local and t
 remote segment are allocated, that there is a connection between the local
 and the remote \GASPI{} process and that the remote segment has been registered
 on the local \GASPI{} process. Otherwise, the communication request is invalid
-and the procedure returns with \GASPIGERR{}
+and the procedure returns with \GASPIGERR{}.
 
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, the communication request has
 been posted to the underlying network infrastructure. One new entry is
@@ -2938,7 +2938,7 @@ posted requests to be finished. Or one tries to use another queue.
 The \gaspifunction{wait} procedure is a time-based blocking local
 procedure which waits until all one-sided communication requests posted
 to a given queue are processed by the network infrastructure.
-It is a \gaspisemantic{asynchronous} \gaspisemantic{non-local}
+It is an \gaspisemantic{asynchronous} \gaspisemantic{non-local}
 \gaspisemantic{time-based blocking} procedure.
 
 \begin{FDef}
@@ -3001,7 +3001,7 @@ the queue.
 
 \begin{useradvice}
   Return value \GASPISUCC{} means, that the data of all posted read
-  requests has been arrived at the local side.
+  requests have arrived at the local side.
 \end{useradvice}
 
 \subsubsection{Examples}
@@ -3364,13 +3364,13 @@ The notification buffer on the local side is specified by the notification ID \p
 After successful procedure completion, i.\,e.\ return value
 \GASPISUCC{}, the value of the notification buffer was set to zero and
 \parameter{old\_notification\_val} contains the content of the notification buffer
-before it was set to zero. To read the old value and to set to value
+before it was set to zero. To read the old value and to set the value
 to zero is a single atomic operation.
 
 \gaspifunction{notify\_reset} calls may be posted from every thread of
 the \GASPI{} process.
 
-In case of error, i.\,e.\ return value \GASPIGERR, the value of the
+In case of error, i.\,e.\ return value \GASPIGERR, the value of
 \parameter{old\_notification\_val} is undefined.
 
 %%%%%%%%%%%%% size notification
@@ -4050,7 +4050,7 @@ After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, the pa
 In a threaded program this result is uncertain, since another thread may have
 posted an additional request or a wait call in the meantime.
 
-The queue size is set to set by a successful call to \gaspifunction{passive\_wait}.
+The queue size is set to zero by a successful call to \gaspifunction{passive\_wait}.
 
 In case of error, the return value is \GASPIGERR{}. The value of \parameter{passive\_queue\_size}
 is undefined.
@@ -4097,7 +4097,7 @@ If the procedure returns with \GASPIGERR{}, the purge request aborted abnormally
 \subsection{Introduction and Overview}
 
 Atomic counters are globally accessible variables to which atomic access
-is privided through three operations: set, fetch-and-add and compare-and-swap.
+is provided through three operations: set, fetch-and-add and compare-and-swap.
 
 An atomic operation is an operation which is guaranteed to be executed
 without fear of interference from other processes during the procedure
@@ -4275,7 +4275,7 @@ timeout.
 \subsection{Introduction and overview}
 
 Collective operations are collective with respect to a given group.
-A becessary condition for successful collective procedure completion is that all
+A necessary condition for successful collective procedure completion is that all
 \GASPI{} processes forming the given group have invoked the operation.
 
 Collective operations support both synchronous and asynchronous implementations as
@@ -4625,8 +4625,7 @@ The internal buffer size can be queried through \gaspifunction{allreduce\_buf\_s
 
 \subsubsection{User defined reduction operations}
 
-The user defined reduction operations need to have the
-following prototypes:
+The prototype for the user defined reduction operations is the following:
 
 \begin{FDef}
 \begin{FDefSign}
