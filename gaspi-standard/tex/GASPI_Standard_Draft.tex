@@ -4356,8 +4356,10 @@ while (GASPI_allreduce_user ( buffer_send
 
 \subsubsection{\gaspifunction{barrier}}
 
-The \gaspifunction{barrier} procedure is a \gaspisemantic{synchronous}
-\gaspisemantic{collective} \gaspisemantic{time-based blocking} procedure.
+The \gaspifunction{barrier} procedure is a 
+\gaspisemantic{collective} \gaspisemantic{time-based blocking}
+procedure. An implementation is free to provide it as a synchronous or
+an asynchronous procedure. 
 
 \begin{FDef}
 \begin{FDefSign}
@@ -4441,8 +4443,10 @@ if (err != GASPI_ERROR)
 \subsubsection{\gaspifunction{allreduce}}
 \label{SubSec:allreduce}
 
-The \gaspifunction{allreduce} procedure is a \gaspisemantic{synchronous}
-\gaspisemantic{collective} \gaspisemantic{time-based blocking} procedure.
+The \gaspifunction{allreduce} procedure is a 
+\gaspisemantic{collective} \gaspisemantic{time-based blocking}
+procedure.  An implementation is free to provide it as a synchronous or
+an asynchronous procedure. 
 
 \begin{FDef}
 \begin{FDefSign}
@@ -4570,8 +4574,9 @@ typedef enum { GASPI_TYPE_INT
 
 The procedure \gaspifunction{allreduce\_user} allows the user to specify its
 own reduction operation. Only operations are supported which are
-commutative and associative. It is a \gaspisemantic{synchronous}
-\gaspisemantic{collective} \gaspisemantic{time-based blocking} procedure.
+commutative and associative. It is a \gaspisemantic{collective}
+\gaspisemantic{time-based blocking} procedure.  An implementation is
+free to provide it as a synchronous or an asynchronous procedure. 
 
 \begin{FDef}
 \begin{FDefSign}
