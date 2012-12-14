@@ -244,7 +244,7 @@ basicstyle=\ttfamily
 ~\\
 Specification of a general purpose API for communication\\
 ~\\
-draft, version 0.91
+draft, version 0.92
 }
 
 \author{Daniel Gr\"unewald et al.\\
@@ -762,6 +762,11 @@ and can be used to detect failures on remote processes.
 \TDefDesc{The \GASPI{} notification type.}
 \end{TDef}
 
+\begin{implementoradvice} The sum of the sizes of \gaspitype{notification} and
+\gaspitype{tag} should be at most 8 bytes in order to allow for Infiniband specific
+optimizations.
+\end{implementoradvice}
+
 \begin{TDef}
 \TDefDefn{unsigned short}{\gaspitype{notification\_id}}
 \TDefDesc{The \GASPI{} notification ID type.}
@@ -773,8 +778,10 @@ and can be used to detect failures on remote processes.
   different messages in the passive communication channel.}
 \end{TDef}
 
-Note! The sum of the sizes of \gaspitype{notification} and
-\gaspitype{tag} should be at most 8 bytes.
+\begin{implementoradvice} The sum of the sizes of \gaspitype{notification} and
+\gaspitype{tag} should be at most 8 bytes in order to allow for Infiniband specific
+optimizations.
+\end{implementoradvice}
 
 \begin{TDef}
 \TDefDefn{unsigned short}{\gaspitype{counter\_id}}
@@ -860,7 +867,19 @@ typedef enum { GASPI_SUCCESS = 0
              } gaspi_return_t;
 \end{listing}
 
+\begin{listing}{1}
+\enum gaspi_alloc_t
+\brief GASPI allocation policy
 
+typedef enum { GASPI_ALLOC_DEFAULT = 0
+             } gaspi_alloc_t;
+\end{listing}
+
+\begin{implementoradvice}
+A \GASPI{} implementation is free to extend the above enumeration. 
+It is good practice to implement the default policy in such a way that it leaves 
+the operating system allocation policy untouched. 
+\end{implementoradvice}
 
 
 \section{Execution model}
@@ -2180,7 +2199,7 @@ gaspi_segment_alloc ( gaspi_segment_id_t segment_id
 \parameterlistitem{in}{segment\_id}{ The segment ID to be created. The segment IDs need to be
                                      unique on each \GASPI{} process}
 \parameterlistitem{in}{size}{The size of the segment in bytes}
-\parameterlistitem{opt}{alloc\_policy}{optional parameter characterizing the allocation policy}
+\parameterlistitem{in}{alloc\_policy}{allocation policy}
 \parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
@@ -2193,9 +2212,8 @@ to be unique in the local \GASPI{} process. Creating a new segment
 with an existing segment ID results in undefined behavior. Note that
 the total number of segments is restricted by the underlying hardware
 capabilities. The maximum number of supported segments can be
-retrieved by invoking \gaspifunction{segment\_max}.  The procedure has
-an optional parameter which might be used to pass an allocation
-policy. This is left to the implementation.
+retrieved by invoking \gaspifunction{segment\_max}.  The \parameter{alloc\_policy}
+is used to pass an allocation policy. The default allocation policy behavior is left to the implementation.
 
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{},
 the segment can be accessed locally.
@@ -2317,7 +2335,7 @@ gaspi_segment_create ( gaspi_segment_id_t segment_id
 \parameterlistitem{in}{size}{The size of the segment in bytes}
 \parameterlistitem{in}{group}{The group which should create the segment}
 \parameterlistitem{in}{timeout}{The timeout for the operation}
-\parameterlistitem{opt}{alloc\_policy}{optional parameter characterizing the allocation policy}
+\parameterlistitem{in}{alloc\_policy}{allocation policy}
 \parameterlistend
 \executionphasework
 \FStdRetDesc
@@ -2334,8 +2352,8 @@ referenced by the \parameter{segment\_id} identifier visible and accessible to
 all of the \GASPI{} processes forming the group \parameter{group}.
 The maximum number of supported segments can be retrieved
 by invoking \gaspifunction{segment\_max}.
-The procedure has an optional parameter which might be used to
-pass an allocation policy. This is left to the implementation.
+The \parameter{alloc\_policy}
+is used to pass an allocation policy. The default allocation policy behavior is left to the implementation.
 
 After successful procedure completion, i.\,e.\ \GASPISUCC{}, the segment can be accessed locally
 and it can be used as a destination for the passive communication channel. Either as a source
@@ -2560,7 +2578,7 @@ gaspi_segment_num (gaspi_segment_id_t segment_num)
 \end{FDef}
 
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{},
-\parameter{segment\_num} contains the current number of allocated segments provided
+\parameter{segment\_num} contains the current number of locally allocated segments provided
 by \GASPI{}. The value of \parameter{segment\_num} is related to the parameter
 \parameter{segment\_max} in the configuration structure which is retrieved by \gaspifunction{proc\_init} at
 startup and cannot exceed that value. The maximum number of
@@ -2569,6 +2587,38 @@ specific.
 
 In case of error, the return value is \GASPIGERR{}. The parameter
 \parameter{segment\_num} has an undefined value.
+
+\subsubsection{\gaspifunction{segment\_list}}
+
+The \gaspifunction{segment\_list} procedure
+is a \gaspisemantic{synchronous} \gaspisemantic{local}
+\gaspisemantic{blocking} procedure which returns
+a list of locally allocated segment IDs.
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_segment_list ( gaspi_segment_id_t num
+                   , gaspi_segment_id_t segment_id_list[num] )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+  \parameterlistitem{in}{num}{number of segment IDs to collect}
+  \parameterlistitem{in}{segment\_list[num]}{list of locally allocated segment IDs}
+\parameterlistend
+\executionphasework
+\FStdRetDescNOTimeout
+\end{FDef}
+
+After successful procedure completion, i.\,e.\ return value \GASPISUCC{},
+\parameter{segment\_id\_list[num]} contains the IDs of \parameter{num} locally allocated segments. 
+
+The size of \parameter{segment\_id\_list[num]} needs to be at least \parameter{num} elements
+long.
+
+In case of error, the return value is \GASPIGERR{}. The parameter
+\parameter{segment\_list[num]} has an undefined value.
 
 \subsubsection{\gaspifunction{segment\_ptr}}
 
@@ -3228,7 +3278,7 @@ more efficiently, if supported by the network infrastructure.
 
 For the procedures with notification, \gaspifunction{notify} and the
 extendend function \gaspifunction{write\_notify},
-\gaspifunction{write\_waitsome} is the correspondent wait procedure
+\gaspifunction{notify\_waitsome} is the correspondent wait procedure
 for the receiver (notified) side.
 % Sometimes an applications needs to be notified about the change of one
 % out of a number of notifications. This could be achieved by busy iterating
@@ -4454,7 +4504,7 @@ an asynchronous procedure.
 gaspi_return_t
 gaspi_allreduce ( gaspi_pointer_t buffer_send
                 , gaspi_pointer_t buffer_receive
-                , unsigned char num
+                , gaspi_number_t num
                 , gaspi_operation_t operation
                 , gaspi_datatype_t datatype
                 , gaspi_group_t group
@@ -4584,7 +4634,7 @@ free to provide it as a synchronous or an asynchronous procedure.
 gaspi_return_t
 gaspi_allreduce_user ( gaspi_pointer_t buffer_send
                      , gaspi_pointer_t buffer_receive
-                     , unsigned char num
+                     , gaspi_number_t num
                      , gaspi_size_t size_element
                      , gaspi_reduce_operation_t reduce_operation
                      , gaspi_reduce_state_t reduce_state
@@ -4777,13 +4827,10 @@ gaspi_queue_num (gaspi_number_t queue_num)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_queue_size_max ( gaspi_queue_id_t queue
-                     , gaspi_number_t queue_size_max
-                     )
+gaspi_queue_size_max ( gaspi_number_t queue_size_max )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{in}{queue}{the queue to probe}
 \parameterlistitem{out}{queue\_size\_max}{the maximum number of simultaneous requests allowed}
 \parameterlistend
 \executionphasework
