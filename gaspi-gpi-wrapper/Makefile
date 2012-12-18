@@ -30,7 +30,7 @@ OBJS = $(SOURCES:%.c=%.o)
 libgaspi_gpi.so:gaspi_gpi.o
 	$(CC) $(BUILDFLAGS) gaspi_gpi.o -o libgaspi_gpi.so $(LIBS)
 	cp $@ $(LIB_DIR)
-
+	cp gaspi_gpi.h ./include
 all : $(OBJS)
 
 clean:

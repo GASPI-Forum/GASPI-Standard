@@ -28,4 +28,3 @@ all : $(OBJS)
 
 clean:
 	rm -rf *~ \#_* *.o
-	rm -rf *~ \#_* *.so

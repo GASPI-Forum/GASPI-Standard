@@ -8,7 +8,11 @@ int main (int argc, char *argv[])
   config.argv = argv;
 
   gaspi_proc_init(config, GASPI_SUCCESS);
-  printf("Hello World\n");
+  gaspi_rank_t rank;
+  gaspi_rank_t numOfRanks;
+  gaspi_proc_rank(&rank);
+  gaspi_proc_num(&numOfRanks);
+  printf("Hello World I'am %d of %d\n",rank,numOfRanks);
   gaspi_proc_term(GASPI_SUCCESS);
 
   return 0;
