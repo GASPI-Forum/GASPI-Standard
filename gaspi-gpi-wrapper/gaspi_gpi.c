@@ -1,12 +1,13 @@
-#include "gaspi.h"
+#include "gaspi_gpi.h"
 #include "GPI.h"
 #include <assert.h>
 
 
-
+#pragma weak gaspi_proc_init = pgaspi_proc_init
+#pragma weak gaspi_proc_term = pgaspi_proc_term
 
 gaspi_return_t
-gaspi_proc_init ( gaspi_configuration_t configuration
+pgaspi_proc_init ( gaspi_configuration_t configuration
                 , gaspi_timeout_t timeout
                 )
 {
@@ -19,13 +20,13 @@ gaspi_proc_init ( gaspi_configuration_t configuration
 
 
 gaspi_return_t
-gaspi_proc_term (gaspi_timeout_t timeout )
+pgaspi_proc_term (gaspi_timeout_t timeout )
 {
   assert(timeout == GASPI_BLOCK);
   shutdownGPI();
 	return GASPI_SUCCESS;
 }
-
+/*
 
 
 
@@ -712,5 +713,5 @@ gaspi_error_messg ( gaspi_return_t error_code
 {
 	return GASPI_SUCCESS;
 }
-
+*/
 

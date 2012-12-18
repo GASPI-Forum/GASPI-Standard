@@ -1,0 +1,14 @@
+TOPROOT=$(PWD)
+GPI_DIR=/home/herold/gpilib
+BIN_DIR=$(PWD)/bin/
+LIB_DIR=$(PWD)/lib/
+
+
+CC=gcc
+CPP=g++
+
+INCLUDE=-I$(GPI_DIR)/include
+LIBS=-L$(GPI_DIR)/lib64 -libverbs15 -lGPI -Wl,-rpath=$(GPI_DIR)/lib64:
+
+gaspi_gpi.o : gaspi_gpi.c
+  gcc -fPIC -std=gnu99 -g -c -Wall $(INCLUDE) gaspi_gpi.c -o gaspi_gpi.o $(LIBS)
