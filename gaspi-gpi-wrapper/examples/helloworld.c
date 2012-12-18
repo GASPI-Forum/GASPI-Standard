@@ -4,9 +4,11 @@
 int main (int argc, char *argv[])
 {
   gaspi_configuration_t config;
-  config.argc = argc;
-  config.argv = argv;
-
+  argument_t arg;
+  
+  arg.argc = argc;
+  arg.argv = argv;
+  config.user_defined = &arg;
   gaspi_proc_init(config, GASPI_SUCCESS);
   gaspi_rank_t rank;
   gaspi_rank_t numOfRanks;

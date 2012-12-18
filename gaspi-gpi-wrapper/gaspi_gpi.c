@@ -1,5 +1,5 @@
 #include "gaspi_gpi.h"
-#include "GPI.h"
+#include <GPI.h>
 #include <assert.h>
 
 
@@ -14,7 +14,8 @@ pgaspi_proc_init ( gaspi_configuration_t configuration
                 )
 {
   assert(timeout == GASPI_BLOCK);
-  return startGPI(configuration.argc, configuration.argv, "", (1UL << 30)) != 0 ? GASPI_ERROR : GASPI_SUCCESS;
+  argument_t *arg = (argument_t *) configuration.user_defined;
+  return startGPI(arg->argc, arg->argv, "", (1UL << 30)) != 0 ? GASPI_ERROR : GASPI_SUCCESS;
 }
 
 gaspi_return_t
