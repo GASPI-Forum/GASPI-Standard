@@ -9,13 +9,13 @@ int main (int argc, char *argv[])
   arg.argc = argc;
   arg.argv = argv;
   config.user_defined = &arg;
-  gaspi_proc_init(config, GASPI_SUCCESS);
+  gaspi_proc_init(config, GASPI_BLOCK);
   gaspi_rank_t rank;
   gaspi_rank_t numOfRanks;
   gaspi_proc_rank(&rank);
   gaspi_proc_num(&numOfRanks);
   printf("Hello World I'am %d of %d\n",rank,numOfRanks);
-  gaspi_proc_term(GASPI_SUCCESS);
+  gaspi_proc_term(GASPI_BLOCK);
 
   return 0;
 }

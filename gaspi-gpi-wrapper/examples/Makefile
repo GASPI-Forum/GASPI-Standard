@@ -12,7 +12,7 @@ CFLAGS = -std=gnu99 -Wall
 SOURCES = helloworld.c
 
 LIBS    = -L$(GASPI_DIR)/lib -lgaspi_gpi
-INCLUDE = -I$(GASPI_DIR)/include -I/home/herold/gaspi/trunk/gaspi-standard/include
+INCLUDE = -I$(GASPI_DIR)/include -I/home/herold/gaspi/trunk/gaspi-sdk/include
 
 OBJS = $(SOURCES:%.c=%.o)
 

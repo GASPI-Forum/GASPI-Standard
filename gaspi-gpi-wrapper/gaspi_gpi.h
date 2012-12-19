@@ -1,6 +1,6 @@
 #ifndef GASPI_GPI_H
 #define GASPI_GPI_H
-#include <GASPI.h>
+#include <gaspi.h>
 
 typedef struct {
   int argc;
