@@ -1,12 +1,23 @@
 #include "gaspi_gpi.h"
 #include <GPI.h>
+#include <GpiLogger.h>
 #include <assert.h>
+#include <stdarg.h>
 
+#pragma weak gaspi_proc_init  = pgaspi_proc_init
+#pragma weak gaspi_proc_term  = pgaspi_proc_term
+#pragma weak gaspi_barrier    = pgaspi_barrier
+#pragma weak gaspi_proc_rank  = pgaspi_proc_rank
+#pragma weak gaspi_proc_num   = pgaspi_proc_num
 
-#pragma weak gaspi_proc_init = pgaspi_proc_init
-#pragma weak gaspi_proc_term = pgaspi_proc_term
-#pragma weak gaspi_proc_rank = pgaspi_proc_rank
-#pragma weak gaspi_proc_num = pgaspi_proc_num
+void
+gaspi_printf( char * format , ... )
+{
+  va_list arglist;
+  va_start(arglist, format);
+  gpi_vprintf( format, arglist );
+  va_end(arglist);
+}
 
 gaspi_return_t
 pgaspi_proc_init ( gaspi_configuration_t configuration
@@ -39,6 +50,16 @@ pgaspi_proc_num ( gaspi_rank_t *proc_num )
   *proc_num = getNodeCountGPI();
 	return GASPI_SUCCESS;
 }
+
+gaspi_return_t
+pgaspi_barrier(gaspi_group_t group, gaspi_timeout_t timeout)
+{
+  assert(timeout == GASPI_BLOCK);
+  barrierGPI(void);
+  return GASPI_SUCCESS;
+}
+
+
 /*
 
 
