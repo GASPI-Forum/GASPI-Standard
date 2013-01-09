@@ -55,7 +55,7 @@ gaspi_return_t
 pgaspi_barrier(gaspi_group_t group, gaspi_timeout_t timeout)
 {
   assert(timeout == GASPI_BLOCK);
-  barrierGPI(void);
+  barrierGPI();
   return GASPI_SUCCESS;
 }
 
