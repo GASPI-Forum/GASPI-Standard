@@ -4,11 +4,29 @@
 #include <assert.h>
 #include <stdarg.h>
 
-#pragma weak gaspi_proc_init  = pgaspi_proc_init
-#pragma weak gaspi_proc_term  = pgaspi_proc_term
-#pragma weak gaspi_barrier    = pgaspi_barrier
-#pragma weak gaspi_proc_rank  = pgaspi_proc_rank
-#pragma weak gaspi_proc_num   = pgaspi_proc_num
+#define CHECK(x) ( (x)!=0 ? GASPI_ERROR : GASPI_SUCCESS )
+
+#pragma weak gaspi_proc_init    = pgaspi_proc_init
+#pragma weak gaspi_proc_term    = pgaspi_proc_term
+#pragma weak gaspi_barrier      = pgaspi_barrier
+#pragma weak gaspi_proc_rank    = pgaspi_proc_rank
+#pragma weak gaspi_proc_num     = pgaspi_proc_num
+#pragma weak gaspi_wait         = pgaspi_wait
+#pragma weak gaspi_write        = pgaspi_write 
+#pragma weak gaspi_read         = pgaspi_read
+#pragma weak gaspi_write_notify = pgaspi_write_notify
+#pragma weak gaspi_notify       = pgaspi_notify
+#pragma weak gaspi_notify_wait  = pgaspi_notify_wait
+#pragma weak gaspi_notify_waitsome  = pgaspi_notify_waitsome
+#pragma weak gaspi_notify_reset     = pgaspi_notify_reset
+#pragma weak gaspi_notification_num = pgaspi_notification_num
+#pragma weak gaspi_segment_ptr      = pgaspi_segment_ptr
+
+
+gaspi_notification_id_t notify_num_max = 0;
+gaspi_size_t notify_buffer_offset = 0;
+gaspi_notification_t* notify_buffer_pointer = NULL;
+gaspi_size_t gaspi_notify_value_size = sizeof(gaspi_notification_t);
 
 void
 gaspi_printf( char * format , ... )
@@ -19,21 +37,36 @@ gaspi_printf( char * format , ... )
   va_end(arglist);
 }
 
+
 gaspi_return_t
 pgaspi_proc_init ( gaspi_configuration_t configuration
                 , gaspi_timeout_t timeout
                 )
 {
-  assert(timeout == GASPI_BLOCK);
-  argument_t *arg = (argument_t *) configuration.user_defined;
-  return startGPI(arg->argc, arg->argv, "", (1UL << 30)) != 0 ? GASPI_ERROR : GASPI_SUCCESS;
+	assert(timeout == GASPI_BLOCK);
+	argument_t *arg = (argument_t *) configuration.user_defined;
+	notify_num_max = configuration.notify_flag_num;
+	notify_buffer_offset = (1UL << 20);
+	
+	int status = startGPI(arg->argc, arg->argv, 0, notify_buffer_offset + (notify_num_max + gaspi_notify_value_size));
+	if(CHECK(status) == GASPI_ERROR)
+		return GASPI_ERROR;
+	
+	void* temp;		
+	pgaspi_segment_ptr(0, &temp);
+		
+	notify_buffer_pointer = (gaspi_notification_t*) (temp + notify_buffer_offset);
+	
+	return GASPI_SUCCESS;
 }
 
 gaspi_return_t
 pgaspi_proc_term (gaspi_timeout_t timeout )
 {
-  assert(timeout == GASPI_BLOCK);
-  shutdownGPI();
+	assert(timeout == GASPI_BLOCK);	
+	
+	shutdownGPI();
+	
 	return GASPI_SUCCESS;
 }
 
@@ -41,62 +74,229 @@ gaspi_return_t
 pgaspi_proc_rank (gaspi_rank_t *rank)
 {
 	*rank = getRankGPI();
+	
 	return GASPI_SUCCESS;
 }
 
 gaspi_return_t
 pgaspi_proc_num ( gaspi_rank_t *proc_num )
 {
-  *proc_num = getNodeCountGPI();
+	*proc_num = getNodeCountGPI();
+	
 	return GASPI_SUCCESS;
 }
 
 gaspi_return_t
-pgaspi_barrier(gaspi_group_t group, gaspi_timeout_t timeout)
+pgaspi_barrier ( gaspi_group_t group
+              , gaspi_timeout_t timeout
+              )
 {
-  assert(timeout == GASPI_BLOCK);
-  barrierGPI();
-  return GASPI_SUCCESS;
+	assert(group == GASPI_GROUP_ALL);
+	assert(timeout == GASPI_BLOCK);
+	
+	barrierGPI();
+	
+	return GASPI_SUCCESS;
+}
+
+gaspi_return_t
+pgaspi_wait (gaspi_queue_id_t queue
+           , gaspi_timeout_t timeout)
+{
+	assert(timeout == GASPI_BLOCK);
+	
+	return CHECK(waitDmaGPI(queue));
+}
+
+gaspi_return_t
+pgaspi_write ( gaspi_segment_id_t segment_id_local
+            , gaspi_offset_t offset_local
+            , gaspi_rank_t rank
+            , gaspi_segment_id_t segment_id_remote
+            , gaspi_offset_t offset_remote
+            , gaspi_size_t size
+            , gaspi_queue_id_t queue
+            , gaspi_timeout_t timeout
+            )
+{
+	assert(segment_id_local == 0);
+	assert(segment_id_remote == 0);
+
+	return CHECK(writeDmaGPI(offset_local, offset_remote, size, rank, queue));
+}
+
+gaspi_return_t
+pgaspi_read ( gaspi_segment_id_t segment_id_local
+           , gaspi_offset_t offset_local
+           , gaspi_rank_t rank
+           , gaspi_segment_id_t segment_id_remote
+           , gaspi_offset_t offset_remote
+           , gaspi_size_t size
+           , gaspi_queue_id_t queue
+           , gaspi_timeout_t timeout
+           )
+{
+	assert(segment_id_local == 0);
+	assert(segment_id_remote == 0);
+	assert(timeout == GASPI_BLOCK);
+
+	return CHECK(readDmaGPI (offset_local, offset_remote, size, rank, queue));
+}
+
+gaspi_return_t
+pgaspi_write_notify ( gaspi_segment_id_t segment_id_local
+                   , gaspi_offset_t offset_local
+                   , gaspi_rank_t rank
+                   , gaspi_segment_id_t segment_id_remote
+                   , gaspi_offset_t offset_remote
+                   , gaspi_size_t size
+                   , gaspi_notification_id_t flag_id
+                   , gaspi_notification_t flag_value
+                   , gaspi_queue_id_t queue
+                   , gaspi_timeout_t timeout
+                   )
+{
+	assert(segment_id_local == 0);
+	assert(segment_id_remote == 0);
+	assert(timeout == GASPI_BLOCK);
+	assert(notify_buffer_offset > 0);
+	assert(flag_id < notify_num_max);
+
+	if(pgaspi_write(segment_id_local, offset_local, rank, segment_id_remote, offset_remote, size, queue, timeout) != GASPI_SUCCESS)
+		return GASPI_ERROR;
+	
+	return CHECK(pgaspi_notify(rank, flag_id, flag_value, queue, timeout));
+}
+
+
+gaspi_return_t
+pgaspi_notify ( gaspi_rank_t rank
+             , gaspi_notification_id_t flag_id
+             , gaspi_notification_t flag_value
+             , gaspi_queue_id_t queue
+             , gaspi_timeout_t timeout
+             )
+{
+	assert(timeout == GASPI_BLOCK);
+	assert(notify_buffer_pointer != NULL);
+	assert(flag_id < notify_num_max);
+	
+	notify_buffer_pointer[flag_id] = flag_value;
+	gaspi_size_t offset = notify_buffer_offset + flag_id * gaspi_notify_value_size;
+	return CHECK(writeDmaGPI(offset, offset, gaspi_notify_value_size, rank, queue));
+}
+
+gaspi_return_t
+pgaspi_notify_wait ( gaspi_notification_id_t flag_id
+                  , gaspi_timeout_t timeout
+                  )
+{
+	assert(timeout == GASPI_BLOCK);
+	assert(notify_buffer_pointer != NULL);
+	assert(flag_id < notify_num_max);
+	gaspi_printf("ich bin hier: flag -> %d\n",notify_buffer_pointer[flag_id]);
+	
+	volatile gaspi_notification_t* flag_value = (gaspi_notification_t*) notify_buffer_pointer;
+	while(flag_value[flag_id] == 0);
+	
+	return GASPI_SUCCESS;
+}
+
+gaspi_return_t
+pgaspi_notify_waitsome ( gaspi_notification_id_t flag_id_beg
+                      , gaspi_notification_id_t flag_num
+                      , gaspi_timeout_t timeout
+                      )
+{
+	assert(timeout == GASPI_BLOCK);
+	assert(notify_buffer_offset > 0);
+	assert((flag_id_beg + flag_num - 1) < notify_num_max);
+
+	volatile gaspi_notification_t* flag_value = (gaspi_notification_t*) notify_buffer_pointer;
+	gaspi_notification_id_t i;
+	char notify_found = 0;
+	while(!notify_found)
+	{
+		for(i = flag_id_beg; i < flag_num; i++)
+		{	
+			if(flag_value[i] != 0)
+			{	
+				notify_found = 1;
+				break;	
+			}
+		}
+	}
+	
+	return GASPI_SUCCESS;
+}
+
+gaspi_return_t
+pgaspi_notify_reset ( gaspi_notification_id_t flag_id
+                   , gaspi_notification_t* flag_val
+                   )
+{
+	assert(notify_buffer_offset > 0);
+	assert(flag_id < notify_num_max);
+	
+	*flag_val = notify_buffer_pointer[flag_id];
+	notify_buffer_pointer[flag_id] = 0;
+	
+	return GASPI_SUCCESS;
+}
+
+gaspi_return_t
+pgaspi_notification_num ( gaspi_notification_id_t* flag_max )
+{
+	assert(notify_num_max != 0);
+	*flag_max = notify_num_max;
+	
+	return GASPI_SUCCESS;
+}
+
+gaspi_return_t
+pgaspi_segment_ptr ( gaspi_segment_id_t segment_id
+                  , gaspi_pointer_t* pointer
+                  )
+{
+	assert(segment_id == 0);
+	
+	*pointer = (gaspi_pointer_t) getDmaMemPtrGPI();
+	
+	return GASPI_SUCCESS;
 }
 
 
 /*
 
+gaspi_return_t
+gaspi_queue_num (gaspi_queue_t queue_max )
+{
+	return GASPI_SUCCESS;
+}
 
+gaspi_return_t
+gaspi_queue_size ( gaspi_queue_t queue
+                 , gaspi_number_t queue_size
+                 )
+{
+	return GASPI_SUCCESS;
+}
 
+gaspi_return_t
+gaspi_queue_size_max ( gaspi_queue_t queue
+                     , gaspi_number_t queue_size
+                     )
+{
+	return GASPI_SUCCESS;
+}
 
+// not implemented in gpi
 gaspi_return_t
 gaspi_proc_kill ( gaspi_rank_t rank
                 , gaspi_timeout_t timeout )
 {
 	return GASPI_SUCCESS;
 }
-
-
-
-
-
-gaspi_return_t
-gaspi_proc_rank (gaspi_rank_t* rank)
-{
-  *rank = getRankGPI ();
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_proc_num ( gaspi_rank_t* proc_num )
-{
-  *proc_num = getNodeCountGPI ();
-	return GASPI_SUCCESS;
-}
-
-
-
-
 
 gaspi_return_t
 gaspi_state_vec_get( gaspi_state_vector_t state_vector )
@@ -270,130 +470,7 @@ gaspi_segment_max (gaspi_segment_id_t segment_max)
 
 
 
-gaspi_return_t
-gaspi_write ( gaspi_segment_id_t segment_id_local
-            , gaspi_offset_t offset_local
-            , gaspi_rank_t rank
-            , gaspi_segment_id_t segment_id_remote
-            , gaspi_offset_t offset_remote
-            , gaspi_size_t size
-            , gaspi_queue_t queue
-            , gaspi_timeout_t timeout
-            )
-{
-  assert(segment_id_local == 0);
-  assert(segment_id_remote == 0);
-  assert(timeout == GASPI_BLOCK);
 
-  writeDmaGPI (offset_local, offset_remote, size, rank, queue);
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_read ( gaspi_segment_id_t segment_id_local
-           , gaspi_offset_t offset_local
-           , gaspi_rank_t rank
-           , gaspi_segment_id_t segment_id_remote
-           , gaspi_offset_t offset_remote
-           , gaspi_size_t size
-           , gaspi_queue_t queue
-           , gaspi_timeout_t timeout
-           )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_wait ( gaspi_queue_t queue
-           , gaspi_timeout_t timeout
-           )
-{
-  assert(timeout == GASPI_BLOCK);
-  waitDmaGPI (queue);
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_notify ( gaspi_rank_t rank
-             , gaspi_flag_t flag
-             , gaspi_segment_id_t segment_id_flag
-             , gaspi_offset_t offset_flag
-             , gaspi_queue_t queue
-             , gaspi_timeout_t timeout
-             )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_notify_wait ( gaspi_flag_t comparator
-                  , gaspi_segment_id_t segment_id
-                  , gaspi_offset_t offset
-                  , gaspi_timeout_t timeout
-                  )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_notify_reset ( gaspi_flag_t flag_val
-                   , gaspi_segment_id_t segment_id
-                   , gaspi_offset_t offset
-                   )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_notify_size ( gaspi_size_t size_flag )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_write_notify ( gaspi_segment_id_t segment_id_local
-                   , gaspi_offset_t offset_local
-                   , gaspi_rank_t rank
-                   , gaspi_segment_id_t segment_id_remote
-                   , gaspi_offset_t offset_remote
-                   , gaspi_size_t size
-                   , gaspi_flag_t flag
-                   , gaspi_segment_id_t segment_id_flag
-                   , gaspi_offset_t offset_flag
-                   , gaspi_queue_t queue
-                   , gaspi_timeout_t timeout
-                   )
-{
-	return GASPI_SUCCESS;
-}
 
 
 
@@ -459,35 +536,7 @@ gaspi_read_list ( gaspi_number_t num
 
 
 
-gaspi_return_t
-gaspi_queue_num (gaspi_queue_t queue_max )
-{
-	return GASPI_SUCCESS;
-}
 
-
-
-
-
-gaspi_return_t
-gaspi_queue_size ( gaspi_queue_t queue
-                 , gaspi_number_t queue_size
-                 )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_queue_size_max ( gaspi_queue_t queue
-                     , gaspi_number_t queue_size
-                     )
-{
-	return GASPI_SUCCESS;
-}
 
 
 
