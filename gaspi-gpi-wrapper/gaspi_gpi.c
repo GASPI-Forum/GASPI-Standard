@@ -16,7 +16,6 @@
 #pragma weak gaspi_read         = pgaspi_read
 #pragma weak gaspi_write_notify = pgaspi_write_notify
 #pragma weak gaspi_notify       = pgaspi_notify
-#pragma weak gaspi_notify_wait  = pgaspi_notify_wait
 #pragma weak gaspi_notify_waitsome  = pgaspi_notify_waitsome
 #pragma weak gaspi_notify_reset     = pgaspi_notify_reset
 #pragma weak gaspi_notification_num = pgaspi_notification_num
@@ -183,23 +182,8 @@ pgaspi_notify ( gaspi_rank_t rank
 	
 	notify_buffer_pointer[flag_id] = flag_value;
 	gaspi_size_t offset = notify_buffer_offset + flag_id * gaspi_notify_value_size;
+	
 	return CHECK(writeDmaGPI(offset, offset, gaspi_notify_value_size, rank, queue));
-}
-
-gaspi_return_t
-pgaspi_notify_wait ( gaspi_notification_id_t flag_id
-                  , gaspi_timeout_t timeout
-                  )
-{
-	assert(timeout == GASPI_BLOCK);
-	assert(notify_buffer_pointer != NULL);
-	assert(flag_id < notify_num_max);
-	gaspi_printf("ich bin hier: flag -> %d\n",notify_buffer_pointer[flag_id]);
-	
-	volatile gaspi_notification_t* flag_value = (gaspi_notification_t*) notify_buffer_pointer;
-	while(flag_value[flag_id] == 0);
-	
-	return GASPI_SUCCESS;
 }
 
 gaspi_return_t
