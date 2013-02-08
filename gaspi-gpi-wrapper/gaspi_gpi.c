@@ -20,10 +20,11 @@
 #pragma weak gaspi_notify_reset     = pgaspi_notify_reset
 #pragma weak gaspi_notification_num = pgaspi_notification_num
 #pragma weak gaspi_segment_ptr      = pgaspi_segment_ptr
+#pragma weak gaspi_allreduce        = pgaspi_allreduce
 
 
 gaspi_notification_id_t notify_num_max = 0;
-gaspi_size_t notify_buffer_offset = 0;
+gaspi_offset_t notify_buffer_offset = 0;
 gaspi_notification_t* notify_buffer_pointer = NULL;
 gaspi_size_t gaspi_notify_value_size = sizeof(gaspi_notification_t);
 
@@ -36,6 +37,36 @@ gaspi_printf( char * format , ... )
   va_end(arglist);
 }
 
+//AllReduce: maps gaspi data types to gpi data types 
+gaspi_return_t
+to_gpi_data_types(gaspi_datatype_t gaspi_type, GPI_TYPE* gpi_type, gaspi_size_t* data_size)
+{
+	switch (gaspi_type)
+	{
+		case GASPI_TYPE_INT: *gpi_type = GPI_INT; *data_size = sizeof(int); break;
+		case GASPI_TYPE_UINT: *gpi_type = GPI_UINT; *data_size = sizeof(unsigned int); break;
+		case GASPI_TYPE_LONG: *gpi_type = GPI_LONG; *data_size = sizeof(long); break;
+		case GASPI_TYPE_ULONG: *gpi_type = GPI_ULONG; *data_size = sizeof(unsigned long); break;
+		case GASPI_TYPE_FLOAT: *gpi_type = GPI_FLOAT; *data_size = sizeof(float); break;
+		case GASPI_TYPE_DOUBLE: *gpi_type = GPI_DOUBLE; *data_size = sizeof(double); break;
+		default: return GASPI_ERROR;
+	}
+	
+	return GASPI_SUCCESS;
+}
+
+//AllReduce: maps gaspi operation to gpi operation 
+GPI_OP 
+to_gpi_operation(gaspi_operation_t gaspi_operation)
+{
+	switch (gaspi_operation)
+	{
+		case GASPI_OP_MIN: return GPI_MIN;
+		case GASPI_OP_MAX: return GPI_MAX;
+		case GASPI_OP_SUM: return GPI_SUM;
+		default: return GPI_MIN;
+	}
+}
 
 gaspi_return_t
 pgaspi_proc_init ( gaspi_configuration_t configuration
@@ -43,6 +74,7 @@ pgaspi_proc_init ( gaspi_configuration_t configuration
                 )
 {
 	assert(timeout == GASPI_BLOCK);
+	
 	argument_t *arg = (argument_t *) configuration.user_defined;
 	notify_num_max = configuration.notify_flag_num;
 	notify_buffer_offset = (1UL << 20);
@@ -53,7 +85,6 @@ pgaspi_proc_init ( gaspi_configuration_t configuration
 	
 	void* temp;		
 	pgaspi_segment_ptr(0, &temp);
-		
 	notify_buffer_pointer = (gaspi_notification_t*) (temp + notify_buffer_offset);
 	
 	return GASPI_SUCCESS;
@@ -120,6 +151,9 @@ pgaspi_write ( gaspi_segment_id_t segment_id_local
 {
 	assert(segment_id_local == 0);
 	assert(segment_id_remote == 0);
+	assert(timeout == GASPI_BLOCK);
+	assert((offset_local + size) < notify_buffer_offset);
+	assert((offset_remote + size) < notify_buffer_offset);
 
 	return CHECK(writeDmaGPI(offset_local, offset_remote, size, rank, queue));
 }
@@ -138,12 +172,14 @@ pgaspi_read ( gaspi_segment_id_t segment_id_local
 	assert(segment_id_local == 0);
 	assert(segment_id_remote == 0);
 	assert(timeout == GASPI_BLOCK);
-
+	assert((offset_local + size) < notify_buffer_offset);
+	assert((offset_remote + size) < notify_buffer_offset);
+	
 	return CHECK(readDmaGPI (offset_local, offset_remote, size, rank, queue));
 }
 
 gaspi_return_t
-pgaspi_write_notify ( gaspi_segment_id_t segment_id_local
+pgaspi_write_notify( gaspi_segment_id_t segment_id_local
                    , gaspi_offset_t offset_local
                    , gaspi_rank_t rank
                    , gaspi_segment_id_t segment_id_remote
@@ -158,10 +194,11 @@ pgaspi_write_notify ( gaspi_segment_id_t segment_id_local
 	assert(segment_id_local == 0);
 	assert(segment_id_remote == 0);
 	assert(timeout == GASPI_BLOCK);
-	assert(notify_buffer_offset > 0);
+	assert((offset_local + size) < notify_buffer_offset);
+	assert((offset_remote + size) < notify_buffer_offset);
 	assert(flag_id < notify_num_max);
 
-	if(pgaspi_write(segment_id_local, offset_local, rank, segment_id_remote, offset_remote, size, queue, timeout) != GASPI_SUCCESS)
+	if(pgaspi_write(segment_id_local, offset_local, rank, segment_id_remote, offset_remote, size, queue, timeout) == GASPI_ERROR)
 		return GASPI_ERROR;
 	
 	return CHECK(pgaspi_notify(rank, flag_id, flag_value, queue, timeout));
@@ -181,7 +218,7 @@ pgaspi_notify ( gaspi_rank_t rank
 	assert(flag_id < notify_num_max);
 	
 	notify_buffer_pointer[flag_id] = flag_value;
-	gaspi_size_t offset = notify_buffer_offset + flag_id * gaspi_notify_value_size;
+	gaspi_offset_t offset = notify_buffer_offset + flag_id * gaspi_notify_value_size;
 	
 	return CHECK(writeDmaGPI(offset, offset, gaspi_notify_value_size, rank, queue));
 }
@@ -193,15 +230,15 @@ pgaspi_notify_waitsome ( gaspi_notification_id_t flag_id_beg
                       )
 {
 	assert(timeout == GASPI_BLOCK);
-	assert(notify_buffer_offset > 0);
-	assert((flag_id_beg + flag_num - 1) < notify_num_max);
+	gaspi_notification_id_t flag_id_end = flag_id_beg + flag_num - 1;
+	assert(flag_id_end < notify_num_max);
 
 	volatile gaspi_notification_t* flag_value = (gaspi_notification_t*) notify_buffer_pointer;
 	gaspi_notification_id_t i;
 	char notify_found = 0;
 	while(!notify_found)
 	{
-		for(i = flag_id_beg; i < flag_num; i++)
+		for(i = flag_id_beg; i <= flag_id_end; i++)
 		{	
 			if(flag_value[i] != 0)
 			{	
@@ -231,7 +268,6 @@ pgaspi_notify_reset ( gaspi_notification_id_t flag_id
 gaspi_return_t
 pgaspi_notification_num ( gaspi_notification_id_t* flag_max )
 {
-	assert(notify_num_max != 0);
 	*flag_max = notify_num_max;
 	
 	return GASPI_SUCCESS;
@@ -247,6 +283,29 @@ pgaspi_segment_ptr ( gaspi_segment_id_t segment_id
 	*pointer = (gaspi_pointer_t) getDmaMemPtrGPI();
 	
 	return GASPI_SUCCESS;
+}
+
+gaspi_return_t pgaspi_allreduce(gaspi_pointer_t buffer_send
+           , gaspi_pointer_t buffer_receive
+           , unsigned char num
+           , gaspi_operation_t operation
+           , gaspi_datatype_t datatype
+           , gaspi_group_t group
+           , gaspi_timeout_t timeout
+           )
+{
+	assert(group == GASPI_GROUP_ALL);
+	assert(timeout == GASPI_BLOCK);
+	
+	gaspi_size_t data_size;
+	GPI_TYPE data_type_gpi;
+	if(to_gpi_data_types(datatype, &data_type_gpi, &data_size) == GASPI_ERROR)
+		return GASPI_ERROR;
+		
+	assert((buffer_send + (data_size * num)) < (void*) notify_buffer_pointer);
+	assert((buffer_receive + (data_size * num)) < (void*) notify_buffer_pointer);
+	
+	return CHECK(allReduceGPI(buffer_send, buffer_receive, num, to_gpi_operation(operation), data_type_gpi));
 }
 
 

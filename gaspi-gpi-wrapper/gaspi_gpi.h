@@ -51,9 +51,6 @@ extern gaspi_return_t pgaspi_notify ( gaspi_rank_t rank
            , gaspi_queue_id_t queue
            , gaspi_timeout_t timeout
            );
-extern gaspi_return_t pgaspi_notify_wait ( gaspi_notification_id_t flag_id
-           , gaspi_timeout_t timeout
-           );
 extern gaspi_return_t pgaspi_notify_waitsome ( gaspi_notification_id_t flag_id_beg
            , gaspi_notification_id_t flag_num
            , gaspi_timeout_t timeout
@@ -64,6 +61,14 @@ extern gaspi_return_t pgaspi_notify_reset ( gaspi_notification_id_t flag_id
 extern gaspi_return_t pgaspi_notification_num ( gaspi_notification_id_t* flag_max );
 extern gaspi_return_t pgaspi_segment_ptr ( gaspi_segment_id_t segment_id
            , gaspi_pointer_t* pointer
+           );
+extern gaspi_return_t pgaspi_allreduce ( gaspi_pointer_t buffer_send
+           , gaspi_pointer_t buffer_receive
+           , unsigned char num
+           , gaspi_operation_t operation
+           , gaspi_datatype_t datatype
+           , gaspi_group_t group
+           , gaspi_timeout_t timeout
            );
 
 #endif
