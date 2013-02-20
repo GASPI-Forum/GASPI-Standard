@@ -77,7 +77,7 @@ pgaspi_proc_init ( gaspi_configuration_t configuration
 	
 	argument_t *arg = (argument_t *) configuration.user_defined;
 	notify_num_max = configuration.notify_flag_num;
-	notify_buffer_offset = (1UL << 20);
+	notify_buffer_offset = (1UL << 30);
 	
 	int status = startGPI(arg->argc, arg->argv, 0, notify_buffer_offset + (notify_num_max + gaspi_notify_value_size));
 	if(CHECK(status) == GASPI_ERROR)
@@ -235,14 +235,15 @@ pgaspi_notify_waitsome ( gaspi_notification_id_t flag_id_beg
 
 	volatile gaspi_notification_t* flag_value = (gaspi_notification_t*) notify_buffer_pointer;
 	gaspi_notification_id_t i;
-	char notify_found = 0;
-	while(!notify_found)
+	int notify_found = flag_num;
+	while( notify_found )
 	{
 		for(i = flag_id_beg; i <= flag_id_end; i++)
 		{	
 			if(flag_value[i] != 0)
-			{	
-				notify_found = 1;
+			{
+				notify_found--;
+				flag_value[i] = 0;
 				break;	
 			}
 		}
