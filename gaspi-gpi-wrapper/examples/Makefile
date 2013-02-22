@@ -3,7 +3,7 @@ TOPROOT = $(PWD)
 GASPI_DIR = /home/herold/gaspi/trunk/gaspi-gpi-wrapper
 BIN_DIR = $(PWD)/bin/
 
-CC = gcc
+CC = scorep gcc
 CPP = g++
 
 #gcc

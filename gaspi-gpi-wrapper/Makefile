@@ -11,7 +11,7 @@ CFLAGS = -O2 -g -std=gnu99 -fPIC -std=gnu99 -c -Wall
 
 BUILDFLAGS = -shared -Wl,-soname,libgaspi_gpi.so
 
-INCLUDE = -I$(GPI_DIR)/include -I/home/harry/zih/trunk/gaspi-standard/include
+INCLUDE = -I$(GPI_DIR)/include -I/home/herold/gaspi/trunk/gaspi-standard/include
 SOURCES = gaspi_gpi.c
 
 #gcc

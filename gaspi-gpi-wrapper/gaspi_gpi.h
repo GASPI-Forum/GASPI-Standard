@@ -10,8 +10,9 @@ typedef struct {
 extern void gaspi_printf(char * format, ... );
 
 // strong symbols
-extern gaspi_return_t pgaspi_proc_init ( gaspi_configuration_t configuration, gaspi_timeout_t timeout);
-extern gaspi_return_t pgaspi_proc_term (gaspi_timeout_t timeout );
+extern gaspi_return_t pgaspi_proc_rank(gaspi_rank_t *rank);
+extern gaspi_return_t pgaspi_proc_init( gaspi_configuration_t configuration, gaspi_timeout_t timeout);
+extern gaspi_return_t pgaspi_proc_term(gaspi_timeout_t timeout );
 extern gaspi_return_t pgaspi_wait (gaspi_queue_id_t queue, gaspi_timeout_t timeout);
 extern gaspi_return_t pgaspi_proc_rank (gaspi_rank_t *rank);
 extern gaspi_return_t pgaspi_proc_num ( gaspi_rank_t *proc_num );
@@ -70,5 +71,7 @@ extern gaspi_return_t pgaspi_allreduce ( gaspi_pointer_t buffer_send
            , gaspi_group_t group
            , gaspi_timeout_t timeout
            );
+
+extern gaspi_return_t pgaspi_proc_num ( gaspi_rank_t *proc_num );
 
 #endif
