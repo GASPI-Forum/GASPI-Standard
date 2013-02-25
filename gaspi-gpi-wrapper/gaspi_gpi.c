@@ -235,16 +235,17 @@ pgaspi_notify_waitsome ( gaspi_notification_id_t flag_id_beg
 
 	volatile gaspi_notification_t* flag_value = (gaspi_notification_t*) notify_buffer_pointer;
 	gaspi_notification_id_t i;
-	for(i = flag_id_beg; i <= flag_id_end; i++)
-  {	
-      char notify_found = 1;
-      while( notify_found )
-	    {
-        if(flag_value[i] != 0)
-        {
-          break;	
-        }
-      }
+	char notify_found = 0;
+	while(!notify_found)
+	{
+		for(i = flag_id_beg; i < flag_num; i++)
+		{	
+			if(flag_value[i] != 0)
+			{	
+				notify_found = 1;
+				break;	
+			}
+		}
 	}
 	
 	return GASPI_SUCCESS;
