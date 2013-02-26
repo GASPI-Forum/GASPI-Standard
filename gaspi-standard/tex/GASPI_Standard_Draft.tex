@@ -5122,8 +5122,109 @@ The procedure can be invoked in any of the \GASPI{} execution phases.
 
 The profiling interface of \GASPI{} consists of two parts.
 The statistics part provides the means to allow the user to collect basic profiling data about a program run.
+The event tracing part describes the requirements for an \GASPI{} implementation in order to support the transparent interception and inspection of function calls.
 
 \subsection{Statistics}
+
+\subsubsection{\gaspitype{statistic\_counter}}
+
+The statistic interface provides access to statistic and performance variables of the \GASPI{} implementation.
+It is based on the type \gaspitype{statistic\_counter}, which determines a particular statistical counter.
+
+\begin{listing}[99]{2}
+typedef unsigned int gaspi_statistic_counter_t;
+\end{listing}
+
+A \GASPI{} implementation is free to define symbolic constants of the type \gaspitype{statistic\_counter} for specific statistics.
+
+
+\subsubsection{\gaspifunction{statistic\_counter\_max}}
+
+An implementation shall not provide a compile-time constant maximum for \gaspitype{statistic\_counter}.  
+Instead the user can call \gaspifunction{statistic\_counter\_max} in order to determine the maximum value for \gaspitype{statistic\_counter}.
+Thus a dynamically linked wrapper library can provide extra counters. 
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_statistic_counter_max ( gaspi_statistic_counter_t counter_max )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{out}{counter\_max}{the maximum value for \gaspitype{statistic\_counter}. The allowed value range is $0 \leq counter < counter\_max$ }
+\parameterlistend
+\executionphaseany
+\FStdRetDescNOTimeout
+\end{FDef}
+
+If a \GASPI{} implementation defines symbolic constants for \gaspitype{statistic\_counter} a priori, then \gaspifunction{statistic\_counter\_max} should set \parameter{counter\_max} to the corresponding maximum value.
+A high-speed implementation will likely set \parameter{counter\_max} to $0$ and does not provide any statistics by default.
+In that case a wrapper library can be linked in order to retrieve statistical information from inside the application. 
+
+
+\subsubsection{\gaspifunction{statistic\_counter\_info}}
+
+The \gaspifunction{statistic\_counter\_info} procedure is a \gaspisemantic{synchronous}
+\gaspisemantic{local} \gaspisemantic{blocking}
+procedure which provides an implementation independent way to retrieve information for a particular statistic counter.
+Beside the name and a description this function also yields the meaning of the argument value for this counter, if any.
+The meaning is defined in terms of the \gaspitype{statistic\_argument} enumeration.
+
+\begin{listing}[99]{2}
+typedef enum { GASPI_STATISTIC_ARGUMENT_NONE
+             , GASPI_STATISTIC_ARGUMENT_RANK
+             , ...
+             } gaspi_statistic_argument_t;
+\end{listing}
+
+A \GASPI{} implementation is free to extend the above enumeration.
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_statistic_counter_info ( gaspi_statistic_counter_t counter
+                             , gaspi_statistic_argument_t counter_argument
+                             , gaspi_string_t counter_name
+                             , gaspi_string_t counter_description
+                             , gaspi_number_t verbosity_level
+                             )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{in}{counter}{the counter, for which detailed information is requested}
+\parameterlistitem{out}{counter\_argument}{the meaning of the argument value}
+\parameterlistitem{out}{counter\_name}{a short name of this counter}
+\parameterlistitem{out}{counter\_description}{a more verbose description of this counter}
+\parameterlistitem{out}{verbosity\_level}{minimum verbosity level to activate this counter}
+\parameterlistend
+\executionphaseany
+\FStdRetDescNOTimeout
+\end{FDef}
+
+After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, the out variables contain the desired information.
+
+If the return value is \GASPIGERR{}, the particular \parameter{counter} issued to \gaspifunction{statistic\_counter\_info} does not exist.
+
+
+\subsubsection{\gaspifunction{statistic\_verbosity\_level}}
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_statistic_verbosity_level ( gaspi_number_t verbosity_level )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{in}{verbosity\_level}{the level of desired verbosity}
+\parameterlistend
+\executionphaseany
+\FStdRetDescNOTimeout
+\end{FDef}
+
+
 
 \subsubsection{\gaspifunction{statistic\_counter\_get}}
 
@@ -5131,36 +5232,28 @@ The \gaspifunction{statistic\_counter\_get} procedure is a \gaspisemantic{synchr
 \gaspisemantic{local} \gaspisemantic{blocking}
 procedure which retrieves a statistical counter from the local \GASPI{} process.
 
-\GASPI{} provides a typed enumeration to determine a particular statistical counter.
-
-\begin{listing}[99]{2}
-typedef enum { GASPI_STATISTIC_BYTES_WRITTEN
-             , GASPI_STATISTIC_BYTES_READ
-             , GASPI_STATISTIC_BYTES_SENT
-             , GASPI_STATISTIC_BYTES_RECEIVED
-             } gaspi_statistic_counter_t;
-\end{listing}
-
-A \GASPI{} implementation is free to extend the above enumeration.
-
 
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
 gaspi_statistic_counter_get ( gaspi_statistic_counter_t counter
-                            , gaspi_statistic_value_t value
+                            , gaspi_number_t argument
+                            , gaspi_number_t value
                             )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
 \parameterlistitem{in}{counter}{the counter to be retrieved}
+\parameterlistitem{in}{argument}{the argument for the counter}
 \parameterlistitem{out}{value}{the current value of the counter}
 \parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
 
+The meaning of parameter \parameter{argument} depends on the retrieved counter. 
+For instance, if a counter retrieves the bytes sent per rank, then \parameter{argument} contains the rank number.
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{}
 \parameter{value} contains the current value of the corresponding counter.
 
@@ -5184,49 +5277,76 @@ gaspi_statistic_counter_reset (gaspi_statistic_counter_t counter)
 \FStdRetDescNOTimeout
 \end{FDef}
 
-\subsubsection{\gaspifunction{statistic\_counter\_collect}}
+%\subsubsection{\gaspifunction{statistic\_counter\_collect}}
+%
+%
+%The \gaspifunction{statistic\_counter\_collect} procedure is a \gaspisemantic{synchronous}
+%\gaspisemantic{collective} \gaspisemantic{time-based blocking} procedure.
+%
+%\begin{FDef}8
+%\begin{FDefSign}
+%\begin{verbatim}
+%gaspi_return_t
+%gaspi_statistic_counter_collect ( gaspi_statistic_counter_t counter
+%                                , gaspi_number_t argument
+%                                , gaspi_number_t value
+%                                , gaspi_group_t group
+%                                , gaspi_timeout_t timeout
+%                                )
+%\end{verbatim}
+%\end{FDefSign}
+%\parameterlistbegin
+%\parameterlistitem{in}{counter}{the counter to be retrieved}
+%\parameterlistitem{in}{argument}{the argument for the counter}
+%\parameterlistitem{out}{value}{the current value of the counter}
+%\parameterlistitem{in}{group}{the group of ranks which participate in the collect operation}
+%\parameterlistitem{in}{timeout}{the timeout}
+%\parameterlistend
+%\executionphasework
+%\FStdRetDesc
+%\end{FDef}
+%
+%The behavior of \gaspifunction{statistic\_counter\_collect} is equivalent to a call to \gaspifunction{allreduce} (see \ref{SubSec:allreduce})
+%with num = 1, operation = GASPI\_OP\_SUM and datatype = GASPI\_TYPE\_ULONG.
+%
+%After successful procedure completion, i.\,e.\
+%return value \GASPISUCC{}, \parameter{value} contains the sum of the values of the corresponding \parameter{counter} of all ranks being a member of \parameter{group}.
+%The counter values delivered by every participating rank are equivalent to the values which would be returned by local calls to \gaspifunction{statistic\_counter\_get}.
+%That is, local calls to \gaspifunction{statistic\_counter\_reset} and \gaspifunction{statistic\_verbosity\_level} are respected.
+%
+%Calls to \gaspifunction{statistic\_counter\_collect} do not contribute to the values of the collected counters at every rank.
+%
+%In case of \GASPITIME{}, the reduction operation is not finished yet,
+%i.\,e.\ not all data is available that is needed to calculate the
+%result. \parameter{value} has an undefined value.
+%
+%In case of error, the return value is \GASPIGERR{}. The error vector should be
+%examined. \parameter{value} has an undefined value.
 
+\subsection{Event Tracing}
 
-The \gaspifunction{statistic\_counter\_collect} procedure is a \gaspisemantic{synchronous}
-\gaspisemantic{collective} \gaspisemantic{time-based blocking} procedure.
+\subsubsection{\gaspifunction{pcontrol}}
+
+The function \gaspifunction{pcontrol} is a no-op. 
+A \GASPI{} implementation itself ignores the value of \parameter{argument} and returns immediately.
+
+This routine is provided in order to enable users to communicate with an event trace interface from inside the application.
+The meaning of \parameter{argument} is specified by the used event tracer.
 
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_statistic_counter_collect ( gaspi_statistic_counter_t counter
-                                , gaspi_statistic_value_t value
-                                , gaspi_group_t group
-                                , gaspi_timeout_t timeout
-                                )
+gaspi_pcontrol ( gaspi_pointer_t argument )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
-\parameterlistitem{in}{counter}{the counter to be retrieved}
-\parameterlistitem{out}{value}{the current value of the counter}
-\parameterlistitem{in}{group}{the group of ranks which participate in the collect operation}
-\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistitem{inout}{argument}{}
 \parameterlistend
 \executionphasework
-\FStdRetDesc
+\FStdRetDescNOTimeout
 \end{FDef}
 
-The behavior of \gaspifunction{statistic\_counter\_collect} is equivalent to a call to \gaspifunction{allreduce} (see \ref{SubSec:allreduce})
-with num = 1, operation = GASPI\_OP\_SUM and datatype = GASPI\_TYPE\_ULONG.
-
-After successful procedure completion, i.\,e.\
-return value \GASPISUCC{}, \parameter{value} contains the sum of the values of the corresponding \parameter{counter} of all ranks being a member of \parameter{group}.
-The counter values delivered by every participating rank are equivalent to the values which would be returned by local calls to \gaspifunction{statistic\_counter\_get}.
-That is, local calls to \gaspifunction{statistic\_counter\_reset} are respected.
-
-Calls to \gaspifunction{statistic\_counter\_collect} do not contribute to the values of the collected counters at every rank.
-
-In case of \GASPITIME{}, the reduction operation is not finished yet,
-i.\,e.\ not all data is available that is needed to calculate the
-result. \parameter{value} has an undefined value.
-
-In case of error, the return value is \GASPIGERR{}. The error vector should be
-examined. \parameter{value} has an undefined value.
 
 %\subsection{Requirements}
 
