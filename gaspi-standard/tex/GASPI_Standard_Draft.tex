@@ -194,6 +194,7 @@
 
 \newenvironment{implementoradvice}{\begin{flushright}\begin{minipage}[t]{0.9\linewidth}\emph{Implementor advice:}}{\finalsymb{$\lrcorner$}\end{minipage}\end{flushright}}
 \newenvironment{useradvice}{\begin{flushright}\begin{minipage}[t]{0.9\linewidth}\emph{User advice:}}{\finalsymb{$\lrcorner$}\end{minipage}\end{flushright}}
+\newenvironment{libadvice}{\begin{flushright}\begin{minipage}[t]{0.9\linewidth}\emph{Library implementor advice:}}{\finalsymb{$\lrcorner$}\end{minipage}\end{flushright}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%                            Enums                                      %%%%
@@ -5140,9 +5141,10 @@ A \GASPI{} implementation is free to define symbolic constants of the type \gasp
 
 \subsubsection{\gaspifunction{statistic\_counter\_max}}
 
-An implementation shall not provide a compile-time constant maximum for \gaspitype{statistic\_counter}.  
+The \gaspifunction{statistic\_counter\_max} procedure is a \gaspisemantic{synchronous} \gaspisemantic{local} \gaspisemantic{blocking} 
+procedure, which provides a way to inform the \GASPI{} user dynamically about the number of avialable counters.
+An implementation should not provide a compile-time constant maximum for \gaspitype{statistic\_counter}.  
 Instead the user can call \gaspifunction{statistic\_counter\_max} in order to determine the maximum value for \gaspitype{statistic\_counter}.
-Thus a dynamically linked wrapper library can provide extra counters. 
 
 \begin{FDef}
 \begin{FDefSign}
@@ -5160,13 +5162,17 @@ gaspi_statistic_counter_max ( gaspi_statistic_counter_t counter_max )
 
 If a \GASPI{} implementation defines symbolic constants for \gaspitype{statistic\_counter} a priori, then \gaspifunction{statistic\_counter\_max} should set \parameter{counter\_max} to the corresponding maximum value.
 A high-speed implementation will likely set \parameter{counter\_max} to $0$ and does not provide any statistics by default.
-In that case a wrapper library can be linked in order to retrieve statistical information from inside the application. 
+A dynamically linked wrapper library can provide extra counters by adjusting the return value of \gaspifunction{statistic\_counter\_max}. 
+
+\begin{libadvice}
+A sensible wrapper library will respect the value returned by the native \gaspifunction{statistic\_counter\_max} and append their own counters accordingly. 
+Thus accessses to statistic counters provided by the \GASPI{} implementation itself are not harmed.
+\end{libadvice}
 
 
 \subsubsection{\gaspifunction{statistic\_counter\_info}}
 
-The \gaspifunction{statistic\_counter\_info} procedure is a \gaspisemantic{synchronous}
-\gaspisemantic{local} \gaspisemantic{blocking}
+The \gaspifunction{statistic\_counter\_info} procedure is a \gaspisemantic{synchronous} \gaspisemantic{local} \gaspisemantic{blocking} 
 procedure which provides an implementation independent way to retrieve information for a particular statistic counter.
 Beside the name and a description this function also yields the meaning of the argument value for this counter, if any.
 The meaning is defined in terms of the \gaspitype{statistic\_argument} enumeration.
@@ -5197,18 +5203,29 @@ gaspi_statistic_counter_info ( gaspi_statistic_counter_t counter
 \parameterlistitem{out}{counter\_argument}{the meaning of the argument value}
 \parameterlistitem{out}{counter\_name}{a short name of this counter}
 \parameterlistitem{out}{counter\_description}{a more verbose description of this counter}
-\parameterlistitem{out}{verbosity\_level}{minimum verbosity level to activate this counter}
+\parameterlistitem{out}{verbosity\_level}{minimum verbosity level to activate this counter (at least $1$)}
 \parameterlistend
 \executionphaseany
 \FStdRetDescNOTimeout
 \end{FDef}
 
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, the out variables contain the desired information.
+A dynamically linked wrapper library should provide information for added counters by wrapping \gaspifunction{statistic\_counter\_info}.
+The verbosity level for all counters should be at least $1$ (see \gaspifunction{statistic\_verbosity\_level} below). 
 
 If the return value is \GASPIGERR{}, the particular \parameter{counter} issued to \gaspifunction{statistic\_counter\_info} does not exist.
 
 
 \subsubsection{\gaspifunction{statistic\_verbosity\_level}}
+
+The \gaspifunction{statistic\_verbosity\_level} procedure is a \gaspisemantic{synchronous} \gaspisemantic{local} \gaspisemantic{blocking} 
+procedure which sets the process-wide verbosity level of the statistic interface. 
+A counter is only active (that is, it is updated), if the process-wide verbosity level is higher or equal to the minimum verbosity level of that counter.
+If a call to \gaspifunction{statistic\_verbosity\_level} activates or deactivates counters and there are \gaspisemantic{asynchronous} operations in progress, it is unspecified, whether and how these counters are affected by the operations.
+It is furthermore unspecified whether and how counters of higher verbositiy levels are updated.
+
+A verbosity level of $0$ deactivates all counting. 
+It is not guaranteed, that counters with a minimum verbosity level of $0$ are counted properly, if the verbosity level is set to $0$.
 
 \begin{FDef}
 \begin{FDefSign}
@@ -5248,14 +5265,21 @@ gaspi_statistic_counter_get ( gaspi_statistic_counter_t counter
 \parameterlistitem{in}{argument}{the argument for the counter}
 \parameterlistitem{out}{value}{the current value of the counter}
 \parameterlistend
-\executionphasework
+\executionphaseany
 \FStdRetDescNOTimeout
 \end{FDef}
 
 The meaning of parameter \parameter{argument} depends on the retrieved counter. 
-For instance, if a counter retrieves the bytes sent per rank, then \parameter{argument} contains the rank number.
+For instance, if a counter retrieves the bytes sent per target rank, then \parameter{argument} contains the target rank number.
+If the retrieved counter has no argument, the value of \parameter{argument} is ignored.
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{}
 \parameter{value} contains the current value of the corresponding counter.
+
+The return value is \GASPIGERR{}, if \parameter{counter} does not exist, i.e. exceeds \gaspifunction{statistic\_counter\_max}.
+
+It is allowed to access a counter even, if the process-wide verbosity level is lower than the minimum verbosity level of that counter.
+Thus it is possible to profile certain regions of an application by changing the verbosity level and read the counter values at a later point in time independently of the current verbosity level. 
+
 
 \subsubsection{\gaspifunction{statistic\_counter\_reset}}
 
@@ -5273,9 +5297,11 @@ gaspi_statistic_counter_reset (gaspi_statistic_counter_t counter)
 \parameterlistbegin
 \parameterlistitem{in}{counter}{the counter to be reset}
 \parameterlistend
-\executionphasework
+\executionphaseany
 \FStdRetDescNOTimeout
 \end{FDef}
+
+The return value is \GASPIGERR{}, if \parameter{counter} does not exist, i.e. exceeds \gaspifunction{statistic\_counter\_max}.
 
 %\subsubsection{\gaspifunction{statistic\_counter\_collect}}
 %
@@ -5325,6 +5351,11 @@ gaspi_statistic_counter_reset (gaspi_statistic_counter_t counter)
 
 \subsection{Event Tracing}
 
+The \GASPI{} event tracing interface defines the requirements for an implementation to support the transparent interception and inspection of \GASPI{} calls.
+A \GASPI{} implementation must provide a mechanism, through which all \GASPI{} functions may be accessed with a name shift. 
+The alternate entry point names have the prefix {\tt pgaspi\_} instead of {\tt gaspi\_}.
+In addition the function \gaspifunction{pcontrol} is provided.
+
 \subsubsection{\gaspifunction{pcontrol}}
 
 The function \gaspifunction{pcontrol} is a no-op. 
@@ -5343,7 +5374,7 @@ gaspi_pcontrol ( gaspi_pointer_t argument )
 \parameterlistbegin
 \parameterlistitem{inout}{argument}{}
 \parameterlistend
-\executionphasework
+\executionphaseany
 \FStdRetDescNOTimeout
 \end{FDef}
 
