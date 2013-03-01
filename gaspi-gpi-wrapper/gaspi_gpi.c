@@ -19,6 +19,9 @@
 #pragma weak gaspi_notify_waitsome  = pgaspi_notify_waitsome
 #pragma weak gaspi_notify_reset     = pgaspi_notify_reset
 #pragma weak gaspi_notification_num = pgaspi_notification_num
+#pragma weak gaspi_passive_send     = pgaspi_passive_send
+#pragma weak gaspi_passive_wait     = pgaspi_passive_wait
+#pragma weak gaspi_passive_receive  = pgaspi_passive_receive
 #pragma weak gaspi_segment_ptr      = pgaspi_segment_ptr
 #pragma weak gaspi_allreduce        = pgaspi_allreduce
 
@@ -27,6 +30,8 @@ gaspi_notification_id_t notify_num_max = 0;
 gaspi_offset_t notify_buffer_offset = 0;
 gaspi_notification_t* notify_buffer_pointer = NULL;
 gaspi_size_t gaspi_notify_value_size = sizeof(gaspi_notification_t);
+
+gaspi_rank_t number_ranks = 0;
 
 void
 gaspi_printf( char * format , ... )
@@ -77,15 +82,15 @@ pgaspi_proc_init ( gaspi_configuration_t configuration
 	
 	argument_t *arg = (argument_t *) configuration.user_defined;
 	notify_num_max = configuration.notify_flag_num;
-	notify_buffer_offset = (1UL << 30);
+	notify_buffer_offset = (1UL << 20);
 	
-	int status = startGPI(arg->argc, arg->argv, 0, notify_buffer_offset + (notify_num_max + gaspi_notify_value_size));
+	int status = startGPI(arg->argc, arg->argv, 0, notify_buffer_offset + (2 * notify_num_max * gaspi_notify_value_size));
 	if(CHECK(status) == GASPI_ERROR)
 		return GASPI_ERROR;
 	
 	void* temp;		
 	pgaspi_segment_ptr(0, &temp);
-	notify_buffer_pointer = (gaspi_notification_t*) (temp + notify_buffer_offset);
+	notify_buffer_pointer = (gaspi_notification_t*) ((char*) temp + notify_buffer_offset);
 	
 	return GASPI_SUCCESS;
 }
@@ -217,10 +222,10 @@ pgaspi_notify ( gaspi_rank_t rank
 	assert(notify_buffer_pointer != NULL);
 	assert(flag_id < notify_num_max);
 	
-	notify_buffer_pointer[flag_id] = flag_value;
+	notify_buffer_pointer[notify_num_max + flag_id] = flag_value;
 	gaspi_offset_t offset = notify_buffer_offset + flag_id * gaspi_notify_value_size;
 	
-	return CHECK(writeDmaGPI(offset, offset, gaspi_notify_value_size, rank, queue));
+	return CHECK(writeDmaGPI(offset + (notify_num_max * gaspi_notify_value_size), offset, gaspi_notify_value_size, rank, queue));
 }
 
 gaspi_return_t
@@ -238,7 +243,7 @@ pgaspi_notify_waitsome ( gaspi_notification_id_t flag_id_beg
 	char notify_found = 0;
 	while(!notify_found)
 	{
-		for(i = flag_id_beg; i < flag_num; i++)
+		for(i = flag_id_beg; i <= flag_id_end; i++)
 		{	
 			if(flag_value[i] != 0)
 			{	
@@ -258,8 +263,8 @@ pgaspi_notify_reset ( gaspi_notification_id_t flag_id
 {
 	assert(notify_buffer_offset > 0);
 	assert(flag_id < notify_num_max);
-	
-	*flag_val = notify_buffer_pointer[flag_id];
+	volatile gaspi_notification_t temp_value = notify_buffer_pointer[flag_id];
+	*flag_val = temp_value;
 	notify_buffer_pointer[flag_id] = 0;
 	
 	return GASPI_SUCCESS;
@@ -272,6 +277,50 @@ pgaspi_notification_num ( gaspi_notification_id_t* flag_max )
 	
 	return GASPI_SUCCESS;
 }
+
+extern gaspi_return_t pgaspi_passive_send ( gaspi_segment_id_t segment_id_local
+           , gaspi_offset_t offset_local
+           , gaspi_rank_t rank
+           , gaspi_size_t size
+           , gaspi_tag_t tag
+           , gaspi_timeout_t timeout
+           )
+{
+	assert(segment_id_local == 0);
+	assert(timeout == GASPI_BLOCK);
+	assert(tag == 0);
+	
+	return CHECK(sendDmaPassiveGPI(offset_local, size, rank));
+}
+
+extern gaspi_return_t pgaspi_passive_wait (gaspi_timeout_t timeout)
+{
+	assert(timeout == GASPI_BLOCK);
+	
+	waitDmaPassiveGPI();
+	
+	return GASPI_SUCCESS;	
+}
+
+extern gaspi_return_t pgaspi_passive_receive ( gaspi_segment_id_t segment_id_local
+           , gaspi_offset_t offset_local
+           , gaspi_size_t size
+           , gaspi_rank_t* rank
+           , gaspi_tag_t* tag
+           , gaspi_timeout_t timeout
+           )
+{
+	assert(segment_id_local == 0);
+	assert(timeout == GASPI_BLOCK);
+	
+	int senderRank = -1;
+	if(CHECK(recvDmaPassiveGPI(offset_local, size, &senderRank)) == GASPI_ERROR)
+		return GASPI_ERROR;
+	
+	*rank = senderRank;
+	
+	return GASPI_SUCCESS;
+}           
 
 gaspi_return_t
 pgaspi_segment_ptr ( gaspi_segment_id_t segment_id
@@ -302,542 +351,50 @@ gaspi_return_t pgaspi_allreduce(gaspi_pointer_t buffer_send
 	if(to_gpi_data_types(datatype, &data_type_gpi, &data_size) == GASPI_ERROR)
 		return GASPI_ERROR;
 		
-	assert((buffer_send + (data_size * num)) < (void*) notify_buffer_pointer);
-	assert((buffer_receive + (data_size * num)) < (void*) notify_buffer_pointer);
+	assert((void*)((char*) buffer_send + (data_size * num)) < notify_buffer_pointer);
+	assert((void*)((char*) buffer_receive + (data_size * num)) < notify_buffer_pointer);
 	
 	return CHECK(allReduceGPI(buffer_send, buffer_receive, num, to_gpi_operation(operation), data_type_gpi));
 }
 
-
-/*
-
-gaspi_return_t
-gaspi_queue_num (gaspi_queue_t queue_max )
+/*gaspi_return_t
+pgaspi_statistic_counter_max(gaspi_statistic_counter_t* counter_max)
 {
-	return GASPI_SUCCESS;
+	
 }
 
 gaspi_return_t
-gaspi_queue_size ( gaspi_queue_t queue
-                 , gaspi_number_t queue_size
-                 )
+pgaspi_statistic_counter_info(gaspi_statistic_counter_t counter
+			, gaspi_statistic_argument_t* counter_argument
+			, gaspi_string_t* counter_name,
+			, gaspi_string_t* counter_description,
+			, gaspi_number_t* verbosity_level
+			)
 {
-	return GASPI_SUCCESS;
+	
 }
 
 gaspi_return_t
-gaspi_queue_size_max ( gaspi_queue_t queue
-                     , gaspi_number_t queue_size
-                     )
+pgaspi_statistic_counter_get ( gaspi_statistic_counter_t counter
+			, gaspi_number_t argument
+			, gaspi_number_t value
+			)
 {
-	return GASPI_SUCCESS;
+	
 }
-
-// not implemented in gpi
+			
 gaspi_return_t
-gaspi_proc_kill ( gaspi_rank_t rank
-                , gaspi_timeout_t timeout )
+pgaspi_statistic_counter_reset (gaspi_statistic_counter_t counter)
 {
-	return GASPI_SUCCESS;
+	
 }
-
-gaspi_return_t
-gaspi_state_vec_get( gaspi_state_vector_t state_vector )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
 
 gaspi_return_t
-gaspi_state_vec_reset( gaspi_state_vector_t state_vector )
+pgaspi_statistic_counter_collect (gaspi_statistic_counter_t counter
+			,gaspi_statistic_value_t value
+			,gaspi_group_t group
+			,gaspi_timeout_t timeout
+			)
 {
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_group_create (gaspi_group_t group)
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_group_add ( gaspi_group_t group
-                , gaspi_rank_t rank
-                )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_group_commit ( gaspi_group_t group
-                   , gaspi_timeout_t timeout
-                   )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_group_delete ( gaspi_group_t group )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_group_max (gaspi_number_t group_max)
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_group_size ( gaspi_group_t group
-                 , gaspi_rank_t group_size )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_group_ranks( gaspi_group_t group
-		   , gaspi_rank_t  group_ranks
-		   , gaspi_number_t group_size)
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_segment_alloc ( gaspi_segment_id_t segment_id
-                    , gaspi_size_t size
-                    , gaspi_number_t alloc_policy
-                    )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_segment_register ( gaspi_segment_id_t segment_id
-                       , gaspi_rank_t rank
-                       , gaspi_timeout_t timeout
-                       )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_segment_create ( gaspi_segment_id_t segment_id
-                     , gaspi_size_t size
-                     , gaspi_group_t group
-                     , gaspi_timeout_t timeout
-                     , gaspi_number_t alloc_policy
-                     )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_segment_free ( gaspi_segment_id_t segment_id )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_segment_ptr ( gaspi_segment_id_t segment_id
-                  , gaspi_pointer_t* pointer
-                  )
-{
-  assert(segment_id == 0);
-  *pointer = getDmaMemPtrGPI ();
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_segment_max (gaspi_segment_id_t segment_max)
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-
-
-
-
-
-
-gaspi_return_t
-gaspi_write_list ( gaspi_number_t num
-                 , gaspi_segment_id_t segment_id_local[num]
-                 , gaspi_offset_t offset_local[num]
-                 , gaspi_rank_t rank
-                 , gaspi_segment_id_t segment_id_remote[num]
-                 , gaspi_offset_t offset_remote[num]
-                 , gaspi_size_t size[num]
-                 , gaspi_queue_t queue
-                 , gaspi_timeout_t timeout
-                 )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_write_list_notify ( gaspi_number_t num
-                        , gaspi_segment_id_t segment_id_local[num]
-                        , gaspi_offset_t offset_local[num]
-                        , gaspi_rank_t rank
-                        , gaspi_segment_id_t segment_id_remote[num]
-                        , gaspi_offset_t offset_remote[num]
-                        , gaspi_size_t size[num]
-                        , gaspi_flag_t flag
-                        , gaspi_segment_id_t segment_id_flag
-                        , gaspi_offset_t offset_flag
-                        , gaspi_queue_t queue
-                        , gaspi_timeout_t timeout
-                        )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_read_list ( gaspi_number_t num
-                , gaspi_segment_id_t segment_id_local[num]
-                , gaspi_offset_t offset_local[num]
-                , gaspi_rank_t rank
-                , gaspi_segment_id_t segment_id_remote[num]
-                , gaspi_offset_t offset_remote[num]
-                , gaspi_size_t size[num]
-                , gaspi_queue_t queue
-                , gaspi_timeout_t timeout
-                )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-
-
-
-
-
-
-gaspi_return_t
-gaspi_messg_size_max ( gaspi_size_t messg_size )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_passive_send ( gaspi_segment_id_t segment_id_local
-                   , gaspi_offset_t offset_local
-                   , gaspi_rank_t rank
-                   , gaspi_size_t size
-                   , gaspi_tag_t tag
-                   , gaspi_timeout_t timeout
-                   )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_passive_wait (gaspi_timeout_t timeout)
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_passive_receive ( gaspi_segment_id_t segment_id_local
-                      , gaspi_offset_t offset_local
-                      , gaspi_rank_t rank
-                      , gaspi_tag_t tag
-                      , gaspi_timeout_t timeout
-                      )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_passive_queue_size (gaspi_number_t queue_size)
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_passive_queue_size_max  (gaspi_number_t queue_size)
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_passive_messg_size_max (gaspi_size_t messg_size)
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_counter_reset ( gaspi_counter_id_t counter_id
-                    , gaspi_counter_value_t value
-                    , gaspi_timeout_t timeout
-                    )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_counter_fetch_add ( gaspi_counter_id_t counter_id
-                        , gaspi_counter_value_t value_add
-                        , gaspi_counter_value_t value_old
-                        , gaspi_timeout_t timeout
-                        )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_counter_compare_swap ( gaspi_counter_id_t counter_id
-                           , gaspi_counter_value_t comparator
-                           , gaspi_counter_value_t value_new
-                           , gaspi_counter_value_t value_old
-                           , gaspi_timeout_t timeout
-                           )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_counter_num (gaspi_number_t counter_max)
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_barrier ( gaspi_group_t group
-              , gaspi_timeout_t timeout
-              )
-{
-  assert(group == GASPI_GROUP_ALL);
-  assert(timeout == GASPI_BLOCK);
-  barrierGPI ();
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_allreduce ( gaspi_pointer_t buffer_send
-                , gaspi_pointer_t buffer_receive
-                , unsigned char num
-                , gaspi_operation_t operation
-                , gaspi_datatype_t datatype
-                , gaspi_group_t group
-                , gaspi_timeout_t timeout
-                )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_allreduce_elem_max (gaspi_number_t elem_max)
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_allreduce_user ( gaspi_pointer_t buffer_send
-                     , gaspi_pointer_t buffer_receive
-                     , unsigned char num
-                     , gaspi_size_t size_element
-                     , gaspi_reduce_operation_t reduce_operation
-                     , gaspi_reduce_state_t reduce_state
-                     , gaspi_group_t group
-                     , gaspi_timeout_t timeout
-                     )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_reduce_operation ( gaspi_pointer_t operand_one
-                       , gaspi_pointer_t operand_two
-                       , gaspi_pointer_t result
-                       , gaspi_state_t state
-                       , gaspi_timeout_t timeout
-                       )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_allreduce_buf_size (gaspi_number_t buf_size)
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_version (float version)
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_time_get ( gaspi_time_t wtime )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_time_ticks ( gaspi_time_t resolution )
-{
-	return GASPI_SUCCESS;
-}
-
-
-
-
-
-gaspi_return_t
-gaspi_error_messg ( gaspi_return_t error_code
-                  , gaspi_string_t error_messg )
-{
-	return GASPI_SUCCESS;
-}
-*/
-
+	
+}*/

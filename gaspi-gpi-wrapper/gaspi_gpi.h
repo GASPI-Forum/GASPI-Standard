@@ -71,7 +71,20 @@ extern gaspi_return_t pgaspi_allreduce ( gaspi_pointer_t buffer_send
            , gaspi_group_t group
            , gaspi_timeout_t timeout
            );
-
-extern gaspi_return_t pgaspi_proc_num ( gaspi_rank_t *proc_num );
+extern gaspi_return_t pgaspi_passive_send ( gaspi_segment_id_t segment_id_local
+           , gaspi_offset_t offset_local
+           , gaspi_rank_t rank
+           , gaspi_size_t size
+           , gaspi_tag_t tag
+           , gaspi_timeout_t timeout
+           );
+extern gaspi_return_t pgaspi_passive_wait (gaspi_timeout_t timeout);                   
+extern gaspi_return_t pgaspi_passive_receive ( gaspi_segment_id_t segment_id_local
+           , gaspi_offset_t offset_local
+           , gaspi_size_t size
+           , gaspi_rank_t* rank
+           , gaspi_tag_t* tag
+           , gaspi_timeout_t timeout
+           );
 
 #endif

@@ -897,8 +897,9 @@ gaspi_passive_wait (gaspi_timeout_t timeout);
 gaspi_return_t
 gaspi_passive_receive ( gaspi_segment_id_t segment_id_local
                       , gaspi_offset_t offset_local
-                      , gaspi_rank_t rank
-                      , gaspi_tag_t tag
+                      , gaspi_size_t size
+                      , gaspi_rank_t* rank
+                      , gaspi_tag_t* tag
                       , gaspi_timeout_t timeout
                       );
 
@@ -941,6 +942,28 @@ gaspi_passive_queue_size_max  (gaspi_number_t queue_size);
 gaspi_return_t
 gaspi_passive_message_size_max (gaspi_size_t message_size);
 
+
+typedef enum {GASPI_STATISTIC_BYTES_WRITTEN
+			,GASPI_STATISTIC_BYTES_READ
+			,GASPI_STATISTIC_BYTES_SENT
+			,GASPI_STATISTIC_BYTES_RECEIVED
+			}gaspi_statistic_counter_t;
+
+
+/*gaspi_return_t
+gaspi_statistic_counter_get ( gaspi_statistic_counter_t counter
+			, gaspi_statistic_value_t value
+			);*/
+			
+gaspi_return_t
+gaspi_statistic_counter_reset (gaspi_statistic_counter_t counter);
+
+/*gaspi_return_t
+gaspi_statistic_counter_collect (gaspi_statistic_counter_t counter
+			,gaspi_statistic_value_t value
+			,gaspi_group_t group
+			,gaspi_timeout_t timeout
+			);*/
 
 /*!
 
