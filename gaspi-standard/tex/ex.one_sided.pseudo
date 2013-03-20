@@ -1,15 +1,14 @@
 let nProc be the number of processes;
 let iProc be the unique id of this process;
-let src[iProc] be an array of size nProc;
-let dst[iProc] be an array of size nProc;
+let src be the data to be distributed;
+let dst be an array storing the destination addresses;
 
 foreach process p in [0,nProc):
-  write src[iProc][p] into dst[p][iProc];
-  //    ^^^^^^^^^^         ^^^^^^
-  //    | local            | remote if p != iProc
+  write src into dst[p][iProc];
+  //             ^^^^^^
+  //             | remote address if p != iProc
 
 wait for the completion of the writes;
-// now this process sent the data
 
 barrier;
-// now all processes sent the data
+// the writes of all processes are completed

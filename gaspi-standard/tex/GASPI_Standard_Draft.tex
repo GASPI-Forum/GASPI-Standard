@@ -75,6 +75,9 @@
 \newcommand{\gaspitype}[1]{\type{\protect\zsep{\gaspiprefix\_#1\_t}}}
 \newcommand{\gaspifunction}[1]{\function{\protect\zsep{\gaspiprefix\_#1}}}
 
+\newcommand{\eg}{e.\,g.\ }
+\newcommand{\ie}{i.\,e.\ }
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\finalsymb}[1]{\leavevmode\unskip\penalty9999\hbox{}\nobreak\hfill\hskip 1em minus 0.5em\hbox{#1}}
@@ -298,7 +301,7 @@ spirit of MPI---it complements existing languages like C/C++ or
 Fortran with a PGAS API which enables the application to leverage the
 concept of the Partitioned Global Adress Space.  In contrast to
 e.\,g.\ OpenShmem or Global Arrays, \GASPI{} is not limited to a
-single memory model, but rather provides configurable RDMA pinnend
+single memory model, but rather provides configurable RDMA
 PGAS memory segments.  By means of these segments GASPI does not
 merely support a single Partitioned Global Address Space, but rather a
 multitude of Partitioned Global Address Spaces. In GASPI it is hence
@@ -343,7 +346,7 @@ From the application requirements the following design goals have been deduced:
 
 \begin{itemize}
 \item Extreme scalability
-\item Multi-segment support (heterogeneous systems, NUMA-pinning)
+\item Multi-segment support to support \eg heterogeneous systems and NUMA-pinning
 \item Dynamic allocation of segments
 \item Timeout mechanisms and failure tolerance
 \item Group support for collectives
@@ -508,13 +511,12 @@ In this section, the basic \GASPI{} concepts are introduced. A more detailed
 description with the corresponding procedure specifications can be found
 in the subsequent topic-specific sections.
 
-\GASPI{} is a communication API.  It implements a Partitioned Global
-Address Space (\emph{PGAS}) model. Each \GASPI{} process hosts some
-part, zero or one or more segments, of the global address space. This
-partition is local to the process and can be accessed locally just as
-ordinary allocated memory. In addition to that, every thread on every
-other \GASPI{} process can also have access to these segments by read
-and write operations.
+\GASPI{} is a communication API that implements a Partitioned Global
+Address Space (\emph{PGAS}) model. Each \GASPI{} process may host 
+parts (called segments) of the global address space. A local segment 
+can be accessed with standard load/store operations and remote segments
+can be accessed by every thread on every \GASPI{} process using the
+\GASPI{} read and write operations.
 
 \GASPI{} was designed with remote direct memory access (RDMA) in mind.
 A network infrastructure that supports RDMA guarantees asynchronous and
@@ -528,12 +530,12 @@ with computation.
 %\GASPI{} has a high flexibility in the configuration of the runtime
 %parameters.
 
-\GASPI{} provides the concept of ranks. Each \GASPI{} process receives
-a unique rank that identifies it during runtime.
+\GASPI{} has the concept of ranks. Each \GASPI{} process receives
+a unique rank that identifies it during its runtime.
 
 \subsection{\GASPI{} groups}
 
-Groups are subsets of the set of processes. The group members
+A group is a subset of all processes. The group members
 have common collective operations. A collective operation is then
 restricted to the processes forming the group.
 
@@ -556,7 +558,7 @@ Address Space.
 One-sided asynchronous communication is the basic communication
 mechanism provided by \GASPI{}. The one-sided communication comes
 in two flavors.  There are read and write operations from and into the
-Partitioned Global Address Space from arbitrary locations. These
+Partitioned Global Address Space. These
 operations are non-blocking and asynchronous, allowing the program to continue
 its execution along the data transfer. The actual data transfer is managed
 by the underlying network infrastructure.
@@ -566,8 +568,10 @@ by the underlying network infrastructure.
 %In this respect, an entire communication request is splitted into two
 %calls. The actual invocation and the check for completion.
 
-\GASPI{} offers the possibility to use different queues to handle the requests. Each
-communication request can be submitted to one of the supported
+\subsection{\GASPI{} queues}
+
+\GASPI{} offers the possibility to use different queues to handle the communication requests.
+The requests can be submitted to one of the supported
 queues. These queues allow more scalability and can be used as
 channels for different types of requests where similar types of
 requests are queued and then get synchronised together but
@@ -580,7 +584,7 @@ Furthermore, the order of communication request addressing the same remote \GASP
 process posted to a given queue are preserved, both on the local as
 well as on the remote side.
 
-\insertlisting{ex.one_sided.pseudo}{Alltoall with one-sided writes.}
+\insertlisting{ex.one_sided.pseudo}{Allgather with one-sided writes.}
 
 \subsection{\GASPI{} passive communication}
 
@@ -591,8 +595,8 @@ process from the receiver perspective) but there is potentially the
 need for synchronisation between different processes.
 
 The receive operation is a blocking call that has as low interference
-as possible (e.\,g.\ consumes no CPU cycles) and should be woken up
-directly by the network layer. This passive communication allows for
+as possible (e.\,g.\ consumes no CPU cycles) and is ideally woken up
+by the network layer. This passive communication allows for
 fair distributed updates of globally shared parts of data.
 
 \insertlisting{ex.passive.pseudo}{Single consumer and multiple
@@ -610,8 +614,8 @@ counters: \function{fetch\_and\_add} and
 \function{compare\_and\_swap}. The counters can be used as global
 shared variables and to synchronise processes or events.
 
-Atomic counters are predestined for the implementation of dynamic load balancing
-schemes for example.
+Atomic counters are predestined for the implementation of \eg dynamic
+load balancing schemes.
 
 The specification guarantees fairness, i.\,e.\ no process should see
 its atomic operation delayed indefinitely.
@@ -619,15 +623,43 @@ its atomic operation delayed indefinitely.
 \insertlisting{ex.atomic1.pseudo}{Dynamic work distribution: Clients
   atomically fetch a packet id and increment the value.}
 
+\subsection{\GASPI{} timeouts}
+\label{SubSec::Timeout}
+
+Failure tolerant parallel programs necessitate non-blocking
+communication calls.  Hence, \GASPI{} provides a timeout mechanism for
+all potentially blocking procedures.
+
+Timeouts for procedures are specified in milliseconds.
+\GASPIBLOCK{} is a predefined timeout value which blocks the
+procedure call until completion. This value
+should not be used in failure tolerant programs, as it can block
+for an indefinitely amount of time in case of an error.
+
+\GASPITEST{} is another predefined timeout value which
+blocks the procedure for the shortest time possible, \ie the time
+in which the procedure call processes an atomic portion of its work.
+%TODO usecase
+
+Example:
+\begin{listing}{1}
+const gaspi_return_t err = WAIT (..., GASPI_BLOCK);
+\end{listing}
+Blocks until the communication queue is empty and may block indefinitely in case of a failure.
+\begin{listing}{1}
+const gaspi_return_t err = WAIT (..., GASPI_TEST);
+\end{listing}
+Just check if the operation has completed and return as soon as possible.
+\begin{listing}{1}
+const gaspi_return_t err = WAIT (..., 10);
+\end{listing}
+Blocks until the queue is empty or more than $10$ milliseconds have
+passed since wait has been called.
+
 \subsection{\GASPI{} collective communication}
 
-Collective operations are operations which involve a whole set of
-\GASPI{} processes. That means that collective operations are
-collective with respect to a group of processes. They are also exclusive
-per group, i.\,e.\ only one collective operation of a specific type can
-run at a given time. For example, two allreduce for one group can not run at the same
-time; however, an allreduce operation and a barrier can run at the
-same time.
+Collective communication is communication which involves a group of
+\GASPI{} processes. It is collective only for that group.
 
 Collective operations can be either synchronous or asnychronous.
 Synchronous implies that progress is achieved only as long as
@@ -636,8 +668,13 @@ be interrupted by a timeout. The operation is then continued in the
 next call of the procedure. This implies that a collective operation
 may involve several procedure calls until completion.
 
-Please note that collective operations can internally also be handled asynchronously,
-i.\,e.\ with progress being achieved outside of the call.
+Collective operations are exclusive per group, i.\,e.\ only one collective operation 
+of a specific type can run at a given time for a given group. For example,
+two allreduce for one group cannot run at the same time; however, an
+allreduce operation and a barrier can run at the same time.
+
+% Please note that collective operations can internally also be handled asynchronously,
+% i.\,e.\ with progress being achieved outside of the call.
 
 \begin{implementoradvice}
 \GASPI{} does not regulate
@@ -647,49 +684,11 @@ If asynchronous operation is supported, it should leverage external network-reso
 consuming CPU cycles.
 \end{implementoradvice}
 
-Beside barriers and reductions with predefined operations,
-reductions with user defined operations are also supported via callback
-functions.
+\GASPI{} support the following collective operations: barriers, reductions with predefined operations,
+reductions with user defined operations.
 
 Collective operations have their own queue and hence typically will be synchronised
 independently from the operations on other queues (separation of concerns).
-
-\subsection{\GASPI{} timeouts}
-\label{SubSec::Timeout}
-
-Failure tolerant parallel programs necessitate non-blocking
-communication calls.  Hence, \GASPI{} provides a timeout mechanism for
-all potentially blocking procedures.
-
-The timeout for a given procedure is specified in milliseconds.
-\GASPIBLOCK{} is a special predefined timeout value which blocks the
-invoked procedure until the procedure is completed. This special value
-shall not be used in a failure tolerant program, because in a
-situation in which the procedure cannot complete due to a failure on a
-remote process, the procedure will not return at all.
-
-\GASPITEST{} is yet another predefined special timeout value which
-represents a timeout equal to zero. Timeout equal to zero means that
-the invoked procedure processes an atomic portion of the work and
-returns after that work has finished. It does not mean that the
-invoked procedure is doing nothing. It does not mean that the invoked
-procedure returns immediately.
-
-Example:
-\begin{listing}{1}
-const gaspi_return_t err = WAIT (..., GASPI_BLOCK);
-\end{listing}
-Blocks until the communication queue is empty. No chance to handle
-failures.
-\begin{listing}{1}
-const gaspi_return_t err = WAIT (..., GASPI_TEST);
-\end{listing}
-Just check if the operation has completed and return as soon as possible.
-\begin{listing}{1}
-const gaspi_return_t err = WAIT (..., 10);
-\end{listing}
-Blocks until the queue is empty or more than $10$ milliseconds have
-passed since the wait call has been initiated.
 
 \subsection{\GASPI{} return values}
 
@@ -701,26 +700,23 @@ GASPI_ERROR   = -1
 GASPI_TIMEOUT = 1
 \end{listing}
 
-\GASPISUCC{} corresponds to return value equal to zero and implies
- that the procedure has completed successfully.
+\GASPISUCC{} implies that the procedure has completed successfully.
 
-\GASPITIME{} corresponds to return value equal to one and implies
-that the procedure could not complete in the given period of time.
-This does not necessarily mean that an error has occurred.
-The procedure has to be invoked subsequently in order to fully complete
+\GASPITIME{} implies that the procedure could not complete in the
+given period of time. This does not necessitate an error. The
+procedure has to be invoked subsequently in order to fully complete
 the operation.
 
-\GASPIGERR{} corresponds to a return value less than zero and implies
-that the procedure has terminated due to an error.  There are no
-predefined error values specifying the detailed cause of error in the
-\GASPI{} specification. This is implementation dependent. However,
+\GASPIGERR{} implies that the procedure has terminated due to an error.
+There are no predefined error values specifying the detailed cause of an error.
 \gaspifunction{error\_message} translates the error code into a human
-readable format. Moreover, all error codes in the range
-$(-2,\ldots,-999)$ are reserved for future extensions and
-must not be used for implementation specific error codes.
+readable format.
+
 \begin{implementoradvice}
-If there are predefined error codes, each of the return codes must
-have a corresponding error message.
+An implementation may provide specific error values. All error codes
+in the range $(-2,\ldots,-999)$ are reserved and must not be used.
+If there are predefined error codes, each of the return codes must have
+a corresponding error message.
 \end{implementoradvice}
 
 Additionally, there is a state vector that contains health states for
