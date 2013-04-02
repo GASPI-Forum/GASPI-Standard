@@ -1,37 +1,49 @@
 TOPROOT = $(PWD)
 
-GPI_DIR = /home/harry/gpilib
+#change me
+GPI_DIR = /home/huenich/gpi/gpi-SDK
+
 BIN_DIR = $(PWD)/bin/
 LIB_DIR = $(PWD)/lib/
 CC = gcc
 CPP = g++
 
+FLAGS = -O2 -g -fPIC -c -Wall
 #gcc
-CFLAGS = -O2 -g -std=gnu99 -fPIC -std=gnu99 -c -Wall
+CFLAGS = $(FLAGS) -std=gnu99
+#g++
+CPPFLAGS = $(FLAGS)
 
-BUILDFLAGS = -shared -Wl,-soname,libgaspi_gpi.so
+BUILDFLAGS = -shared -Wl,-soname
 
-INCLUDE = -I$(GPI_DIR)/include -I/home/herold/gaspi/trunk/gaspi-standard/include
-SOURCES = gaspi_gpi.c
+INCLUDE = -I$(GPI_DIR)/include -I./ 
+SOURCES = $(wildcard *.cpp)
 
 #gcc
 LIBS    = -L$(GPI_DIR)/lib64 -libverbs15 -lGPI -Wl,-rpath=$(GPI_DIR)/lib64:
 
-OBJS = $(SOURCES:%.c=%.o)
+OBJS = $(SOURCES:%.cpp=%.o)
 
-%.o:%.c
-	$(CC) $(CFLAGS) $(INCLUDE) -o $@ $< $(LIBS)
-	cp $@ $(BIN_DIR)
+#%.o:%.c
+#	$(CC) $(CFLAGS) $(INCLUDE) -o $@ $< $(LIBS)
+#	cp $@ $(BIN_DIR)
 
 %.o:%.cpp
-	$(CPP) $(CFLAGS) $(INCLUDE) -o $@ $< $(LIBS)
+	echo $(SOURCES)
+	$(CPP) $(CPPFLAGS) $(INCLUDE) -o $@ $< $(LIBS)
 	cp $@ $(BIN_DIR)
 
 libgaspi_gpi.so:gaspi_gpi.o
-	$(CC) $(BUILDFLAGS) gaspi_gpi.o -o libgaspi_gpi.so $(LIBS)
+	$(CPP) $(BUILDFLAGS),libgaspi_gpi.so gaspi_gpi.o -o libgaspi_gpi.so $(LIBS)
 	cp $@ $(LIB_DIR)
 	cp gaspi_gpi.h ./include
-all : $(OBJS)
+
+libgaspi_gpi_profiler.so:gaspi_gpi_profiler.o
+	$(CPP) $(BUILDFLAGS),libgaspi_gpi_profiler.so gaspi_gpi_profiler.o -o libgaspi_gpi_profiler.so $(LIBS) #-L./lib -lgaspi_gpi
+	cp $@ $(LIB_DIR)
+	cp gaspi_gpi_profiler.h ./include
+
+all : libgaspi_gpi.so libgaspi_gpi_profiler.so
 
 clean:
 	rm -rf *~ \#_* *.o
