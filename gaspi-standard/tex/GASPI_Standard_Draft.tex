@@ -639,7 +639,6 @@ for an indefinitely amount of time in case of an error.
 \GASPITEST{} is another predefined timeout value which
 blocks the procedure for the shortest time possible, \ie the time
 in which the procedure call processes an atomic portion of its work.
-%TODO usecase
 
 Example:
 \begin{listing}{1}
@@ -1669,12 +1668,16 @@ process is corrupted, i.\,e.\ there is no communication possible.
 \TDefDefn{{\tt vector<\gaspitype{state}>}}{\gaspitype{state\_vector}}
 \TDefDesc{The vector with state information for individual processes. The
   length of the vector equals the number of processes in the \GASPI{}
-  program.}
+  program and the entries are ordered based on the process ranks, i.\,e.\ entry~0
+  of the vector represents the state of process with the rank~0.}
 \end{TDef}
 
 There are procedures to query the state of the communication partners
 after a given communication request and also to reset the state after
 successful recovery. These are described in the following subsections.
+
+The state vector does not provide a global view, but each process has its own
+state vector that may be different to the state vector of another process.
 
 \subsubsection{\gaspifunction{state\_vec\_get}}
 
@@ -1735,12 +1738,14 @@ The state vector has one entry for each rank. It is initialized during
   \end{itemize}
 \end{itemize}
 
+An update is not guaranteed to update all entries in the state vector, but may only update
+the entries of the direct communication partners.
 \gaspifunction{state\_vec\_get} retrieves in case of successful completion, i.\,e.\ return
 value \GASPISUCC, the state vector.
 It contains the states of the \GASPI{} processes with which the local process has been
 communicating. All other entries are unmodified.
 
-The internal operation to update the state vector is a logic "or".
+% The internal operation to update the state vector is a logic "or".
 
 In case of error, the return value is \GASPIGERR{} and the value of
 the state vector is undefined.
