@@ -24,12 +24,20 @@
 #pragma weak gaspi_passive_receive  = pgaspi_passive_receive
 #pragma weak gaspi_segment_ptr      = pgaspi_segment_ptr
 #pragma weak gaspi_allreduce        = pgaspi_allreduce
+#pragma weak gaspi_queue_size      = pgaspi_queue_size
+#pragma weak gaspi_statistic_verbosity_level = pgaspi_statistic_verbosity_level
+#pragma weak gaspi_statistic_counter_max = pgaspi_statistic_counter_max
+#pragma weak gaspi_statistic_counter_info = pgaspi_statistic_counter_info
+#pragma weak gaspi_statistic_counter_get = pgaspi_statistic_counter_get
+#pragma weak gaspi_statistic_counter_reset = pgaspi_statistic_counter_reset
 
 
 gaspi_notification_id_t notify_num_max = 0;
 gaspi_offset_t notify_buffer_offset = 0;
 gaspi_notification_t* notify_buffer_pointer = NULL;
 gaspi_size_t gaspi_notify_value_size = sizeof(gaspi_notification_t);
+
+gaspi_number_t verbosity_level = 0;
 
 gaspi_rank_t number_ranks = 0;
 
@@ -91,14 +99,14 @@ pgaspi_proc_init ( gaspi_configuration_t configuration
 	void* temp;		
 	pgaspi_segment_ptr(0, &temp);
 	notify_buffer_pointer = (gaspi_notification_t*) ((char*) temp + notify_buffer_offset);
-	
+
 	return GASPI_SUCCESS;
 }
 
 gaspi_return_t
 pgaspi_proc_term (gaspi_timeout_t timeout )
 {
-	assert(timeout == GASPI_BLOCK);	
+	assert(timeout == GASPI_BLOCK);
 	
 	shutdownGPI();
 	
@@ -179,7 +187,7 @@ pgaspi_read ( gaspi_segment_id_t segment_id_local
 	assert(timeout == GASPI_BLOCK);
 	assert((offset_local + size) < notify_buffer_offset);
 	assert((offset_remote + size) < notify_buffer_offset);
-	
+
 	return CHECK(readDmaGPI (offset_local, offset_remote, size, rank, queue));
 }
 
@@ -357,21 +365,43 @@ gaspi_return_t pgaspi_allreduce(gaspi_pointer_t buffer_send
 	return CHECK(allReduceGPI(buffer_send, buffer_receive, num, to_gpi_operation(operation), data_type_gpi));
 }
 
-/*gaspi_return_t
+gaspi_return_t
+pgaspi_queue_size(gaspi_queue_id_t queue, gaspi_number_t* queue_size)
+{
+	int temp = openDMARequestsGPI(queue);
+	if(temp < 0)
+		return GASPI_ERROR;
+		
+	*queue_size = (gaspi_number_t) temp;
+
+	return GASPI_SUCCESS;
+}
+
+gaspi_return_t
+pgaspi_statistic_verbosity_level(gaspi_number_t _verbosity_level)
+{
+	verbosity_level = _verbosity_level;
+	
+	return GASPI_SUCCESS;
+}
+
+gaspi_return_t
 pgaspi_statistic_counter_max(gaspi_statistic_counter_t* counter_max)
 {
+	*counter_max = 0;
 	
+	return GASPI_SUCCESS;
 }
 
 gaspi_return_t
 pgaspi_statistic_counter_info(gaspi_statistic_counter_t counter
 			, gaspi_statistic_argument_t* counter_argument
-			, gaspi_string_t* counter_name,
-			, gaspi_string_t* counter_description,
+			, gaspi_string_t* counter_name
+			, gaspi_string_t* counter_description
 			, gaspi_number_t* verbosity_level
 			)
 {
-	
+	return GASPI_SUCCESS;
 }
 
 gaspi_return_t
@@ -380,21 +410,11 @@ pgaspi_statistic_counter_get ( gaspi_statistic_counter_t counter
 			, gaspi_number_t value
 			)
 {
-	
+	return GASPI_SUCCESS;
 }
 			
 gaspi_return_t
 pgaspi_statistic_counter_reset (gaspi_statistic_counter_t counter)
 {
-	
+	return GASPI_SUCCESS;
 }
-
-gaspi_return_t
-pgaspi_statistic_counter_collect (gaspi_statistic_counter_t counter
-			,gaspi_statistic_value_t value
-			,gaspi_group_t group
-			,gaspi_timeout_t timeout
-			)
-{
-	
-}*/

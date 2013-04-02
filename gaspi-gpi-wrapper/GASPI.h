@@ -943,19 +943,42 @@ gaspi_return_t
 gaspi_passive_message_size_max (gaspi_size_t message_size);
 
 
-typedef enum {GASPI_STATISTIC_BYTES_WRITTEN
-			,GASPI_STATISTIC_BYTES_READ
-			,GASPI_STATISTIC_BYTES_SENT
-			,GASPI_STATISTIC_BYTES_RECEIVED
-			}gaspi_statistic_counter_t;
+typedef unsigned int gaspi_statistic_counter_t;
 
+typedef enum{GASPI_STATISTIC_ARGUMENT_NONE
+			, GASPI_STATISTIC_ARGUMENT_RANK
+			, GASPI_STATISTIC_ARGUMENT_INVOC
+			, GASPI_STATISTIC_ARGUMENT_MIN
+			, GASPI_STATISTIC_ARGUMENT_MAX
+		}gaspi_statistic_argument_t;
+
+typedef unsigned int gaspi_argument_t;
 
 /*gaspi_return_t
 gaspi_statistic_counter_get ( gaspi_statistic_counter_t counter
 			, gaspi_statistic_value_t value
 			);*/
 			
-gaspi_return_t
+gaspi_return_t 
+gaspi_statistic_verbosity_level(gaspi_number_t _verbosity_level);
+			
+gaspi_return_t 
+gaspi_statistic_counter_max(gaspi_statistic_counter_t* counter_max);
+
+gaspi_return_t 
+gaspi_statistic_counter_info(gaspi_statistic_counter_t counter
+			, gaspi_statistic_argument_t* counter_argument
+			, gaspi_string_t* counter_name
+			, gaspi_string_t* counter_description
+			, gaspi_number_t* verbosity_level
+			);
+			
+gaspi_return_t 
+gaspi_statistic_counter_get ( gaspi_statistic_counter_t counter
+			, gaspi_number_t argument
+			, gaspi_number_t* value
+			);
+gaspi_return_t 
 gaspi_statistic_counter_reset (gaspi_statistic_counter_t counter);
 
 /*gaspi_return_t
