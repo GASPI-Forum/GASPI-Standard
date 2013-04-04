@@ -975,6 +975,14 @@ to be executed in that execution phase results in undefined behavior.
 The \GASPI{} configuration structure describes the configuration parameters which
 influence the \GASPI{} runtime behavior.
 
+Please note, that for simplicity of notation this is a C-style
+definition. In bindings to other languages corresponding definitions
+will be used.
+
+% \begin{todo}
+% \item check how this works in fortran
+% \end{todo}
+
 \begin{listing}[99]{2}
 typedef struct {
 
@@ -982,7 +990,7 @@ typedef struct {
   gaspi_number_t     group_max;
 
   // maximum number of segments
-  gaspi_segment_id_t segment_max
+  gaspi_number_t     segment_max
 
   // one-sided comm parameter
   gaspi_number_t     queue_num;
@@ -1013,14 +1021,6 @@ typedef struct {
 
 } gaspi_configuration_t;
 \end{listing}
-
-Please note, that for simplicity of notation this is a C-style
-definition. In bindings to other languages corresponding definitions
-will be used.
-
-% \begin{todo}
-% \item check how this works in fortran
-% \end{todo}
 
 The definition of each of the configuration structure fields is as follows:
 
@@ -2065,7 +2065,7 @@ the number of ranks of a given group.
 \begin{verbatim}
 gaspi_return_t
 gaspi_group_size ( gaspi_group_t group
-                 , gaspi_rank_t group_size
+                 , gaspi_number_t group_size
                  )
 \end{verbatim}
 \end{FDefSign}
@@ -2569,7 +2569,7 @@ the current number of allocated segments.
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_segment_num (gaspi_segment_id_t segment_num)
+gaspi_segment_num (gaspi_number_t segment_num)
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
@@ -2601,13 +2601,13 @@ a list of locally allocated segment IDs.
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_segment_list ( gaspi_segment_id_t num
+gaspi_segment_list ( gaspi_number_t num
                    , gaspi_segment_id_t segment_id_list[num] )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
   \parameterlistitem{in}{num}{number of segment IDs to collect}
-  \parameterlistitem{in}{segment\_list[num]}{list of locally allocated segment IDs}
+  \parameterlistitem{out}{segment\_list[num]}{list of locally allocated segment IDs}
 \parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
@@ -5151,7 +5151,7 @@ Instead the user can call \gaspifunction{statistic\_counter\_max} in order to de
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_statistic_counter_max ( gaspi_statistic_counter_t counter_max )
+gaspi_statistic_counter_max ( gaspi_number_t counter_max )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
@@ -5256,7 +5256,7 @@ procedure which retrieves a statistical counter from the local \GASPI{} process.
 \begin{verbatim}
 gaspi_return_t
 gaspi_statistic_counter_get ( gaspi_statistic_counter_t counter
-                            , gaspi_number_t argument
+                            , gaspi_statistic_argument_t argument
                             , gaspi_number_t value
                             )
 \end{verbatim}
