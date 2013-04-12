@@ -718,8 +718,8 @@ If there are predefined error codes, each of the return codes must have
 a corresponding error message.
 \end{implementoradvice}
 
-Additionally, there is a state vector that contains health states for
-individual processes. The state vector is set after non-local operations
+Additionally, each process has a state vector that contains the health state for
+all processes. The state vector is set after non-local operations
 and can be used to detect failures on remote processes.
 
 
@@ -1512,8 +1512,7 @@ a clean shutdown.
 \subsubsection{Example}
 
 The \listref{lst:hello_world} shows a \GASPI{} "Hello world"
-example. Please note that this program does not include any code that
-is needed to deal with failures.
+example. Please note that this example does not deal with failures.
 
 \insertlisting{../examples/hello_world.c}{\GASPI{} hello world example. \label{lst:hello_world}}
 
@@ -3078,8 +3077,8 @@ directly use the data after the local wait returns.
 \insertlisting{../examples/all_to_all/alltoall_read.c}{\GASPI{} all-to-all communication (matrix transpose) implemented with \gaspifunction{read}\label{lst:alltoall_read}}
 
 The definition of the macro \verb|ASSERT| is given in the listings
-\ref{lst:success_or_die_h} and \ref{lst:success_or_die_c} starting on
-page \pageref{lst:success_or_die_h}. The definition of the function
+\ref{lst:success_or_die_h} and \ref{lst:success_or_die_c}.
+The definition of the function
 \verb|wait_if_queue_full| is given in the listings
 \ref{lst:wait_if_queue_full_h} and \ref{lst:wait_if_queue_full_c}
 starting on page \pageref{lst:wait_if_queue_full_h}.
