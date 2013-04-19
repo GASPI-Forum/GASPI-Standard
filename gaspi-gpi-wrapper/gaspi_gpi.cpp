@@ -3,6 +3,7 @@
 #include <GpiLogger.h>
 #include <assert.h>
 #include <stdarg.h>
+#include <sys/time.h>
 
 #define CHECK(x) ( (x)!=0 ? GASPI_ERROR : GASPI_SUCCESS )
 
@@ -25,6 +26,7 @@
 #pragma weak gaspi_segment_ptr      = pgaspi_segment_ptr
 #pragma weak gaspi_allreduce        = pgaspi_allreduce
 #pragma weak gaspi_queue_size      = pgaspi_queue_size
+#pragma weak gaspi_time_get = pgaspi_time_get
 #pragma weak gaspi_statistic_verbosity_level = pgaspi_statistic_verbosity_level
 #pragma weak gaspi_statistic_counter_max = pgaspi_statistic_counter_max
 #pragma weak gaspi_statistic_counter_info = pgaspi_statistic_counter_info
@@ -374,6 +376,16 @@ pgaspi_queue_size(gaspi_queue_id_t queue, gaspi_number_t* queue_size)
 		
 	*queue_size = (gaspi_number_t) temp;
 
+	return GASPI_SUCCESS;
+}
+
+gaspi_return_t
+pgaspi_time_get(gaspi_time_t* wtime)
+{
+	timeval tv;
+	gettimeofday(&tv, NULL);
+	*wtime = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+	
 	return GASPI_SUCCESS;
 }
 
