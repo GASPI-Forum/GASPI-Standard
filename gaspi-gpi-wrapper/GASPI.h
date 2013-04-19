@@ -947,9 +947,7 @@ typedef unsigned int gaspi_statistic_counter_t;
 
 typedef enum{GASPI_STATISTIC_ARGUMENT_NONE
 			, GASPI_STATISTIC_ARGUMENT_RANK
-			, GASPI_STATISTIC_ARGUMENT_INVOC
-			, GASPI_STATISTIC_ARGUMENT_MIN
-			, GASPI_STATISTIC_ARGUMENT_MAX
+			, GASPI_STATISTIC_ARGUMENT_FUNC
 		}gaspi_statistic_argument_t;
 
 typedef unsigned int gaspi_argument_t;
@@ -1246,7 +1244,7 @@ typedef unsigned int gaspi_time_t;
 \retval GASPI_ERROR: operation has terminated with an error*/
 
 gaspi_return_t
-gaspi_time_get ( gaspi_time_t wtime );
+gaspi_time_get ( gaspi_time_t* wtime );
 
 
 /*!
