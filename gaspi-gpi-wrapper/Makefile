@@ -39,7 +39,7 @@ libgaspi_gpi.so:gaspi_gpi.o
 	cp gaspi_gpi.h ./include
 
 libgaspi_gpi_profiler.so:gaspi_gpi_profiler.o
-	$(CPP) $(BUILDFLAGS),libgaspi_gpi_profiler.so gaspi_gpi_profiler.o -o libgaspi_gpi_profiler.so $(LIBS) #-L./lib -lgaspi_gpi
+	$(CPP) $(BUILDFLAGS),libgaspi_gpi_profiler.so gaspi_gpi_profiler.o -o libgaspi_gpi_profiler.so $(LIBS) 
 	cp $@ $(LIB_DIR)
 	cp gaspi_gpi_profiler.h ./include
 
