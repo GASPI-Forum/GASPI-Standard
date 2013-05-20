@@ -1973,6 +1973,11 @@ GASPI_GROUP_COMMIT ( group
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{in}{group}{the group to commit}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -1989,16 +1994,13 @@ gaspi_group_commit ( group
                    , timeout
                    , ireturn
                    ) BIND(C)
-TYPE(gaspi_group_t), INTENT(IN) :: group
-TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_group_t), INTENT(IN) :: group
+  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
-\parameterlistbegin
-\parameterlistitem{in}{group}{the group to commit}
-\parameterlistitem{in}{timeout}{the timeout}
-\parameterlistend
+
 \executionphasework
 \FStdRetDesc
 \end{FDef}
@@ -2051,6 +2053,10 @@ GASPI_GROUP_DELETE ( group )
 \end{FDefSign}
 
 
+\parameterlistbegin
+\parameterlistitem{in}{group}{the group to be deleted}
+\parameterlistend
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -2063,14 +2069,11 @@ gaspi_group_delete ( gaspi_group_t group )
 gaspi_group_delete ( group
                    , ireturn
                    ) BIND(C)
-TYPE(gaspi_group_t), INTENT(IN) :: group
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_group_t), INTENT(IN) :: group
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
-\parameterlistbegin
-\parameterlistitem{in}{group}{the group to be deleted}
-\parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -2103,6 +2106,11 @@ GASPI_GROUP_NUM ( group_num )
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{out}{group\_num}{the current number of groups}
+\parameterlistend
+
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -2116,15 +2124,12 @@ gaspi_group_num ( gaspi_number_t group_num )
 gaspi_group_num ( group_num
                 , ireturn
                 ) BIND(C)
-TYPE(gaspi_number_t), INTENT(OUT) :: group_num
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_number_t), INTENT(OUT) :: group_num
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
 
-\parameterlistbegin
-  \parameterlistitem{out}{group\_num}{the current number of groups}
-\parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -2152,6 +2157,12 @@ GASPI_GROUP_SIZE ( gaspi_group_t group
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{in}{group}{the group to be examined}
+\parameterlistitem{out}{group\_size}{the number of ranks in a given group}
+\parameterlistend
+
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -2167,16 +2178,12 @@ gaspi_group_size ( gaspi_group_t group
                  , gaspi_number_t group_size
                  , ireturn
                  ) BIND(C)
-TYPE(gaspi_group_t), INTENT(IN) :: group
-TYPE(gaspi_number_t), INTENT(OUT) :: group_size
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_group_t), INTENT(IN) :: group
+  TYPE(gaspi_number_t), INTENT(OUT) :: group_size
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
-\parameterlistbegin
-\parameterlistitem{in}{group}{the group to be examined}
-\parameterlistitem{out}{group\_size}{the number of ranks in a given group}
-\parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -2199,15 +2206,22 @@ a list of ranks of \GASPI{} processes forming the group.
 \begin{FDefSign}
 \begin{verbatim}
 GASPI_GROUP_RANKS ( group
+                  , group_size
                   , group_ranks[group_size]
                   )
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{in}{group}{the group to be examined}
+\parameterlistitem{out}{group\_ranks}{the list of ranks forming the group}
+\parameterlistend
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
 gaspi_group_ranks ( gaspi_group_t group
+                  , gaspi_number_t group_size
                   , gaspi_rank_t group_ranks[group_size]
                   )
 \end{verbatim}
@@ -2216,19 +2230,17 @@ gaspi_group_ranks ( gaspi_group_t group
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_group_ranks ( group
+                  , group_size
                   , group_ranks
                   , ireturn
                   ) BIND(C)
-TYPE(gaspi_group_t), INTENT(IN) :: group
-TYPE(gaspi_rank_t), INTENT(OUT) :: group_ranks(group_size)
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_group_t), INTENT(IN) :: group
+  TYPE(gaspi_number_t), INTENT(IN) :: group_size
+  TYPE(gaspi_rank_t), INTENT(OUT) :: group_ranks(group_size)
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
-\parameterlistbegin
-\parameterlistitem{in}{group}{the group to be examined}
-\parameterlistitem{out}{group\_ranks}{the list of ranks forming the group}
-\parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -2322,6 +2334,14 @@ GASPI_SEGMENT_ALLOC ( segment_id
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{in}{segment\_id}{ The segment ID to be created. The segment IDs need to be
+                                     unique on each \GASPI{} process}
+\parameterlistitem{in}{size}{The size of the segment in bytes}
+\parameterlistitem{in}{alloc\_policy}{allocation policy}
+\parameterlistend
+
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -2339,19 +2359,13 @@ gaspi_segment_alloc ( segment_id
                     , alloc_policy
                     , ireturn
                     ) BIND(C)
-TYPE(gaspi_segment_id_t), INTENT(IN) :: group
-TYPE(gaspi_size_t), INTENT(IN) :: size
-TYPE(gaspi_alloc_t), INTENT(IN) :: alloc_policy
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: group
+  TYPE(gaspi_size_t), INTENT(IN) :: size
+  TYPE(gaspi_alloc_t), INTENT(IN) :: alloc_policy
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
-\parameterlistbegin
-\parameterlistitem{in}{segment\_id}{ The segment ID to be created. The segment IDs need to be
-                                     unique on each \GASPI{} process}
-\parameterlistitem{in}{size}{The size of the segment in bytes}
-\parameterlistitem{in}{alloc\_policy}{allocation policy}
-\parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -2404,6 +2418,14 @@ GASPI_SEGMENT_REGISTER ( segment_id
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{in}{segment\_id}{ The segment ID to be registered. The segment ID's need to be
+                                     unique for each \GASPI{} process}
+\parameterlistitem{in}{rank}{The rank of the \GASPI{} process which should register the new segment}
+\parameterlistitem{in}{timeout}{The timeout for the operation}
+\parameterlistend
+
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -2421,20 +2443,14 @@ gaspi_segment_register ( segment_id
                        , timeout
                        , ireturn
                        ) BIND(C)
-TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
-TYPE(gaspi_rank_t), INTENT(IN) :: rank
-TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
+  TYPE(gaspi_rank_t), INTENT(IN) :: rank
+  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
 
-\parameterlistbegin
-\parameterlistitem{in}{segment\_id}{ The segment ID to be registered. The segment ID's need to be
-                                     unique for each \GASPI{} process}
-\parameterlistitem{in}{rank}{The rank of the \GASPI{} process which should register the new segment}
-\parameterlistitem{in}{timeout}{The timeout for the operation}
-\parameterlistend
 \executionphasework
 \FStdRetDesc
 \end{FDef}
@@ -2505,6 +2521,15 @@ GASPI_SEGMENT_CREATE ( segment_id
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{in}{segment\_id}{The ID for the segment to be created. The segment ID's need to be
+      unique for each \GASPI{} process}
+\parameterlistitem{in}{size}{The size of the segment in bytes}
+\parameterlistitem{in}{group}{The group which should create the segment}
+\parameterlistitem{in}{timeout}{The timeout for the operation}
+\parameterlistitem{in}{alloc\_policy}{allocation policy}
+\parameterlistend
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -2526,23 +2551,15 @@ gaspi_segment_create ( segment_id
                      , alloc_policy
                      , ireturn
                      ) BIND(C)
-TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
-TYPE(gaspi_size_t), INTENT(IN) :: size
-TYPE(gaspi_group_t), INTENT(IN) :: group
-TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-TYPE(gaspi_alloc_t), INTENT(IN) :: alloc_policy
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
+  TYPE(gaspi_size_t), INTENT(IN) :: size
+  TYPE(gaspi_group_t), INTENT(IN) :: group
+  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+  TYPE(gaspi_alloc_t), INTENT(IN) :: alloc_policy
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
-\parameterlistbegin
-\parameterlistitem{in}{segment\_id}{The ID for the segment to be created. The segment ID's need to be
-      unique for each \GASPI{} process}
-\parameterlistitem{in}{size}{The size of the segment in bytes}
-\parameterlistitem{in}{group}{The group which should create the segment}
-\parameterlistitem{in}{timeout}{The timeout for the operation}
-\parameterlistitem{in}{alloc\_policy}{allocation policy}
-\parameterlistend
 \executionphasework
 \FStdRetDesc
 \end{FDef}
@@ -2620,6 +2637,10 @@ GASPI_SEGMENT_DELETE ( segment_id )
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{in}{segment\_id}{ The segment ID to be deleted. }
+\parameterlistend
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -2632,14 +2653,11 @@ gaspi_segment_delete ( gaspi_segment_id_t segment_id )
 gaspi_segment_delete ( segment_id
                      , ireturn
                      ) BIND(C)
-TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
-\parameterlistbegin
-\parameterlistitem{in}{segment\_id}{ The segment ID to be deleted. }
-\parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -2794,6 +2812,10 @@ GASPI_SEGMENT_NUM ( segment_num )
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{out}{segment\_num}{the current number of allocated segments}
+\parameterlistend
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -2806,14 +2828,11 @@ gaspi_segment_num ( gaspi_number_t segment_num )
 gaspi_segment_num ( segment_num 
                   , ireturn
                   ) BIND(C)
-TYPE(gaspi_number_t), INTENT(OUT) :: segment_num
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_number_t), INTENT(OUT) :: segment_num
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
-\parameterlistbegin
-\parameterlistitem{out}{segment\_num}{the current number of allocated segments}
-\parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -2845,6 +2864,11 @@ GASPI_SEGMENT_LIST ( num
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{in}{num}{number of segment IDs to collect}
+\parameterlistitem{out}{segment\_list[num]}{list of locally allocated segment IDs}
+\parameterlistend
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -2860,16 +2884,12 @@ gaspi_segment_list ( num
                    , segment_id_list
                    , ireturn
                    ) BIND(C)
-TYPE(gaspi_number_t), INTENT(IN) :: num
-TYPE(gaspi_segment_id_t), INTENT(OUT) :: segment_id_list(num)
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_number_t), INTENT(IN) :: num
+  TYPE(gaspi_segment_id_t), INTENT(OUT) :: segment_id_list(num)
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
-\parameterlistbegin
-\parameterlistitem{in}{num}{number of segment IDs to collect}
-\parameterlistitem{out}{segment\_list[num]}{list of locally allocated segment IDs}
-\parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -2900,6 +2920,13 @@ GASPI_SEGMENT_PTR ( segment_id
 \end{verbatim}
 \end{FDefSign}
 
+
+\parameterlistbegin
+\parameterlistitem{in}{segment\_id}{The segment ID.}
+\parameterlistitem{out}{pointer}{The pointer to the memory segment.}
+\parameterlistend
+
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -2915,17 +2942,12 @@ gaspi_segment_ptr ( segment_id
                   , pointer
                   , ireturn
                   ) BIND(C)
-TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
-TYPE(gaspi_pointer_t), INTENT(OUT) :: pointer
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
+  TYPE(gaspi_pointer_t), INTENT(OUT) :: pointer
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
-
-\parameterlistbegin
-\parameterlistitem{in}{segment\_id}{The segment ID.}
-\parameterlistitem{out}{pointer}{The pointer to the memory segment.}
-\parameterlistend
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -3081,6 +3103,17 @@ GASPI_WRITE ( segment_id_local
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{in}{segment\_id\_local}{the local segment ID to read from}
+\parameterlistitem{in}{offset\_local}{the local offset in bytes to read from}
+\parameterlistitem{in}{rank}{the remote rank to write to}
+\parameterlistitem{in}{segment\_id\_remote}{the remote segment to write to}
+\parameterlistitem{in}{offset\_remote}{the remote offset to write to}
+\parameterlistitem{in}{size}{the size of the data to write}
+\parameterlistitem{in}{queue}{the queue to use}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -3108,28 +3141,19 @@ gaspi_write ( segment_id_local
             , timeout
             , ireturn
             ) BIND(C)
-TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local
-TYPE(gaspi_offset_t), INTENT(IN) :: offset_local
-TYPE(gaspi_rank_t), INTENT(IN) :: rank
-TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_remote
-TYPE(gaspi_offset_t), INTENT(IN) :: offset_remote
-TYPE(gaspi_size_t), INTENT(IN) :: size
-TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
-TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local
+  TYPE(gaspi_offset_t), INTENT(IN) :: offset_local
+  TYPE(gaspi_rank_t), INTENT(IN) :: rank
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_remote
+  TYPE(gaspi_offset_t), INTENT(IN) :: offset_remote
+  TYPE(gaspi_size_t), INTENT(IN) :: size
+  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
+  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
-\parameterlistbegin
-\parameterlistitem{in}{segment\_id\_local}{the local segment ID to read from}
-\parameterlistitem{in}{offset\_local}{the local offset in bytes to read from}
-\parameterlistitem{in}{rank}{the remote rank to write to}
-\parameterlistitem{in}{segment\_id\_remote}{the remote segment to write to}
-\parameterlistitem{in}{offset\_remote}{the remote offset to write to}
-\parameterlistitem{in}{size}{the size of the data to write}
-\parameterlistitem{in}{queue}{the queue to use}
-\parameterlistitem{in}{timeout}{the timeout}
-\parameterlistend
+
 \executionphasework
 \FStdRetDesc
 
@@ -3228,6 +3252,18 @@ GASPI_READ ( segment_id_local
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{in}{segment\_id\_local}{the local segment ID to write to}
+\parameterlistitem{in}{offset\_local}{the local offset in bytes to write to}
+\parameterlistitem{in}{rank}{the remote rank to read from}
+\parameterlistitem{in}{segment\_id\_remote}{the remote segment to read from}
+\parameterlistitem{in}{offset\_remote}{the remote offset to read from}
+\parameterlistitem{in}{size}{the size of the data to read}
+\parameterlistitem{in}{queue}{the queue to use}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -3255,29 +3291,18 @@ gaspi_read ( segment_id_local
            , timeout
            , ireturn
            ) BIND(C)
-TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local
-TYPE(gaspi_offset_t), INTENT(IN) :: offset_local
-TYPE(gaspi_rank_t), INTENT(IN) :: rank
-TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_remote
-TYPE(gaspi_offset_t), INTENT(IN) :: offset_remote
-TYPE(gaspi_size_t), INTENT(IN) :: size
-TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
-TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local
+  TYPE(gaspi_offset_t), INTENT(IN) :: offset_local
+  TYPE(gaspi_rank_t), INTENT(IN) :: rank
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_remote
+  TYPE(gaspi_offset_t), INTENT(IN) :: offset_remote
+  TYPE(gaspi_size_t), INTENT(IN) :: size
+  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
+  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
-
-\parameterlistbegin
-\parameterlistitem{in}{segment\_id\_local}{the local segment ID to write to}
-\parameterlistitem{in}{offset\_local}{the local offset in bytes to write to}
-\parameterlistitem{in}{rank}{the remote rank to read from}
-\parameterlistitem{in}{segment\_id\_remote}{the remote segment to read from}
-\parameterlistitem{in}{offset\_remote}{the remote offset to read from}
-\parameterlistitem{in}{size}{the size of the data to read}
-\parameterlistitem{in}{queue}{the queue to use}
-\parameterlistitem{in}{timeout}{the timeout}
-\parameterlistend
 \executionphasework
 \FStdRetDesc
 \end{FDef}
@@ -3371,6 +3396,11 @@ GASPI_WAIT ( queue
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{in}{queue}{the queue ID to wait for}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -3386,16 +3416,12 @@ gaspi_wait ( queue
            , timeout
            , ireturn
            ) BIND(C)
-TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
-TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
+  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
-\parameterlistbegin
-\parameterlistitem{in}{queue}{the queue ID to wait for}
-\parameterlistitem{in}{timeout}{the timeout}
-\parameterlistend
 \executionphasework
 \FStdRetDesc
 \end{FDef}
@@ -3522,6 +3548,15 @@ GASPI_NOTIFY ( rank
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{in}{rank}{the remote rank to notify}
+\parameterlistitem{in}{notification\_id}{the remote notification ID}
+\parameterlistitem{in}{notification\_value}{the notification value ($>0$) to write}
+\parameterlistitem{in}{queue}{the queue to use}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -3543,23 +3578,16 @@ gaspi_notify ( rank
              , timeout
              , ireturn
              ) BIND(C)
-TYPE(gaspi_rank_t), INTENT(IN) :: rank
-TYPE(gaspi_notification_id_t), INTENT(IN) :: notification_id
-TYPE(gaspi_notification_t), INTENT(IN) :: notification_value
-TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
-TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_rank_t), INTENT(IN) :: rank
+  TYPE(gaspi_notification_id_t), INTENT(IN) :: notification_id
+  TYPE(gaspi_notification_t), INTENT(IN) :: notification_value
+  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
+  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
 
-\parameterlistbegin
-\parameterlistitem{in}{rank}{the remote rank to notify}
-\parameterlistitem{in}{notification\_id}{the remote notification ID}
-\parameterlistitem{in}{notification\_value}{the notification value ($>0$) to write}
-\parameterlistitem{in}{queue}{the queue to use}
-\parameterlistitem{in}{timeout}{the timeout}
-\parameterlistend
 \executionphasework
 \FStdRetDesc
 \end{FDef}
@@ -3723,6 +3751,12 @@ GASPI_NOTIFY_WAITSOME ( notification_begin
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{in}{notification\_begin}{the local notification ID for the first notification to wait for}
+\parameterlistitem{in}{notification\_num}{the number of notification ID's to wait for}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -3741,18 +3775,14 @@ gaspi_notify_waitsome ( notification_begin
                       , timeout
                       , ireturn
                       ) BIND(C)
-TYPE(gaspi_notification_id_t), INTENT(IN) :: notification_begin
-TYPE(gaspi_number_t), INTENT(IN) :: notification_num
-TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_notification_id_t), INTENT(IN) :: notification_begin
+  TYPE(gaspi_number_t), INTENT(IN) :: notification_num
+  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
-\parameterlistbegin
-\parameterlistitem{in}{notification\_begin}{the local notification ID for the first notification to wait for}
-\parameterlistitem{in}{notification\_num}{the number of notification ID's to wait for}
-\parameterlistitem{in}{timeout}{the timeout}
-\parameterlistend
+
 \executionphasework
 \FStdRetDesc
 \end{FDef}
@@ -3843,6 +3873,10 @@ GASPI_NOTIFY_RESET ( notification_id
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{in}{notification\_id}{the local notification ID to reset}
+\parameterlistitem{out}{old\_notification\_val}{notification value before reset}
+\parameterlistend
 
 \begin{FDefSign}
 \begin{verbatim}
@@ -3859,18 +3893,15 @@ gaspi_notify_reset ( notification_id
                    , old_notification_val
                    , ireturn
                    ) BIND(C)
-TYPE(gaspi_notification_id_t), INTENT(IN) :: notification_id
-TYPE(gaspi_notification_t), INTENT(OUT) :: old_notification_val
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_notification_id_t), INTENT(IN) :: notification_id
+  TYPE(gaspi_notification_t), INTENT(OUT) :: old_notification_val
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
 
 
-\parameterlistbegin
-\parameterlistitem{in}{notification\_id}{the local notification ID to reset}
-\parameterlistitem{out}{old\_notification\_val}{notification value before reset}
-\parameterlistend
+
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -3969,6 +4000,19 @@ GASPI_WRITE_NOTIFY ( segment_id_local
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{in}{segment\_id\_local}{the local segment ID to read from}
+\parameterlistitem{in}{offset\_local}{the local offset in bytes to read from}
+\parameterlistitem{in}{rank}{the remote rank to write to}
+\parameterlistitem{in}{segment\_id\_remote}{the remote segment to write to}
+\parameterlistitem{in}{offset\_remote}{the remote offset to write to}
+\parameterlistitem{in}{size}{the size of the data to write}
+\parameterlistitem{in}{notification\_id}{the remote notification ID}
+\parameterlistitem{in}{notification\_value}{the value of the notification to write}
+\parameterlistitem{in}{queue}{the queue to use}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+
 
 \begin{FDefSign}
 \begin{verbatim}
@@ -4002,33 +4046,21 @@ gaspi_write_notify ( segment_id_local
                    , timeout
                    , ireturn
                    ) BIND(C)
-TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local
-TYPE(gaspi_offset_t_t), INTENT(IN) :: offset_local
-TYPE(gaspi_rank_t), INTENT(IN) :: rank
-TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_remote
-TYPE(gaspi_offset_t_t), INTENT(IN) :: offset_remote
-TYPE(gaspi_size_t), INTENT(IN) :: size
-TYPE(gaspi_notification_id_t), INTENT(IN) :: notification_id
-TYPE(gaspi_notification_t), INTENT(IN) :: notification_value
-TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
-TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local
+  TYPE(gaspi_offset_t_t), INTENT(IN) :: offset_local
+  TYPE(gaspi_rank_t), INTENT(IN) :: rank
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_remote
+  TYPE(gaspi_offset_t_t), INTENT(IN) :: offset_remote
+  TYPE(gaspi_size_t), INTENT(IN) :: size
+  TYPE(gaspi_notification_id_t), INTENT(IN) :: notification_id
+  TYPE(gaspi_notification_t), INTENT(IN) :: notification_value
+  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
+  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
 
-\parameterlistbegin
-\parameterlistitem{in}{segment\_id\_local}{the local segment ID to read from}
-\parameterlistitem{in}{offset\_local}{the local offset in bytes to read from}
-\parameterlistitem{in}{rank}{the remote rank to write to}
-\parameterlistitem{in}{segment\_id\_remote}{the remote segment to write to}
-\parameterlistitem{in}{offset\_remote}{the remote offset to write to}
-\parameterlistitem{in}{size}{the size of the data to write}
-\parameterlistitem{in}{notification\_id}{the remote notification ID}
-\parameterlistitem{in}{notification\_value}{the value of the notification to write}
-\parameterlistitem{in}{queue}{the queue to use}
-\parameterlistitem{in}{timeout}{the timeout}
-\parameterlistend
 \executionphasework
 \FStdRetDesc
 \end{FDef}
@@ -4069,6 +4101,19 @@ GASPI_WRITE_LIST ( num
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{in}{num}{the number of elements to write}
+\parameterlistitem{in}{segment\_id\_local[num]}{list of local segment ID's to read from}
+\parameterlistitem{in}{offset\_local[num]}{list of local offsets in bytes to read from}
+\parameterlistitem{in}{rank}{the remote rank to write to}
+\parameterlistitem{in}{segment\_id\_remote[num]}{list of remote segments to write to}
+\parameterlistitem{in}{offset\_remote[num]}{list of remote offsets to write to}
+\parameterlistitem{in}{size[num]}{list of sizes of the data to write}
+\parameterlistitem{in}{queue}{the queue to use}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -4099,31 +4144,20 @@ gaspi_write_list ( num
                  , timeout
                  , ireturn
                  ) BIND(C)
-TYPE(gaspi_number_t), INTENT(IN) :: num
-TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local(num)
-TYPE(gaspi_offset_t), INTENT(IN) :: offset_local(num) 
-TYPE(gaspi_rank_t), INTENT(IN) :: rank
-TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_remote(num)
-TYPE(gaspi_offset_t), INTENT(IN) :: offset_remote(num)
-TYPE(gaspi_size_t), INTENT(IN) :: size(num) 
-TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
-TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_number_t), INTENT(IN) :: num
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local(num)
+  TYPE(gaspi_offset_t), INTENT(IN) :: offset_local(num) 
+  TYPE(gaspi_rank_t), INTENT(IN) :: rank
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_remote(num)
+  TYPE(gaspi_offset_t), INTENT(IN) :: offset_remote(num)
+  TYPE(gaspi_size_t), INTENT(IN) :: size(num) 
+  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
+  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
 
-\parameterlistbegin
-\parameterlistitem{in}{num}{the number of elements to write}
-\parameterlistitem{in}{segment\_id\_local[num]}{list of local segment ID's to read from}
-\parameterlistitem{in}{offset\_local[num]}{list of local offsets in bytes to read from}
-\parameterlistitem{in}{rank}{the remote rank to write to}
-\parameterlistitem{in}{segment\_id\_remote[num]}{list of remote segments to write to}
-\parameterlistitem{in}{offset\_remote[num]}{list of remote offsets to write to}
-\parameterlistitem{in}{size[num]}{list of sizes of the data to write}
-\parameterlistitem{in}{queue}{the queue to use}
-\parameterlistitem{in}{timeout}{the timeout}
-\parameterlistend
 \executionphasework
 \FStdRetDesc
 \end{FDef}
@@ -4168,6 +4202,21 @@ GASPI_WRITE_LIST_NOTIFY
 \end{verbatim}
 \end{FDefSign}
 
+\parameterlistbegin
+\parameterlistitem{in}{num}{the number of elements to write}
+\parameterlistitem{in}{segment\_id\_local[num]}{list of local segment ID's to read from}
+\parameterlistitem{in}{offset\_local[num]}{list of local offsets in bytes to read from}
+\parameterlistitem{in}{rank}{the remote rank to be write to}
+\parameterlistitem{in}{segment\_id\_remote[num]}{list of remote segments to write to}
+\parameterlistitem{in}{offset\_remote[num]}{list of remote offsets to write to}
+\parameterlistitem{in}{size[num]}{list of sizes of the data to write}
+\parameterlistitem{in}{notification\_id}{the remote notification ID}
+\parameterlistitem{in}{notification\_value}{the value of the notification to write}
+\parameterlistitem{in}{queue}{the queue to use}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -4204,35 +4253,22 @@ gaspi_write_list_notify
                 , timeout
                 , ireturn
                 ) BIND(C)
-TYPE(gaspi_number_t), INTENT(IN) :: num
-TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local(num)
-TYPE(gaspi_offset__t), INTENT(IN) :: offset_local(num)
-TYPE(gaspi_rank_t), INTENT(IN) :: rank
-TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_remote(num)
-TYPE(gaspi_offset_t), INTENT(IN) :: offset_remote(num)
-TYPE(gaspi_size_t), INTENT(IN) :: size(num) 
-TYPE(gaspi_notification_id_t), INTENT(IN) :: notification_id
-TYPE(gaspi_notification_t), INTENT(IN) :: notification_value  
-TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
-TYPE(gaspi_timeout_t), INTENT(IN) :: timeout 
-TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+  TYPE(gaspi_number_t), INTENT(IN) :: num
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local(num)
+  TYPE(gaspi_offset__t), INTENT(IN) :: offset_local(num)
+  TYPE(gaspi_rank_t), INTENT(IN) :: rank
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_remote(num)
+  TYPE(gaspi_offset_t), INTENT(IN) :: offset_remote(num)
+  TYPE(gaspi_size_t), INTENT(IN) :: size(num) 
+  TYPE(gaspi_notification_id_t), INTENT(IN) :: notification_id
+  TYPE(gaspi_notification_t), INTENT(IN) :: notification_value  
+  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
+  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout 
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
 
 
-\parameterlistbegin
-\parameterlistitem{in}{num}{the number of elements to write}
-\parameterlistitem{in}{segment\_id\_local[num]}{list of local segment ID's to read from}
-\parameterlistitem{in}{offset\_local[num]}{list of local offsets in bytes to read from}
-\parameterlistitem{in}{rank}{the remote rank to be write to}
-\parameterlistitem{in}{segment\_id\_remote[num]}{list of remote segments to write to}
-\parameterlistitem{in}{offset\_remote[num]}{list of remote offsets to write to}
-\parameterlistitem{in}{size[num]}{list of sizes of the data to write}
-\parameterlistitem{in}{notification\_id}{the remote notification ID}
-\parameterlistitem{in}{notification\_value}{the value of the notification to write}
-\parameterlistitem{in}{queue}{the queue to use}
-\parameterlistitem{in}{timeout}{the timeout}
-\parameterlistend
 \executionphasework
 \FStdRetDesc
 \end{FDef}
