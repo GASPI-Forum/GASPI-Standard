@@ -1090,13 +1090,30 @@ default configuration structure.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_config_get (gaspi_configuration_t config)
+GASPI_CONFIG_GET ( config )
 \end{verbatim}
 \end{FDefSign}
+
 \parameterlistbegin
 \parameterlistitem{out}{config}{the default configuration}
 \parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_config_get ( gaspi_configuration_t config )
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_config_get ( config ) BIND(C)
+  TYPE(gaspi_configuration_t), INTENT(IN) :: config
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
+
 \executionphasesetup
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -1116,13 +1133,30 @@ structure for process initialization.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_config_set (gaspi_configuration_t config)
+GASPI_CONFIG_SET ( config )
 \end{verbatim}
 \end{FDefSign}
+
 \parameterlistbegin
 \parameterlistitem{in}{config}{the configuration structure to be set}
 \parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_config_set ( gaspi_configuration_t *config )
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_config_set ( config ) BIND(C)
+  TYPE(gaspi_configuration_t), INTENT(OUT) :: config
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
+
 \executionphasesetup
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -1141,19 +1175,38 @@ In case of error, the return value is \GASPIGERR{}.
 of the application. It is a \gaspisemantic{non-local} \gaspisemantic{synchronous}
 \gaspisemantic{time-based blocking} procedure.
 
+
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_proc_init (gaspi_timeout_t timeout)
+GASPI_PROC_INIT ( config )
 \end{verbatim}
 \end{FDefSign}
+
 \parameterlistbegin
 \parameterlistitem{in}{timeout}{the timeout.}
 \parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_proc_init ( gaspi_timeout_t timeout )
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_config_set ( config ) BIND(C)
+  TYPE(gaspi_configuration_t), INTENT(OUT) :: config
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
+
 \executionphaseinit
 \FStdRetDesc
 \end{FDef}
+
 
 The explicit start of a \GASPI{} process or launch from command line is
 not specified. This is implementation dependent.
@@ -1186,19 +1239,6 @@ Note, that a subsequent change of the number of running
 \GASPI{} processes invalidates \GASPIGROUPALL{} for the old running processes.
 Also the return value of \gaspifunction{proc\_num} is changed.
 
-%\begin{itemize}
-%\item \GASPIGROUPALL{} is invalidated
-%\item \gaspifunction{proc\_num} returns the new total number of ranks
-%\end{itemize}
-
-% The way how to specify the set of given hosts is implementation dependent.
-% It follows the model of starting one process per host
-% or one process per \emph{NUMA} socket. This choice can be configured by the
-% application through the configuration structure that is passed to
-% \gaspifunction{proc\_init}. There should be exactly one start call per \GASPI{}
-% process and per \GASPI{} life cycle (c.\,f.\ \secref{SubSec:ExecPhases}).
-% Otherwise, the behavior is undefined.
-
 The configuration structure should be created by the application before passing
 it to the \gaspifunction{proc\_init} procedure.
 
@@ -1206,10 +1246,6 @@ After successful procedure completion, \gaspifunction{proc\_init} returns
 \GASPISUCC{} and it guarantees that the application has been started
 on all hosts. In case that the \parameter{build\_infrastructure}
 is set, return value \GASPISUCC{} also implies that the communication infrastructure is up and ready to be used.
-
-% The parameters \parameter{argc} and \parameter{argv} are not
-% forwarded to the remote binaries. In order to forwarded them the \parameter{command\_line}
-% has to be set accordingly.
 
 In case the application could not be initialized in line with the timeout
 parameter, the return value is \GASPITIME{}. The application is not initialized
@@ -1222,24 +1258,6 @@ by invocation of \gaspifunction{state\_vec\_get} gives information about
 whether the involved remote \GASPI{} processes are healthy or whether they
 are corrupted.
 
-% Because the
-% initialization can fail for several causes....
-% \color{red}\emph{ VIP (very important point): We
-%   need to define this better so that is possible for the user to know
-%   what was wrong!  Some possibilities
-% \begin{itemize}
-% \item one node is down
-% \item network problem
-% \begin{itemize}
-% \item port occupied
-% \item problem with Infiniband (as we've seen, wrong kernel, wrong version)
-% \item external problem (filesystem)
-% \end{itemize}
-% \item whatever starts the application (daemon, implementation specific script) failed
-% \item user-defined parameters
-% \item wrong parameter (e.\,g.\ num queues = 0) but not check enabled
-% \end{itemize}}
-% \color{black}
 
 \begin{implementoradvice}
 Calling \gaspifunction{proc\_init} with an enabled parameter \parameter{build\_infrastructure} is semantically equivalent to
@@ -1267,97 +1285,7 @@ committed. Only global atomic operations are feasible right from the beginning.
 \end{useradvice}
 
 
-% \begin{implementoradvice}
-% The start routine is a good point to establish the passive communication infrastructure.
-% \end{implementoradvice}
 
-% \subsubsection{\gaspifunction{substitute\_node}}
-%
-% Substitute node is a operation that starts a given \GASPI{} program on
-% a given host and assigns the rank(s) which were running on the old host to that program.
-% It is intended to be used in the recovery phase of a fault tolerant programs.
-% It is a \gaspisemantic{synchronous} \gaspisemantic{non-local}
-% \gaspisemantic{time-based blocking} procedure.
-%
-% \begin{FDef}
-% \begin{FDefSign}
-% \begin{verbatim}
-% gaspi_return_t
-% gaspi_substitute_node ( gaspi_configuration_t configuration
-%                       , gaspi_hostname_t hostname_old
-%                       , gaspi_hostname_t hostname_new
-%                       , gaspi_timeout_t timeout
-%                       )
-% \end{verbatim}
-% \end{FDefSign}
-% \parameterlistbegin
-% \parameterlistitem{in}{configuration}{configuration object with the desired
-%   configuration options}
-% \parameterlistitem{in}{hostname\_old}{the name of the host to be substituted}
-% \parameterlistitem{in}{hostname\_new}{the name of the host which is going to substitute}
-% \parameterlistitem{in}{timeout}{the timeout}
-% \parameterlistend
-% \executionphasework
-% \FStdRetDesc
-% \end{FDef}
-%
-% \gaspifunction{substitute\_node} invokes the startup of a \GASPI{} program
-% in accordance with the \parameter{command\_line} of the \parameter{configuration}
-% structure on the host \parameter{hostname\_new}.
-%
-% If the \parameter{numa\_splitting} is set, \gaspifunction{substitute\_node} starts
-% one process per \NUMA{} socket. The affinity mask of the correspondent
-% \GASPI{} process is restricted to the CPU set attached to this socket
-% such that the eventually forked threads are automatically pinned to this
-% socket. If the underlying hardware is not a \NUMA{} system, the \parameter{numa\_splitting}
-% is ignored.
-%
-% If the \parameter{numa\_splitting} is not set, \gaspifunction{substitute\_node}
-% starts only one process per node. The affinity mask of the correspondent \GASPI{}
-% process is not restricted.
-%
-% The ranks which are assigned to the newly started \GASPI{} processes
-% are the same as the ranks which were running on host \parameter{hostname\_old}.
-% Therefore, it yields undefined behavior, if the hardware capabilites of node \parameter{hostname\_old}
-% concerning \NUMA{} are different than the hardware capabilities of node \parameter{hostname\_new} or
-% if the \parameter{numa\_splitting} passed to \gaspifunction{substitute\_node} differs from the one
-% passed to \gaspifunction{proc\_init}.
-%
-% All \GASPI{} programs that were previously running on the node
-% \parameter{hostname\_new} are terminated. It yields undefined behavior
-% when \gaspifunction{substitute\_node} is called more than once with the
-% same hostname on a global cluster wide level.
-%
-% After calling \gaspifunction{substitute\_node}, all groups which
-% contained the substituted rank(s) are invalid and must be
-% re-constructed. The same is true for the memory registrations
-% which where committed to the substituted ranks.
-%
-% %%
-%
-% After a successful completion, \gaspifunction{substitute\_node} returns
-% \GASPISUCC{} and it guarantees that the application has been started
-% on the given node and that the infrastructure is up and ready to be used.
-%
-% All fields of the configuration structure are optional and do not need
-% to be explicitly initialized. The default values are implementation dependent. If
-% some of the parameters are externally set by the program, the requested
-% values have to be considered as proposals.
-% Depending on the underlying hardware capabilities,
-% the implementation is allowed to overrule these proposals.
-% The actual values of the parameters can be retrieved by the corresponding \GASPI{}
-% routines after the successful program startup.
-%
-% In case the operation could not be initialized according to the timeout
-% parameter, the return value is \GASPITIME{}.
-%
-% In case of error, the return value is \GASPIGERR{}.
-%
-% % In case of the return value \GASPITIME{} or \GASPIGERR{}, a check of the state vector
-% % by invocation of \gaspifunction{state\_vec\_get} gives information
-% % whether the involved remote \GASPI{} processes are healthy or whether they
-% % are corrupted.
-%
 
 \subsubsection{\gaspifunction{proc\_num}}\label{sec:gaspi_proc_num}
 
@@ -1369,13 +1297,29 @@ This is a \gaspisemantic{local} \gaspisemantic{synchronous}
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_proc_num (gaspi_rank_t proc_num)
+GASPI_PROC_NUM ( proc_num )
 \end{verbatim}
 \end{FDefSign}
+
 \parameterlistbegin
 \parameterlistitem{out}{proc\_num}{the total number of \GASPI{} processes}
 \parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_proc_num ( gaspi_rank_t *proc_num )
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_proc_num ( proc_num ) BIND(C)
+  TYPE(gaspi_rank_t), INTENT(OUT) :: proc_num
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -1401,13 +1345,29 @@ retrieved by \gaspifunction{proc\_rank}. It is a \gaspisemantic{local} \gaspisem
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_proc_rank (gaspi_rank_t rank)
+GASPI_PROC_RANK ( rank )
 \end{verbatim}
 \end{FDefSign}
+
 \parameterlistbegin
 \parameterlistitem{out}{rank}{the rank of the calling \GASPI{} process.}
 \parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_proc_rank ( gaspi_rank_t *rank )
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_proc_rank ( rank ) BIND(C)
+  TYPE(gaspi_rank_t), INTENT(OUT) :: rank
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -1436,13 +1396,29 @@ functionality involving that process{}.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_proc_term (gaspi_timeout_t timeout)
+GASPI_PROC_TERM ( timeout )
 \end{verbatim}
 \end{FDefSign}
+
 \parameterlistbegin
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_proc_term ( gaspi_timeout_t timeout )
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_proc_term ( timeout ) BIND(C)
+  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
 \executionphaseshutdown
 \FStdRetDesc
 \end{FDef}
@@ -1471,19 +1447,38 @@ given \GASPI{} process.
 It is a \gaspisemantic{synchronous} \gaspisemantic{non-local}
 \gaspisemantic{time-based blocking} procedure.
 
+
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_proc_kill ( gaspi_rank_t rank
-                , gaspi_timeout_t timeout
-                )
+GASPI_PROC_KILL ( rank
+                , timeout )
 \end{verbatim}
 \end{FDefSign}
+
 \parameterlistbegin
 \parameterlistitem{in}{rank}{the rank of the process to be killed}
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_proc_kill ( gaspi_rank_t rank
+                , gaspi_timeout_t timeout )
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_proc_kill ( rank
+                , timeout ) BIND(C)
+  TYPE(gaspi_rank_t), INTENT(IN) :: rank
+  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
 \executionphasework
 \FStdRetDesc
 \end{FDef}
@@ -1545,17 +1540,34 @@ It is bound to the working phase of the \GASPI{} life cycle.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-
-gaspi_return_t
-gaspi_connect ( gaspi_rank_t rank
-              , gaspi_timeout_t timeout
-              )
+GASPI_CONNECT ( rank
+              , timeout )
 \end{verbatim}
 \end{FDefSign}
+
 \parameterlistbegin
 \parameterlistitem{in}{rank}{ the remote rank with which the communication infrastructure is established}
 \parameterlistitem{in}{timeout}{The timeout for the operation}
 \parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_connect ( gaspi_rank_t rank
+              , gaspi_timeout_t timeout )
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_connect ( rank
+              , timeout ) BIND(C)
+  TYPE(gaspi_rank_t), INTENT(IN) :: rank
+  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
 \executionphasework
 \FStdRetDesc
 \end{FDef}
@@ -1606,19 +1618,38 @@ process, identified by its rank, and frees all associated ressources.
 
 It is bound to the working phase of the \GASPI{} life cycle.
 
+
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_disconnect ( gaspi_rank_t rank
-                 , gaspi_timeout_t timeout
-                 )
+GASPI_DISCONNECT ( rank
+                 , timeout )
 \end{verbatim}
 \end{FDefSign}
+
 \parameterlistbegin
 \parameterlistitem{in}{rank}{ the remote rank from which the communication infrastructure is disconnected}
 \parameterlistitem{in}{timeout}{The timeout for the operation}
 \parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_disconnect ( gaspi_rank_t rank
+                 , gaspi_timeout_t timeout )
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_diconnect ( rank
+                , timeout ) BIND(C)
+  TYPE(gaspi_rank_t), INTENT(IN) :: rank
+  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
 \executionphasework
 \FStdRetDesc
 \end{FDef}
@@ -1693,13 +1724,29 @@ The state vector represents the states of all \GASPI{} processes.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_state_vec_get (gaspi_state_vector_t state_vector)
+GASPI_STATE_VEC_GET ( state_vector )
 \end{verbatim}
 \end{FDefSign}
+
 \parameterlistbegin
 \parameterlistitem{out}{returns}{the vector with individual return codes}
 \parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_state_vec_get ( gaspi_state_vector_t *state_vector )
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_state_vec_get ( state_vector ) BIND(C)
+  TYPE(gaspi_state_vector_t), INTENT(OUT) :: state_vector
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
