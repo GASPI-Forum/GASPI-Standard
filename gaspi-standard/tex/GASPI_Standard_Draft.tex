@@ -228,10 +228,10 @@ basicstyle=\ttfamily
   ,gaspi_segment_id_t,gaspi_segment_alloc,gaspi_segment_register,gaspi_segment_create
   ,gaspi_segment_ptr,gaspi_queue_id_t,gaspi_offset_t,gaspi_socket_id_t,gaspi_size_t,gaspi_pointer_t
   ,gaspi_write,gaspi_read,gaspi_wait
-  ,gaspi_notify,gaspi_notify_reset,gaspi_notify_wait ,gaspi_counter_t
-  ,gaspi_counter_value_t,gaspi_counter_id_t,gaspi_proc_num,gaspi_proc_rank
+  ,gaspi_notify,gaspi_notify_reset,gaspi_notify_wait ,gaspi_atomic_value_t
+  ,gaspi_proc_num,gaspi_proc_rank
   ,gaspi_number_t,gaspi_notification_t,gaspi_notification_id_t, gaspi_time_t
-  ,gaspi_counter_compare_swap,gaspi_counter_set
+  ,gaspi_atomic_compare_swap,gaspi_atomic_set
   ,GASPI_SUCCESS,GASPI_TIMEOUT,GASPI_ERROR,GASPI_GROUP_ALL
   ,GASPI_BLOCK,GASPI_TEST,GASPI_CONFIGURATION_DEFAULT,GASPI_NORANK,GASPI_NOSTRING
   ,gaspi_notify_waitsome,gaspi_notify_size,gaspi_error_message
@@ -341,7 +341,7 @@ The following application requirements have been identified
 \item barrier (also for subgroups)
 \item broadcast (also for subgroups)
 \item passive communication
-\item atomic counters
+\item atomic operations
 \end{itemize}
 
 
@@ -355,8 +355,8 @@ From the application requirements the following design goals have been deduced:
 \item Dynamic allocation of segments
 \item Timeout mechanisms and failure tolerance
 \item Group support for collectives
-\item Large flexibility in the number of queues, queue sizes,
-  atomic counters etc.
+\item Large flexibility in the number of queues, queue sizes, atomic
+  operations etc.
 \item A maximum freedom to implementors, where details are left to
   implementation
 \item A strong standard library which takes care of convenience
@@ -611,16 +611,16 @@ fair distributed updates of globally shared parts of data.
 
 \subsection{\GASPI{} global atomics}
 
-\GASPI{} provides atomic counters, i.\,e. integral types that can be
+\GASPI{} provides atomic operations, i.\,e. integral types that can be
 manipulated through atomic procedures. These atomic procedures are
 guaranteed to execute from start to end without fear of preemption
-causing corruption.  There are two basic operations on atomic
-counters: \function{fetch\_and\_add} and
-\function{compare\_and\_swap}. The counters can be used as global
-shared variables and to synchronise processes or events.
+causing corruption.  There are two basic atomic operations:
+\function{fetch\_and\_add} and \function{compare\_and\_swap}. The
+values can be used as global shared variables and to synchronise
+processes or events.
 
-Atomic counters are predestined for the implementation of \eg dynamic
-load balancing schemes.
+%Atomic counters are predestined for the implementation of \eg dynamic
+%load balancing schemes.
 
 The specification guarantees fairness, i.\,e.\ no process should see
 its atomic operation delayed indefinitely.
@@ -784,14 +784,10 @@ optimizations.
 optimizations.
 \end{implementoradvice}
 
-\begin{TDef}
-\TDefDefn{unsigned short}{\gaspitype{counter\_id}}
-\TDefDesc{The \GASPI{} global atomic counter ID type.}
-\end{TDef}
 
 \begin{TDef}
-\TDefDefn{long}{\gaspitype{counter\_value}}
-\TDefDesc{The \GASPI{} global atomic counter value type.}
+\TDefDefn{long}{\gaspitype{atomic\_value}}
+\TDefDesc{The \GASPI{} global atomic value type.}
 \end{TDef}
 
 \begin{TDef}
@@ -956,7 +952,7 @@ globally by all processes and where global data should be placed.
 
 After the initialization, the application can proceed with its real
 \textbf{working} phase and use the functionalities of \GASPI{} (communication,
-collectives, atomic counters, etc.).
+collectives, atomic operations, etc.).
 
 Before terminating, the application should call the
 \textbf{shutdown} procedure (see Section~\ref{sec:shutdown}) so that the
@@ -1009,9 +1005,6 @@ typedef struct {
   gaspi_number_t     passive_queue_size_max;
   gaspi_size_t       passive_transfer_size_max;
 
-  // atomic counter parameter
-  gaspi_number_t     counter_num;
-
   // collective comm parameter
   gaspi_size_t       allreduce_buf_size;
   gaspi_number_t     allreduce_elem_max;
@@ -1046,8 +1039,6 @@ There is a hardware/implementation dependent maximum.
 passive communication queue. There is a hardware/implementation dependent maximum.
 \item[passive\_transfer\_size\_max] the desired maximum size of a
   single data transfer in the passive communication channel.
-There is a hardware/implementation dependent maximum.
-\item[counter\_num] the desired number of atomic counters to be created.
 There is a hardware/implementation dependent maximum.
 \item[allreduce\_elem\_max] the maximum number of elements in \gaspifunction{allreduce}
 There is a hardware/implementation dependent maximum.
@@ -1771,21 +1762,16 @@ The state vector has one entry for each rank. It is initialized during
   \begin{itemize}
     \item \gaspifunction{wait}
   \end{itemize}
-\item passive communication
-  \begin{itemize}
-    \item \gaspifunction{passive\_wait}
-  \end{itemize}
 \item collective operations
   \begin{itemize}
     \item \gaspifunction{barrier}
     \item \gaspifunction{allreduce}
     \item \gaspifunction{allreduce\_user}
   \end{itemize}
-\item global atomic counters
+\item global atomic operations
   \begin{itemize}
-    \item \gaspifunction{counter\_set}
-    \item \gaspifunction{counter\_fetch\_and\_add}
-    \item \gaspifunction{counter\_compare\_swap}
+    \item \gaspifunction{atomic\_fetch\_and\_add}
+    \item \gaspifunction{atomic\_compare\_swap}
   \end{itemize}
 \end{itemize}
 
@@ -3473,10 +3459,12 @@ gaspi_wait ( queue
 \FStdRetDesc
 \end{FDef}
 
-After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, the hitherto posted communication
-requests have been processed by the network infrastructure and the queue is cleaned up.
-After that, any communication request which
-has been posted to the given queue can be considered as completed on the local side.
+After successful procedure completion, i.\,e.\ return value
+\GASPISUCC{}, the hitherto posted communication requests have been
+processed by the network infrastructure and the queue is cleaned up.
+After that, any communication request which has been posted to the
+given queue can be considered as completed on the local and remote
+sides.
 
 \gaspifunction{wait} procedure calls may be posted from every thread
 of the local \GASPI{} process.  However, the wait operation is a
@@ -3651,17 +3639,19 @@ connection between the local and the remote \GASPI{} process. Otherwise, the
 communication request is invalid
 and the procedure returns with \GASPIGERR{}.
 
-After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, the notification request has
-been posted to the underlying network infrastructure. One new entry is
-inserted into the given queue.
+After successful procedure completion, i.\,e.\ return value
+\GASPISUCC{}, the notification request has been posted to the
+underlying network infrastructure.  
 
-Successive \gaspifunction{write} and \gaspifunction{notify} calls
-posted to the same queue and the same destination rank are
-non-overtaking. Non-overtaking means that the order of communication
-requests is preserved on the remote side. In particular, one can
-assume, that if the data from the later request has arrived on the
-remote process, also the data from the earlier posted request to the
-same process have arrived on the remote side.
+%One new entry is inserted into the given queue.
+
+% Successive \gaspifunction{write} and \gaspifunction{notify} calls
+% posted to the same queue and the same destination rank are
+% non-overtaking. Non-overtaking means that the order of communication
+% requests is preserved on the remote side. In particular, one can
+% assume, that if the data from the later request has arrived on the
+% remote process, also the data from the earlier posted request to the
+% same process have arrived on the remote side.
 
 \gaspifunction{notify} calls may be posted from every thread of the \GASPI{} process.
 
@@ -4112,7 +4102,7 @@ gaspi_write_notify ( segment_id_local
 \FStdRetDesc
 \end{FDef}
 
-Two new entries are inserted into the given queue.
+%Two new entries are inserted into the given queue.
 
 \begin{implementoradvice}
 The procedure is semantically equivalent to a call to \gaspifunction{write}
@@ -4209,7 +4199,7 @@ gaspi_write_list ( num
 \FStdRetDesc
 \end{FDef}
 
-\parameter{num} new entries are inserted in the given queue.
+%\parameter{num} new entries are inserted in the given queue.
 
 \begin{implementoradvice}
 The procedure is semantically equivalent to \parameter{num} subsequent calls
@@ -4320,7 +4310,7 @@ gaspi_write_list_notify
 \FStdRetDesc
 \end{FDef}
 
-\parameter{num+1} new entries are inserted into the given queue.
+%\parameter{num+1} new entries are inserted into the given queue.
 
 \begin{implementoradvice}
 The procedure is semantically equivalent to a call to \gaspifunction{write\_list}
@@ -4343,6 +4333,33 @@ procedure.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
+GASPI_READ_LIST ( num
+                , segment_id_local[num]
+                , offset_local[num]
+                , rank
+                , segment_id_remote[num]
+                , offset_remote[num]
+                , size[num]
+                , queue
+                , timeout
+                )
+\end{verbatim}
+\end{FDefSign}
+
+\parameterlistbegin
+\parameterlistitem{in}{num}{the number of elements to read}
+\parameterlistitem{in}{segment\_id\_local[num]}{list of local segment ID's to write to}
+\parameterlistitem{in}{offset\_local[num]}{list of local offsets in bytes to write to}
+\parameterlistitem{in}{rank}{the remote rank to read from}
+\parameterlistitem{in}{segment\_id\_remote[num]}{list of remote segments to read from}
+\parameterlistitem{in}{offset\_remote[num]}{list of remote offsets to read from}
+\parameterlistitem{in}{size[num]}{list of sizes of the data to read}
+\parameterlistitem{in}{queue}{the queue to use}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
 gaspi_return_t
 gaspi_read_list ( gaspi_number_t num
                 , gaspi_segment_id_t segment_id_local[num]
@@ -4356,22 +4373,39 @@ gaspi_read_list ( gaspi_number_t num
                 )
 \end{verbatim}
 \end{FDefSign}
-\parameterlistbegin
-\parameterlistitem{in}{num}{the number of elements to read}
-\parameterlistitem{in}{segment\_id\_local[num]}{list of local segment ID's to write to}
-\parameterlistitem{in}{offset\_local[num]}{list of local offsets in bytes to write to}
-\parameterlistitem{in}{rank}{the remote rank to read from}
-\parameterlistitem{in}{segment\_id\_remote[num]}{list of remote segments to read from}
-\parameterlistitem{in}{offset\_remote[num]}{list of remote offsets to read from}
-\parameterlistitem{in}{size[num]}{list of sizes of the data to read}
-\parameterlistitem{in}{queue}{the queue to use}
-\parameterlistitem{in}{timeout}{the timeout}
-\parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_read_list ( num
+                , segment_id_local[num]
+                , offset_local[num]
+                , rank
+                , segment_id_remote[num]
+                , offset_remote[num]
+                , size[num]
+                , queue
+                , timeout
+                , ireturn
+                ) BIND(C)
+  TYPE(gaspi_number_t), INTENT(IN) :: num
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local(num)
+  TYPE(gaspi_offset__t), INTENT(IN) :: offset_local(num)
+  TYPE(gaspi_rank_t), INTENT(IN) :: rank
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_remote(num)
+  TYPE(gaspi_offset_t), INTENT(IN) :: offset_remote(num)
+  TYPE(gaspi_size_t), INTENT(IN) :: size(num) 
+  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
+  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout 
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+
+\end{verbatim}
+\end{FDefSign}
+
 \executionphasework
 \FStdRetDesc
 \end{FDef}
 
-\parameter{num} new entries are inserted into the given queue.
+%\parameter{num} new entries are inserted into the given queue.
 
 %\subsubsection{Examples}
 
@@ -4470,37 +4504,49 @@ for synchronisation between processes. Typical example uses cases are:
 \end{itemize}
 
 The implementation should try to enforce fairness in communication
-that is, no sender should see its communication request delayed indefinitely.
+that is, no sender should see its communication request delayed
+indefinitely.
 
 The passive keyword means that the communication calls should avoid
 busy-waiting and consume no CPU cycles, freeing the system for
 computation.
 
-The send request is asynchronous, whereas the matching receive is
-\gaspisemantic{time-based blocking}. Due to the asynchronous nature of the
-send request, a complete send involves two procedure calls. First, one
-call which initiates the communication. This call posts a
-communication request to the underlying network infrastructure.  The
-second call waits for the completion of the communication request.
-
-A valid passive communication request requires that the local and the
-remote segment are allocated and that there is a connection between the local
-and the remote \GASPI{} process. Otherwise, the communication request is invalid
-and the procedure returns with \GASPIGERR{}.
+The send request is synchronous, whereas the matching receive is
+\gaspisemantic{time-based blocking}. A valid passive communication
+request requires that the local and the remote segment are allocated
+and that there is a connection between the local and the remote
+\GASPI{} process. Otherwise, the communication request is invalid and
+the procedure returns with \GASPIGERR{}.
 
 \subsection{Passive communication calls}
 
-%%%%%%%%% Passive wait
-
 \subsubsection{\gaspifunction{passive\_send}}
 
-The non-blocking \gaspifunction{passive\_send} is one of the routines
-called by the sender side to engage in passive communication.
-%To make sure the requests are processed the \gaspifunction{passive\_wait} is used.
-It is an \gaspisemantic{asynchronous}
-\gaspisemantic{non-local} \gaspisemantic{time-based blocking} procedure.
+The blocking \gaspifunction{passive\_send} is the routine called by
+the sender side to engage in passive communication. It is an
+\gaspisemantic{synchronous} \gaspisemantic{non-local}
+\gaspisemantic{time-based blocking} procedure.
 
 \begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+GASPI_PASSIVE_SEND ( segment_id_local
+                   , offset_local
+                   , rank
+                   , size
+                   , timeout
+                   )
+\end{verbatim}
+\end{FDefSign}
+
+\parameterlistbegin
+\parameterlistitem{in}{segment\_id\_local}{the local segment ID from which the data is sent}
+\parameterlistitem{in}{offset\_local}{the local offset from which the data is sent}
+\parameterlistitem{in}{rank}{the remote rank to which the data is sent}
+\parameterlistitem{in}{size}{the size of the data to be sent}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -4508,30 +4554,41 @@ gaspi_passive_send ( gaspi_segment_id_t segment_id_local
                    , gaspi_offset_t offset_local
                    , gaspi_rank_t rank
                    , gaspi_size_t size
-                   , gaspi_tag_t tag
                    , gaspi_timeout_t timeout
                    )
 \end{verbatim}
 \end{FDefSign}
-\parameterlistbegin
-\parameterlistitem{in}{segment\_id\_local}{the local segment ID from which the data is sent}
-\parameterlistitem{in}{offset\_local}{the local offset from which the data is sent}
-\parameterlistitem{in}{rank}{the remote rank to which the data is sent}
-\parameterlistitem{in}{size}{the size of the data to be sent}
-\parameterlistitem{in}{tag}{the tag to be sent with the data}
-\parameterlistitem{in}{timeout}{the timeout}
-\parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_passive_send ( segment_id_local
+                   , offset_local
+                   , rank
+                   , size
+                   , timeout
+                   , ireturn
+                   ) BIND(C)
+    TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local
+    TYPE(gaspi_offset_t), INTENT(IN) :: offset_local
+    TYPE(gaspi_rank_t), INTENT(IN) :: rank
+    TYPE(gaspi_size_t), INTENT(IN) :: size
+    TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+
+\end{verbatim}
+\end{FDefSign}
 \executionphasework
 \FStdRetDesc
 \end{FDef}
 
 \gaspifunction{passive\_send} posts a passive communication request
-which asynchronously transfers a contiguous block of \parameter{size}
-bytes from a source location of the local \GASPI{} process to the remote
-\GASPI{} process with the indicated rank \parameter{rank}.  On the
-remote side, a corresponding \gaspifunction{passive\_receive} has to
-be posted. The source location is specified by the
+which transfers a contiguous block of \parameter{size} bytes from a
+source location of the local \GASPI{} process to the remote \GASPI{}
+process with the indicated rank \parameter{rank}.  On the remote side,
+a corresponding \gaspifunction{passive\_receive} has to be posted. The
+source location is specified by the
 pair \parameter{segment\_id\_local}, \parameter{offset\_local}.
+
 % The
 % source location is located at address \emph{source\_buffer =
 %   segment\_base\_addr + offset\_local}, where
@@ -4541,62 +4598,36 @@ pair \parameter{segment\_id\_local}, \parameter{offset\_local}.
 % segment identifier.
 
 There is a size limit for the data sent with
-\gaspifunction{passive\_send}. The maximum size is returned by the function
-\gaspifunction{passive\_transfer\_size\_max}.
+\gaspifunction{passive\_send}. The maximum size is returned by the
+function \gaspifunction{passive\_transfer\_size\_max}.
 
-The passive data \parameter{tag} can be used to discriminate different
-types of data.
+A valid \gaspifunction{passive\_send} communication request requires
+that the local and the remote segment are allocated and that there is
+a connection between the local and the remote \GASPI{}
+process. Otherwise, the communication request is invalid and the
+procedure returns with \GASPIGERR{}.
 
-A valid \gaspifunction{send} communication request requires that the local and the
-remote segment are allocated and that there is a connection between the local
-and the remote \GASPI{} process. Otherwise, the communication request is invalid
-and the procedure returns with \GASPIGERR{}.
+After successful procedure completion, i.\,e.\ return value
+\GASPISUCC{}, the passive communication request has been posted to the
+underlying network infrastructure and was completed.
 
-After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, the passive communication request has
-been posted to the underlying network infrastructure. One new entry is
-inserted into the passive queue.
+\gaspifunction{passive\_send} calls may be posted from every thread of
+the \GASPI{} process.
 
-Successive \gaspifunction{passive\_send} calls posted to the same
-destination rank are non-overtaking. Non-overtaking means that the
-order of communication requests is preserved on the remote side. In
-particular, one can assume, that if the data from the later request
-has arrived on the remote process, also the data from the earlier
-posted request to the same process have arrived on the remote side.
+If the procedure returns with \GASPITIME{}, the communication request
+could not be posted to the hardware during the given timeout. 
 
-\gaspifunction{passive\_send} calls may be posted from every thread of the \GASPI{} process.
+% A passive communication request can be considered as completed, if the
+% the correspondent \gaspifunction{passive\_wait} returns with
+% \GASPISUCC{}.
 
-If the procedure returns with \GASPITIME{}, the communication request could not be posted
-to the hardware during the given timeout. This can happen, if another thread is in a \gaspifunction{passive\_wait}.
-A subsequent call of \gaspifunction{passive\_send} needs to be invoked in order to complete
-the procedure call.
-
-A passive communication request can be considered as completed, if the
-the correspondent \gaspifunction{passive\_wait} returns with \GASPISUCC{}.
-
-% If the passive communication queue is full, i.\,e.\ the number of
-% posted communication requests has already reached the queue size, and another communication
-% request is posted, this results in an error and the procedure returns with return value \GASPIGERR{}.
-If the passive communication queue is full at the time when a new passive communication request is
-posted, i.\,e.\ the number of
-posted communication requests has already reached the queue size, the communication
-request fails and the procedure returns with return value \GASPIGERR{}. If a saturated passive
-communication queue
-is detected one has to invoke a \gaspifunction{passive\_wait} in order to wait for all the
-posted requests to be finished.
-
-\begin{useradvice}
-  The parameter \parameter{tag} is \emph{not} used to match sends and
-  reveices. It is just an additional information that the sender
-  attaches to the data, e.\,g.\ the type. On the receiver side, \emph{all}
-  messages are accepted, regardless of the value of the tag. However,
-  by reading the submitted tag-value, the receiver can act differently
-  on different types of data.
-\end{useradvice}
+If the passive communication queue is full at the time when a new
+passive communication request is posted, i.\,e.\ the number of posted
+communication requests has already reached the queue size, the
+communication request fails and the procedure returns with return
+value \GASPIGERR{}.
 
 \begin{useradvice}\emph{[see also the advice in \ref{useradvice:gaspi_write} on page \pageref{useradvice:gaspi_write}]}
-  Return value \GASPISUCC{} does not mean, that the data has been transferred
-  or buffered or that the data has arrived at the remote side.
-
   It is allowed to write data to the source location while the
   communication is ongoing. However, the result on the remote side
   would be some undefined interleaving of the data that was present
@@ -4614,133 +4645,99 @@ posted requests to be finished.
   calling the procedure \gaspifunction{connect}.
 \end{useradvice}
 
-%%%%%% Passive wait
-
-\subsubsection{\gaspifunction{passive\_wait}}
-
-The \gaspifunction{passive\_wait} procedure is an \gaspisemantic{asynchronous}
-\gaspisemantic{non-local} \gaspisemantic{time-based blocking}
-procedure which waits until all posted passive send requests are processed
-by the network infrastructure.
-
-\begin{FDef}
-\begin{FDefSign}
-\begin{verbatim}
-gaspi_return_t
-gaspi_passive_wait (gaspi_timeout_t timeout)
-\end{verbatim}
-\end{FDefSign}
-\parameterlistbegin
-\parameterlistitem{in}{Timeout}{the timeout}
-\parameterlistend
-\executionphasework
-\FStdRetDesc
-\end{FDef}
-
-The passive wait operation makes sure all passive send requests are
-finished.
-
-After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, the hitherto posted
-passive communication
-requests have been processed by the network infrastructure. After that, any passive communication
-request which has been posted can be considered as completed on the local side.
-
-\gaspifunction{passive\_wait} procedure calls may be posted from every
-thread of the local \GASPI{} process.  However, the wait operation is
-a thread exclusive operation and therefore needs privileged access to
-the queue which means that if a passive send is done while a wait is
-in operation, the passive send blocks to ensure correctness.
-Enforcing this provides correctness and safety to the user while being
-easier for the implementor and still
-allows for a high performance implementation. As a consequence, successive \gaspifunction{passive\_wait} calls invoked for the same queue
-by different threads are processed in some sequence one after another.
-
-If the procedure returns with \GASPITIME{}, the wait request could not be completed
-during the given timeout. This can happen, if there are still some passive communication requests
-to be completed or if there is another thread in a \gaspifunction{passive\_wait} for the same queue.
-
-If the procedure returns with \GASPIGERR{}, the wait request aborted abnormally.
-
-In both cases, \GASPITIME{} and \GASPIGERR{}, the \GASPI{} state
-vector should be checked in order to eliminate the possibility of a
-failure.  If a failure is detected, all of the
-\gaspifunction{passive\_send} requests which have been posted to the
-given queue since the last \gaspifunction{passive\_wait} are in an
-undefined state.  Here, undefined state means that the local \GASPI{}
-process does not know which requests have been processed and which
-requests are still outstanding. A call to
-\gaspifunction{passive\_queue\_purge} has to be invoked in order to
-reset the passive queue.
-
-\begin{useradvice}\emph{[identical to the advice in \ref{useradvice:gaspi_wait} on page \pageref{useradvice:gaspi_wait}]}
-  Return value \GASPISUCC{} means, that the data of all posted passive
-  communication requests has been transferred to the remote side. It does not
-  mean, that the data has arrived at the remote side. However, write
-  accesses to the local source location will not affect the data that is
-  placed in the remote target location.
-\end{useradvice}
 
 %%%%%%%%%%%% passive receive
 
 \subsubsection{\gaspifunction{passive\_receive}}
 
-The \gaspisemantic{synchronous}
-\gaspisemantic{non-local} \gaspisemantic{time-based blocking} \gaspifunction{passive\_receive} is one of the routines
-called by the receiver side to engage in passive communication.
+The \gaspisemantic{synchronous} \gaspisemantic{non-local}
+\gaspisemantic{time-based blocking} \gaspifunction{passive\_receive}
+is one of the routines called by the receiver side to engage in
+passive communication.
 
 \begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+GASPI_PASSIVE_RECEIVE ( segment_id_local
+                      , offset_local
+                      , rank
+                      , size
+                      , timeout
+                      )
+\end{verbatim}
+\end{FDefSign}
+
+\parameterlistbegin
+\parameterlistitem{in}{segment\_id\_local}{the local segment ID where to write the data}
+\parameterlistitem{in}{offset\_local}{the local offset where to write the data}
+\parameterlistitem{out}{rank}{the remote rank from which the data is transferred}
+\parameterlistitem{in}{size}{the size of the data to be received}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
 gaspi_passive_receive ( gaspi_segment_id_t segment_id_local
                       , gaspi_offset_t offset_local
                       , gaspi_rank_t rank
-                      , gaspi_tag_t tag
+                      , gaspi_size_t size
                       , gaspi_timeout_t timeout
                       )
 \end{verbatim}
 \end{FDefSign}
-\parameterlistbegin
-\parameterlistitem{in}{segment\_id\_local}{the local segment ID where to write the data}
-\parameterlistitem{in}{offset\_local}{the local offset where to write the data}
-\parameterlistitem{out}{rank}{the remote rank from which the data is transferred}
-\parameterlistitem{out}{tag}{the tag which has been sent with the data}
-\parameterlistitem{in}{timeout}{the timeout}
-\parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_passive_receive ( segment_id_local
+                      , offset_local
+                      , rank
+                      , size
+                      , timeout
+                      , ireturn
+                      ) BIND(C)
+    TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local
+    TYPE(gaspi_offset_t), INTENT(IN) :: offset_local
+    TYPE(gaspi_rank_t), INTENT(OUT) :: rank
+    TYPE(gaspi_size_t), INTENT(IN) :: size
+    TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+
+\end{verbatim}
+\end{FDefSign}
 \executionphasework
 \FStdRetDesc
 \end{FDef}
 
-\gaspifunction{passive\_receive} receives a contiguous block of data into a target location from some unspecified
-remote \GASPI{} process. The target location is specified by the pair \parameter{segment\_id\_local},
+\gaspifunction{passive\_receive} receives a contiguous block of data
+into a target location from some unspecified remote \GASPI{}
+process. The target location is specified by the
+pair \parameter{segment\_id\_local},
 \parameter{offset\_local}.
-% It is located at address \emph{source\_buffer = segment\_base\_addr + offset\_local},
-% where \emph{segment\_base\_addr} is the base address of the segment with the identifier \parameter{segment\_id\_local}.
-% It is the address which is obtained by applying \gaspifunction{segment\_ptr} on the given segment specifier.
 
 There is no need for the \gaspifunction{passive\_receive} procedure to
 be active before a corresponding \gaspifunction{passive\_send}
 procedure is invoked. However, as long as there is no matching
 receive, the \gaspifunction{passive\_send} cannot achieve any progress
-and a \gaspifunction{passive\_wait} that includes such a
-\gaspifunction{passive\_send} cannot return \GASPISUCC{}.
+and thus cannot return \GASPISUCC{}.
 
 The target location needs to have enough space to hold the maximum
 passive transfer size that could be sent be any other
 process. Otherwise, the received data might overwrite memory regions
-outside of the allocated memory and the application will be in an undefined state.
+outside of the allocated memory and the application will be in an
+undefined state.
 
 A valid \gaspifunction{passive\_receive} communication request
 requires that the local destination segment is allocated and that
 there is a connection between the local and the remote \GASPI{}
-process from which a data transfer originates. Otherwise, the communication
-request is invalid and the procedure returns with \GASPIGERR{}.
+process from which a data transfer originates. Otherwise, the
+communication request is invalid and the procedure returns with
+\GASPIGERR{}.
 
 After successful procedure completion, i.\,e.\ return value
 \GASPISUCC{}, the data has been received and is available at the
 target location. Further \parameter{rank} contains the rank of the
-sending process and \parameter{tag} contains the tag associated to the
-communication request.
+sending process and associated to the communication request.
 
 Successive \gaspifunction{passive\_receive} calls posted by two
 different threads using two different target locations are
@@ -4751,7 +4748,7 @@ thread of a \GASPI{} process.
 
 If the procedure returns with \GASPITIME{}, there was no pending
 communication request in the queue. The output
-parameters \parameter{rank} and \parameter{tag} have no defined value.
+parameter \parameter{rank} has no defined value.
 
 \begin{useradvice}
   It is allowed to write data to the local target location while the
@@ -4766,46 +4763,15 @@ parameters \parameter{rank} and \parameter{tag} have no defined value.
 \end{useradvice}
 
 \begin{implementoradvice}
-  A quality implementation enforces fairness in communication
-  that is, no sender should see its communication request
-  delayed indedinitely. The passive keyword means the communication calls shall
-  avoid busy-waiting and consume no CPU cycles, freeing the system for
-  computation.
+  A quality implementation enforces fairness in communication that is,
+  no sender should see its communication request delayed
+  indefinitely. The passive keyword means the communication calls
+  shall avoid busy-waiting and consume no CPU cycles, freeing the
+  system for computation.
 \end{implementoradvice}
 
 
 \subsection{Passive communication utilities}
-
-\subsubsection{\gaspifunction{passive\_queue\_size}}
-
-The \gaspifunction{passive\_queue\_size} procedure is a
-\gaspisemantic{synchronous} \gaspisemantic{local}
-\gaspisemantic{blocking} procedure which determines the number of
-communication requests posted to the passive queue.
-
-\begin{FDef}
-\begin{FDefSign}
-\begin{verbatim}
-gaspi_return_t
-gaspi_passive_queue_size (gaspi_number_t queue_size)
-\end{verbatim}
-\end{FDefSign}
-\parameterlistbegin
-\parameterlistitem{out}{queue\_size}{Number of requests posted to the passive communication queue}
-\parameterlistend
-\executionphasework
-\FStdRetDescNOTimeout
-\end{FDef}
-
-After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, the parameter
-\parameter{queue\_size} contains the number of posted requests.
-In a threaded program this result is uncertain, since another thread may have
-posted an additional request or a wait call in the meantime.
-
-The queue size is set to zero by a successful call to \gaspifunction{passive\_wait}.
-
-In case of error, the return value is \GASPIGERR{}. The value of \parameter{passive\_queue\_size}
-is undefined.
 
 \subsubsection{\gaspifunction{passive\_queue\_purge}}
 
@@ -4817,39 +4783,58 @@ queue.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
+GASPI_PASSIVE_QUEUE_PURGE (timeout)
+\end{verbatim}
+\end{FDefSign}
+
+\parameterlistbegin
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
 gaspi_return_t
 gaspi_passive_queue_purge (gaspi_timeout_t timeout)
 \end{verbatim}
 \end{FDefSign}
-\parameterlistbegin
-\parameterlistitem{in}{timeout}{the timeout}
-\parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_passive_queue_purge ( gaspi_timeout_t timeout
+                          , ireturn
+                          ) BIND(C)
+    TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
 \executionphasework
 \FStdRetDesc
 \end{FDef}
 
-This procedure should only be invoked in the situation in which a node failure is detected
-by inspecting the global health state with \gaspifunction{state\_vec\_get}.
+This procedure should only be invoked in the situation in which a node
+failure is detected by inspecting the global health state with
+\gaspifunction{state\_vec\_get}.
 
-After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, the passive communication
-queue is purged. All communication requests posted to the passive queue are
-eliminated. The local \GASPI{} process has no information about the
-completion of communication requests posted to the passive queue since the last invocation
-of \gaspifunction{passive\_wait}.
+After successful procedure completion, i.\,e.\ return value
+\GASPISUCC{}, the passive communication queue is purged. 
 
-If the procedure returns with \GASPITIME{}, the purge request could not be completed
-during the given timeout. This might happen if there is another thread in a \gaspifunction{passive\_wait}.
-A subsequent call of \gaspifunction{passive\_queue\_purge} has to be
-invoked in order to complete the call.
+% All communication requests posted to the passive queue are
+% eliminated. The local \GASPI{} process has no information about the
+% completion of communication requests posted to the passive queue since
+% the last invocation of \gaspifunction{passive\_wait}.
 
-If the procedure returns with \GASPIGERR{}, the purge request aborted abnormally.
+If the procedure returns with \GASPITIME{}, the purge request could
+not be completed during the given timeout. A subsequent call of
+\gaspifunction{passive\_queue\_purge} has to be invoked in order to
+complete the call.
+
+If the procedure returns with \GASPIGERR{}, the purge request was not
+satisfied and returned abnormally.
 
 \section{Global atomics}
 
 \subsection{Introduction and Overview}
-
-Atomic counters are globally accessible variables to which atomic access
-is provided through three operations: set, fetch-and-add and compare-and-swap.
 
 An atomic operation is an operation which is guaranteed to be executed
 without fear of interference from other processes during the procedure
@@ -4860,162 +4845,228 @@ Atomic operations are also guaranteed to be fair. That means no \GASPI{}
 process should see its atomic operation request
 delayed indefinitely.
 
-The number of atomic counters available can be defined by the user
-through the configuration structure at start-up and cannot be changed
-during run-time. The maximum number of available atomic counters is
-implementation dependent.
-
-\begin{implementoradvice}
-  The distribution of the counters should be divided evenly over the
-  available nodes to avoid too much contention on a single node holding
-  the atomic counters.
-\end{implementoradvice}
-
 \subsection{Atomic operation calls}
 
-\subsubsection{\gaspifunction{counter\_set}}
+\subsubsection{\gaspifunction{atomic\_fetch\_add}}
 
-The \gaspifunction{counter\_set} procedure is a \gaspisemantic{synchronous}
-\gaspisemantic{non-local} \gaspisemantic{time-based} \gaspisemantic{blocking} procedure
-which atomically set the value of a global counter.
+The \gaspifunction{atomic\_fetch\_add} procedure is a
+\gaspisemantic{synchronous} \gaspisemantic{non-local}
+\gaspisemantic{time-based blocking} procedure which atomically adds a
+given value to a globally acessible value.
 
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_counter_set ( gaspi_counter_id_t counter_id
-                  , gaspi_counter_value_t value
-                  , gaspi_timeout_t timeout
-                  )
+GASPI_ATOMIC_FETCH_ADD (  segment_id
+                        , offset
+                        , rank
+                        , value_add
+                        , value_old
+                        , timeout
+                        )
 \end{verbatim}
 \end{FDefSign}
+
 \parameterlistbegin
-\parameterlistitem{in}{counter\_id}{the counter to set}
-\parameterlistitem{in}{value}{the value to which the global atomic counter is set}
+\parameterlistitem{in}{segment\_id}{the segment ID where the value is located}
+\parameterlistitem{in}{offset}{the offset where the value is located}
+\parameterlistitem{in}{rank}{the rank where the value is located}
+\parameterlistitem{in}{value\_add}{the value which is to be added}
+\parameterlistitem{out}{value\_old}{the old value before the operation}
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
-\executionphasework
-\FStdRetDesc
-\end{FDef}
 
-\gaspifunction{counter\_set} atomically sets the value of the counter \parameter{counter\_id}
-to the value given by \parameter{value}.
-
-After successful procedure completion, i.\,e.\ return value
-\GASPISUCC{}, the value of the atomic counter was set
-to \parameter{value}.
-
-If the procedure returns with \GASPITIME{}, the reset request could not be completed
-during the given timeout. A subsequent call of \gaspifunction{counter\_set} needs
-to be invoked in order to complete the operation.
-
-If the procedure returns with \GASPIGERR{}, the reset request aborted abnormally
-and the counter has an undefined value.
-
-In both cases, \GASPITIME{} and \GASPIGERR{}, the \GASPI{} state vector
-should be checked in order to deal with possibile failures.
-
-\subsubsection{\gaspifunction{counter\_fetch\_add}}
-
-The \gaspifunction{counter\_fetch\_add} procedure is a \gaspisemantic{synchronous}
-\gaspisemantic{non-local} \gaspisemantic{time-based blocking} procedure
-which atomically adds a given value to a global counter.
-
-\begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_counter_fetch_add ( gaspi_counter_id_t counter_id
-                        , gaspi_counter_value_t value_add
-                        , gaspi_counter_value_t value_old
+gaspi_atomic_fetch_add ( gaspi_segment_id_t segment_id
+                        , gaspi_offset_t offset
+                        , gaspi_rank_t rank
+                        , gaspi_atomic_value_t value_add
+                        , gaspi_atomic_value_t value_old
                         , gaspi_timeout_t timeout
                         )
 \end{verbatim}
 \end{FDefSign}
-\parameterlistbegin
-\parameterlistitem{in}{counter\_id}{the global atomic counter to be used for the operation}
-\parameterlistitem{in}{value\_add}{the value which is to be added to the global atomic counter}
-\parameterlistitem{out}{value\_old}{the value of the counter before the operation}
-\parameterlistitem{in}{timeout}{the timeout}
-\parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_atomic_fetch_add ( gaspi_segment_id_t segment_id
+                        , gaspi_offset_t offset
+                        , gaspi_rank_t rank
+                        , gaspi_atomic_value_t value_add
+                        , gaspi_atomic_value_t value_old
+                        , gaspi_timeout_t timeout
+                        , ireturn
+                        ) BIND(C)
+    TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
+    TYPE(gaspi_offset_t), INTENT(IN) :: offset
+    TYPE(gaspi_rank_t), INTENT(OUT) :: rank
+    TYPE(gaspi_atomic_value_t), INTENT(IN) :: value_add
+    TYPE(gaspi_atomic_value_t), INTENT(OUT) :: value_old
+    TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
 \executionphasework
-\FStdRetDescNOTimeout
+\FStdRetDesc
 \end{FDef}
 
-\gaspifunction{counter\_fetch\_add} atomically adds the value of \parameter{value\_add} to
-the value of the counter \parameter{counter\_id}.
+\gaspifunction{atomic\_fetch\_add} atomically adds the value
+of \parameter{value\_add} to the value on rank \parameter{rank},
+segment \parameter{segment\_id\_remote} and
+offset \parameter{offset\_remote}.
 
-After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, the parameter
-\parameter{value\_old} contains the value of the atomic counter before the operation
-has been applied.
+After successful procedure completion, i.\,e.\ return value
+\GASPISUCC{}, the parameter
+\parameter{value\_old} contains the value before the operation has
+been applied.
 
-If the procedure returns with \GASPITIME{}, the fetch and add request could not be completed
-during the given timeout. The parameter \parameter{value\_old} has an undefined value.
-A subsequent call of \gaspifunction{counter\_fetch\_add} needs
-to be invoked in order to complete the operation.
+If the procedure returns with \GASPITIME{}, the fetch and add request
+could not be completed during the given timeout. The
+parameter \parameter{value\_old} has an undefined value.  A subsequent
+call of \gaspifunction{atomic\_fetch\_add} needs to be invoked in
+order to complete the operation.
 
-If the procedure returns with \GASPIGERR{}, the fetch and add request aborted abnormally.
-The parameter \parameter{value\_old} as well as the counter have undefined values.
+If the procedure returns with \GASPIGERR{}, the fetch and add request
+aborted abnormally.  The parameter \parameter{value\_old} as well as
+the global value (segment\_id, offset, rank) have undefined values.
 
 In both cases, \GASPITIME{} and \GASPIGERR{}, the \GASPI{} state vector
 should be checked in order to deal with possible failures.
 
-\subsubsection{\gaspifunction{counter\_compare\_swap}}
+\begin{implementoradvice}
+  The implementation might require some alignment restrictions that
+  is, the
+  triple(\parameter{segment\_id}, \parameter{offset}, \parameter{rank})
+  might be required to respect some alignment restrictions.
+\end{implementoradvice}
 
-The \gaspifunction{counter\_compare\_swap} procedure is a \gaspisemantic{synchronous}
-\gaspisemantic{non-local} \gaspisemantic{time-based blocking} procedure
-which atomically compares the value of a global counter against some
-user given value and in case these values are equal replaces the old
-counter value by a new value.
+\begin{useradvice}
+  Concurrent accesses to the location represented by the
+  triple(\parameter{segment\_id}, \parameter{offset}, \parameter{rank})
+  are possible but consistency must be handled by the application.
+\end{useradvice}
+
+\subsubsection{\gaspifunction{atomic\_compare\_swap}}
+
+The \gaspifunction{atomic\_compare\_swap} procedure is a
+\gaspisemantic{synchronous} \gaspisemantic{non-local}
+\gaspisemantic{time-based blocking} procedure which atomically
+compares the value of a global value against some user given value and
+in case these are equal the old value is replaced by a new value.
 
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
+GASPI_ATOMIC_COMPARE_SWAP (  segment_id
+                           , offset
+                           , rank
+                           , comparator
+                           , value_new
+                           , value_old
+                           , timeout
+                           )
+\end{verbatim}
+\end{FDefSign}
+
+\parameterlistbegin
+\parameterlistitem{in}{segment\_id\_local}{the segment ID where the value is located}
+\parameterlistitem{in}{offset}{the offset where the value is located}
+\parameterlistitem{in}{rank}{the rank where the value is located}
+\parameterlistitem{in}{comparator}{the value which is compared to the remote value}
+\parameterlistitem{in}{value\_new}{the new value to which the remote location is set if the result of the comparison is true}
+\parameterlistitem{out}{value\_old}{the value before the operation}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
 gaspi_return_t
-gaspi_counter_compare_swap ( gaspi_counter_id_t counter_id
-                           , gaspi_counter_value_t comparator
-                           , gaspi_counter_value_t value_new
-                           , gaspi_counter_value_t value_old
+gaspi_atomic_compare_swap ( gaspi_segment_id_t segment_id
+                           , gaspi_offset_t offset
+                           , gaspi_rank_t rank
+                           , gaspi_atomic_value_t comparator
+                           , gaspi_atomic_value_t value_new
+                           , gaspi_atomic_value_t value_old
                            , gaspi_timeout_t timeout
                            )
 \end{verbatim}
 \end{FDefSign}
-\parameterlistbegin
-\parameterlistitem{in}{counter\_id}{the global atomic counter to be used for the operation}
-\parameterlistitem{in}{comparator}{the value which is compared to the value of the counter}
-\parameterlistitem{in}{value\_new}{the new value to which the counter is set if the result of the comparison is true}
-\parameterlistitem{out}{value\_old}{the value of the counter before the operation}
-\parameterlistitem{in}{timeout}{the timeout}
-\parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_atomic_compare_swap (  segment_id
+                           , offset
+                           , rank
+                           , comparator
+                           , value_new
+                           , value_old
+                           , timeout
+                           , ireturn
+                           ) BIND(C)
+    TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
+    TYPE(gaspi_offset_t), INTENT(IN) :: offset
+    TYPE(gaspi_rank_t), INTENT(OUT) :: rank
+    TYPE(gaspi_atomic_value_t), INTENT(IN) :: comparator
+    TYPE(gaspi_atomic_value_t), INTENT(IN) :: value_new
+    TYPE(gaspi_atomic_value_t), INTENT(OUT) :: value_old
+    TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
+    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+
+\end{verbatim}
+\end{FDefSign}
+
 \executionphasework
-\FStdRetDescNOTimeout
+\FStdRetDesc
 \end{FDef}
 
-\gaspifunction{counter\_compare\_swap} atomically compares the value of the
-counter \parameter{counter\_id} to the value of \parameter{comparator}. If the
-comparison is true, the counter is set to \parameter{value\_new}. If the comparison
-is false, the counter keeps its value.
+\gaspifunction{atomic\_compare\_swap} atomically compares the global
+value of the the value on rank \parameter{rank},
+segment \parameter{segment\_id\_remote} and
+offset \parameter{offset\_remote} to the value
+of \parameter{comparator}. If the comparison is true, this global
+value is set to \parameter{value\_new}. If the comparison is false, it
+keeps its value.
 
-After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, the parameter
-\parameter{value\_old} contains the value of the atomic counter before the comparision
-was done.
+After successful procedure completion, i.\,e.\ return value
+\GASPISUCC{}, the parameter
+\parameter{value\_old} contains the previous value before the
+comparison was done.
 
-If the procedure returns with \GASPITIME{}, the compare and swap request could not be completed
-during the given timeout. The parameter \parameter{value\_old} has an undefined value.
-A subsequent call of \gaspifunction{counter\_compare\_swap} needs
-to be invoked in order to complete the operation.
+If the procedure returns with \GASPITIME{}, the compare and swap
+request could not be completed during the given timeout. The
+parameter \parameter{value\_old} has an undefined value.  A subsequent
+call of \gaspifunction{atomic\_compare\_swap} needs to be invoked in
+order to complete the operation.
 
-If the procedure returns with \GASPIGERR{}, the compare and swap request aborted abnormally.
-The parameter \parameter{value\_old} as well as the counter have an undefined value.
+If the procedure returns with \GASPIGERR{}, the compare and swap
+request aborted abnormally. The parameter \parameter{value\_old} as
+well as well as the global value (segment\_id, offset, rank) have
+undefined values.
 
 In both cases, \GASPITIME{} and \GASPIGERR{}, the \GASPI{} state vector
 should be checked in order to deal with possible failures.
 
+\begin{implementoradvice}
+  The implementation might require some alignment restrictions that
+  is, the
+  triple(\parameter{segment\_id}, \parameter{offset}, \parameter{rank})
+  might be required to respect some alignment restrictions.
+\end{implementoradvice}
+
+\begin{useradvice}
+  Concurrent accesses to the location represented by the
+  triple(\parameter{segment\_id}, \parameter{offset}, \parameter{rank})
+  are possible but consistency must be handled by the application.
+\end{useradvice}
+
 \subsubsection{Examples}
 
-The example in \listref{lst:rsrclock} illustrates the usage of global atomic counters
-for implementing a global resource lock. The example is implemented with
-timeout.
+The example in \listref{lst:rsrclock} illustrates the usage of global
+atomic operations for implementing a global resource lock. The example
+is implemented with timeout.
 
 \insertlisting{../examples/resource_lock/resource_lock.c}
         { \GASPI{} global resource lock implemented with atomic counters \label{lst:rsrclock} }
@@ -5574,21 +5625,21 @@ gaspi_notification_num (gaspi_number_t notification_num)
 \subsection{Getter functions for passive communication}
 
 
-\subsubsection{\gaspifunction{passive\_queue\_size\_max}}
+% \subsubsection{\gaspifunction{passive\_queue\_size\_max}}
 
-\begin{FDef}
-\begin{FDefSign}
-\begin{verbatim}
-gaspi_return_t
-gaspi_passive_queue_size_max (gaspi_number_t queue_size_max)
-\end{verbatim}
-\end{FDefSign}
-\parameterlistbegin
-\parameterlistitem{out}{queue\_size\_max}{maximum number of requests allowed in the passive communication queue}
-\parameterlistend
-\executionphasework
-\FStdRetDescNOTimeout
-\end{FDef}
+% \begin{FDef}
+% \begin{FDefSign}
+% \begin{verbatim}
+% gaspi_return_t
+% gaspi_passive_queue_size_max (gaspi_number_t queue_size_max)
+% \end{verbatim}
+% \end{FDefSign}
+% \parameterlistbegin
+% \parameterlistitem{out}{queue\_size\_max}{maximum number of requests allowed in the passive communication queue}
+% \parameterlistend
+% \executionphasework
+% \FStdRetDescNOTimeout
+% \end{FDef}
 
 \subsubsection{\gaspifunction{passive\_transfer\_size\_max}}
 
@@ -5606,23 +5657,23 @@ gaspi_passive_transfer_size_max (gaspi_size_t transfer_size_max)
 \FStdRetDescNOTimeout
 \end{FDef}
 
-\subsection{Getter functions for atomic operations}
+% \subsection{Getter functions for atomic operations}
 
-\subsubsection{\gaspifunction{counter\_num}}
+% \subsubsection{\gaspifunction{counter\_num}}
 
-\begin{FDef}
-\begin{FDefSign}
-\begin{verbatim}
-gaspi_return_t
-gaspi_counter_num (gaspi_number_t counter_num)
-\end{verbatim}
-\end{FDefSign}
-\parameterlistbegin
-\parameterlistitem{out}{counter\_num}{The number of global atomic counters available}
-\parameterlistend
-\executionphasework
-\FStdRetDescNOTimeout
-\end{FDef}
+% \begin{FDef}
+% \begin{FDefSign}
+% \begin{verbatim}
+% gaspi_return_t
+% gaspi_counter_num (gaspi_number_t counter_num)
+% \end{verbatim}
+% \end{FDefSign}
+% \parameterlistbegin
+% \parameterlistitem{out}{counter\_num}{The number of global atomic counters available}
+% \parameterlistend
+% \executionphasework
+% \FStdRetDescNOTimeout
+% \end{FDef}
 
 \subsection{Getter functions for collective communication}
 
