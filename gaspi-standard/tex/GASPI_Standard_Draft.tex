@@ -165,6 +165,9 @@
 \newcommand{\GASPIGERR}{{\tt\protect\zsep{GASPI\_ERROR}}}
 \newcommand{\GASPIGERRTXT}{operation has finished with an error}
 \newcommand{\GASPIGROUPALL}{{\tt\protect\zsep{GASPI\_GROUP\_ALL}}}
+\newcommand{\GASPIALLOCDEF}{{\tt\protect\zsep{GASPI\_ALLOC\_DEFAULT}}}
+
+
 
 \newcommand{\GASPITEST}{{\tt\protect\zsep{GASPI\_TEST}}}
 \newcommand{\GASPIBLOCK}{{\tt\protect\zsep{GASPI\_BLOCK}}}
@@ -850,37 +853,45 @@ optimizations.
 
 \subsection{Constants}
 
-\begin{listing}{1}
-\enum gaspi_timeout_value_t
-\brief special GASPI timeout values
+\subsubsection{Timeout values}
+\begin{TDef}
+\TDefDefn{\GASPIBLOCK{}} 
+\TDefDesc{\GASPIBLOCK{} is a timeout value which blocks a procedure call until completion.}
+\end{TDef}
 
-typedef enum { GASPI_BLOCK = -1
-             , GASPI_TEST = 0
-             } gaspi_timeout_value_t;
-\end{listing}
+\begin{TDef}
+\TDefDefn{\GASPITEST{}} 
+\TDefDesc{\GASPITEST{} is a timeout value which blocks a procedure call for the shortest time possible.}
+\end{TDef}
 
-\begin{listing}{1}
-\enum gaspi_return_t
-\brief GASPI return values
+\subsubsection{Function return values}
+\begin{TDef}
+\TDefDefn{\GASPISUCC{}} 
+\TDefDesc{GASPI\_SUCCESS is returned if a procedure call is completed successfully.}
+\end{TDef}
 
-typedef enum { GASPI_SUCCESS = 0
-             , GASPI_TIMEOUT = 1
-             , GASPI_ERROR   = -1
-             } gaspi_return_t;
-\end{listing}
 
-\begin{listing}{1}
-\enum gaspi_alloc_t
-\brief GASPI allocation policy
+\begin{TDef}
+\TDefDefn{\GASPITIME{}} 
+\TDefDesc{GASPI\_TIMEOUT is returned if a procedure call ran into a timeout.}
+\end{TDef}
 
-typedef enum { GASPI_ALLOC_DEFAULT = 0
-             } gaspi_alloc_t;
-\end{listing}
+
+\begin{TDef}
+\TDefDefn{\GASPIGERR{}} 
+\TDefDesc{GASPI\_ERROR is returned if a procedure call finished with an error.}
+\end{TDef}
+
+
+
+\subsubsection{Allocation policies}
+\begin{TDef}
+\TDefDefn{\GASPIALLOCDEF{}} 
+\TDefDesc{The \GASPIALLOCDEF{} policy uses the operating systems default memory allocation policy.}
+\end{TDef}
 
 \begin{implementoradvice}
-A \GASPI{} implementation is free to extend the above enumeration. 
-It is good practice to implement the default policy in such a way that it leaves 
-the operating system allocation policy untouched. 
+A \GASPI{} implementation is free to provide additional allocation policies.
 \end{implementoradvice}
 
 
@@ -1140,7 +1151,7 @@ GASPI_CONFIG_SET ( config )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_config_set ( gaspi_configuration_t config )
+gaspi_config_set ( gaspi_configuration_t * const config )
 \end{verbatim}
 \end{FDefSign}
 
@@ -1464,8 +1475,8 @@ GASPI_PROC_KILL ( rank
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_proc_kill ( const gaspi_rank_t rank
-                , const gaspi_timeout_t timeout )
+gaspi_proc_kill ( gaspi_rank_t rank
+                , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -1553,8 +1564,8 @@ GASPI_CONNECT ( rank
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_connect ( const gaspi_rank_t rank
-              , const gaspi_timeout_t timeout )
+gaspi_connect ( gaspi_rank_t rank
+              , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -1635,8 +1646,8 @@ GASPI_DISCONNECT ( rank
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_disconnect ( const gaspi_rank_t rank
-                 , const gaspi_timeout_t timeout )
+gaspi_disconnect ( gaspi_rank_t rank
+                 , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -1935,13 +1946,29 @@ an empty group.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_group_create (gaspi_group_t group)
+GASPI_GROUP_CREATE ( group )
 \end{verbatim}
 \end{FDefSign}
+
 \parameterlistbegin
 \parameterlistitem{out}{group}{the created empty group}
 \parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_group_create ( gaspi_group_t *group )
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_group_create ( group ) BIND(C)
+  TYPE(gaspi_group_t), INTENT(OUT) :: group
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
