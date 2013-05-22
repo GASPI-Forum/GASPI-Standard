@@ -161,7 +161,7 @@
 \newcommand{\GASPISUCC}{{\tt\protect\zsep{GASPI\_SUCCESS}}}
 \newcommand{\GASPISUCCTXT}{operation has returned successfully}
 \newcommand{\GASPITIME}{{\tt\protect\zsep{GASPI\_TIMEOUT}}}
-\newcommand{\GASPITIMETXT}{operation has run into timeout}
+\newcommand{\GASPITIMETXT}{operation has run into a timeout}
 \newcommand{\GASPIGERR}{{\tt\protect\zsep{GASPI\_ERROR}}}
 \newcommand{\GASPIGERRTXT}{operation has finished with an error}
 \newcommand{\GASPIGROUPALL}{{\tt\protect\zsep{GASPI\_GROUP\_ALL}}}
@@ -307,9 +307,9 @@ Fortran with a PGAS API which enables the application to leverage the
 concept of the Partitioned Global Adress Space.  In contrast to
 e.\,g.\ OpenShmem or Global Arrays, \GASPI{} is not limited to a
 single memory model, but rather provides configurable RDMA
-PGAS memory segments.  By means of these segments GASPI does not
+PGAS memory segments.  By means of these segments \GASPI{} does not
 merely support a single Partitioned Global Address Space, but rather a
-multitude of Partitioned Global Address Spaces. In GASPI it is hence
+multitude of Partitioned Global Address Spaces. In \GASPI{} it is hence
 quite possible for different memory management systems---or indeed
 different PGAS applications---to co-exist in the same single global
 address space. \GASPI{} is failure tolerant in the sense that it
@@ -333,7 +333,7 @@ tool for the HPC community.
 
 \subsubsection{Application requirements}
 
-The following application requirements have been identified
+The following application requirements have been identified:
 
 \begin{itemize}
 \item one-sided asynchronous remote read/write operations
@@ -350,18 +350,18 @@ The following application requirements have been identified
 From the application requirements the following design goals have been deduced:
 
 \begin{itemize}
-\item Extreme scalability
-\item Multi-segment support to support \eg heterogeneous systems and NUMA-pinning
-\item Dynamic allocation of segments
-\item Timeout mechanisms and failure tolerance
-\item Group support for collectives
+\item Extreme scalability.
+\item Multi-segment support to support \eg heterogeneous systems and NUMA-pinning.
+\item Dynamic allocation of segments.
+\item Timeout mechanisms and failure tolerance.
+\item Group support for collectives.
 \item Large flexibility in the number of queues, queue sizes, atomic
   operations etc.
-\item A maximum freedom to implementors, where details are left to
-  implementation
+\item A maximum freedom to implementors, where details are left to the
+  implementation.
 \item A strong standard library which takes care of convenience
   procedures and cosmetics. The specification should be simple and solid.
-\item GPI is the base and we should improve from there where necessary
+\item GPI is the base and we should improve from there where necessary.
 \end{itemize}
 
 %\subsection{Organization of this document}
@@ -381,6 +381,10 @@ is followed by the operation name.
 
 
 \subsection{Procedure specification}
+
+\begin{todo}
+\item Subsection empty so far... 
+\end{todo}
 
 \subsection{Semantic terms}
 
@@ -585,7 +589,7 @@ The specification guarantees fairness of transfers posted to
 different queues, i.\,e.\ no queue should see its
 communication requests delayed indefinitely.
 
-Furthermore, the order of communication request addressing the same remote \GASPI{}
+Furthermore, the order of communication requests addressing the same remote \GASPI{}
 process posted to a given queue are preserved, both on the local as
 well as on the remote side.
 
@@ -593,7 +597,7 @@ well as on the remote side.
 
 \subsection{\GASPI{} passive communication}
 
-Passive communication has a two-sided semantics, where there is a
+Passive communication has a two-sided semantic, where there is a
 matching receive operation to a send request. Passive communication aims at
 communication patterns where the sender is unknown (i.\,e.\ it can be any
 process from the receiver perspective) but there is potentially the
@@ -647,15 +651,15 @@ in which the procedure call processes an atomic portion of its work.
 
 Example:
 \begin{listing}{1}
-const gaspi_return_t err = WAIT (..., GASPI_BLOCK);
+ err = WAIT (..., GASPI_BLOCK);
 \end{listing}
 Blocks until the communication queue is empty and may block indefinitely in case of a failure.
 \begin{listing}{1}
-const gaspi_return_t err = WAIT (..., GASPI_TEST);
+ err = WAIT (..., GASPI_TEST);
 \end{listing}
 Just check if the operation has completed and return as soon as possible.
 \begin{listing}{1}
-const gaspi_return_t err = WAIT (..., 10);
+ err = WAIT (..., 10);
 \end{listing}
 Blocks until the queue is empty or more than $10$ milliseconds have
 passed since wait has been called.
@@ -688,7 +692,7 @@ If asynchronous operation is supported, it should leverage external network-reso
 consuming CPU cycles.
 \end{implementoradvice}
 
-\GASPI{} support the following collective operations: barriers, reductions with predefined operations,
+\GASPI{} supports the following collective operations: barriers, reductions with predefined operations,
 reductions with user defined operations.
 
 Collective operations have their own queue and hence typically will be synchronised
@@ -856,7 +860,7 @@ typedef enum { GASPI_BLOCK = -1
 
 \begin{listing}{1}
 \enum gaspi_return_t
-\brief return values
+\brief GASPI return values
 
 typedef enum { GASPI_SUCCESS = 0
              , GASPI_TIMEOUT = 1
@@ -912,12 +916,12 @@ into several consecutive phases:
 %   \item Initialization communication infrastructure
   \item Initialization of the runtime environment
 %   \item Creation of the communication infrastructure
-%   \item Creation of the groups (optional)
-%   \item Creation of the segments (optional).
+   \item Creation of segments or groups (optional)
+%    \item Creation of segments (optional).
   \end{description}
 \item \textbf{Working}
   \begin{description}
-  \item Body of the application
+   \item Body of the application
   \begin{description}
     \item Communication calls (optional)
     \item Collective operations (optional)
@@ -932,7 +936,7 @@ into several consecutive phases:
 
 
 In the \textbf{setup} phase, the application may retrieve and modify
-the \GASPI{} configuration structure (see section~\ref{subsubsec:confstruct})
+the \GASPI{} configuration structure (see Section~\ref{subsubsec:confstruct})
 determining the \GASPI{} runtime behavior. Optionally (but
 advisable), the application can perform environment checks (see
 Section~\ref{sec:envcheck}) to make sure the application can be
@@ -1040,7 +1044,7 @@ passive communication queue. There is a hardware/implementation dependent maximu
 \item[passive\_transfer\_size\_max] the desired maximum size of a
   single data transfer in the passive communication channel.
 There is a hardware/implementation dependent maximum.
-\item[allreduce\_elem\_max] the maximum number of elements in \gaspifunction{allreduce}
+\item[allreduce\_elem\_max] the maximum number of elements in \gaspifunction{allreduce}.
 There is a hardware/implementation dependent maximum.
 \item[allreduce\_buf\_size] the size of the internal buffer of \gaspifunction{allreduce\_user}.
 There is a hardware/implementation dependent maximum.
@@ -1055,7 +1059,7 @@ The default configuration structure can be retrieved by \gaspifunction{config\_g
 % All fields of the default configuration structure are optional and do not need
 % to be explicitly initialized.
 Its default values are implementation dependent. If
-some of the parameters are externally set by the program and committed with \gaspifunction{config\_set},
+some of the parameters are externally set by the program and assigned with \gaspifunction{config\_set},
 the requested values are just proposals.
 Depending on the underlying hardware capabilities,
 the implementation is allowed to overrule these proposals.
@@ -1066,7 +1070,7 @@ getter routines (see section \ref{sec:getterfn}) after the successful program in
 structure parameters need to be the same on all \GASPI{} processes.
 
 The user has the possibility to set the values on her own or leave the
-default values. Each field (where applicable) has also a maximum value
+default values. Each field (where applicable) also has a maximum value
 to avoid user errors that might lead to too much instability or
 scalability problems (for example, the number of queues). The maximum
 values applied will be the current GPI values.
@@ -1092,14 +1096,14 @@ GASPI_CONFIG_GET ( config )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_config_get ( gaspi_configuration_t config )
+gaspi_config_get ( gaspi_configuration_t *config )
 \end{verbatim}
 \end{FDefSign}
 
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_config_get ( config ) BIND(C)
-  TYPE(gaspi_configuration_t), INTENT(IN) :: config
+  TYPE(gaspi_configuration_t), INTENT(OUT) :: config
   TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
@@ -1135,14 +1139,14 @@ GASPI_CONFIG_SET ( config )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_config_set ( gaspi_configuration_t *config )
+gaspi_config_set ( gaspi_configuration_t config )
 \end{verbatim}
 \end{FDefSign}
 
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_config_set ( config ) BIND(C)
-  TYPE(gaspi_configuration_t), INTENT(OUT) :: config
+  TYPE(gaspi_configuration_t), INTENT(IN) :: config
   TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
@@ -1154,7 +1158,7 @@ gaspi_config_set ( config ) BIND(C)
 
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{},
 the runtime parameters for the \GASPI{} process initialization are set
-in accordance with parameters of \parameter{config}
+in accordance with parameters of \parameter{config}.
 
 In case of error, the return value is \GASPIGERR{}.
 
@@ -1170,25 +1174,29 @@ of the application. It is a \gaspisemantic{non-local} \gaspisemantic{synchronous
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-GASPI_PROC_INIT ( config )
+GASPI_PROC_INIT ( config
+                , timeout )
 \end{verbatim}
 \end{FDefSign}
 
 \parameterlistbegin
-\parameterlistitem{in}{timeout}{the timeout.}
+\parameterlistitem{in}{config}{the configuration to be used}
+\parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
 
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_proc_init ( gaspi_timeout_t timeout )
+gaspi_proc_init ( gaspi_configuration_t config
+                , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_config_set ( config ) BIND(C)
-  TYPE(gaspi_configuration_t), INTENT(OUT) :: config
+  TYPE(gaspi_configuration_t), INTENT(IN) :: config
+  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
   TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
@@ -1212,7 +1220,7 @@ remote \GASPI{} processes and sets the corresponding entries in the
 state vector to a healthy state.
 If the parameter \parameter{build\_infrastructure} in the configuration structure is set,
 also the communication infrastructure for passive and one-sided communication to all
-of the other processes is set up. Otherwise, there is no set up of communication infrastructure
+of the other processes is setup. Otherwise, there is no set up of communication infrastructure
 during the initialization.
 A rank is assigned to the given \GASPI{} process in accordance with the position of the host
 in the list. The \GASPI{} process running on the first host in the list has rank zero. The
@@ -1239,7 +1247,7 @@ on all hosts. In case that the \parameter{build\_infrastructure}
 is set, return value \GASPISUCC{} also implies that the communication infrastructure is up and ready to be used.
 
 In case the application could not be initialized in line with the timeout
-parameter, the return value is \GASPITIME{}. The application is not initialized
+pa\-ra\-me\-ter, the return value is \GASPITIME{}. The application has not been initialized
 yet. A subsequent invocation is required to completely initialize the application.
 
 In case of error, the return value is \GASPIGERR{}. The application is not initialized.
@@ -1495,8 +1503,8 @@ In case of error, i.\,e.\ return value \GASPIGERR, the state of the remote
 
 \begin{useradvice}
 The kill signal terminates a \GASPI{} process in an uncontrolled way.
-In order to provide a clean shutdown in this case, it is advisable
-to be register a user defined signal callback function which guarantees
+In this case, in order to provide a clean shutdown, it is advisable
+to register a user defined signal callback function which guarantees
 a clean shutdown.
 \end{useradvice}
 
@@ -1522,7 +1530,7 @@ similar signal handler.
 
 \subsubsection{\gaspifunction{connect}}
 
-In order be able to communicate between two \GASPI{} processes, the communication
+In order to be able to communicate between two \GASPI{} processes, the communication
 infrastructure has to be established. This is
 achieved with the \gaspisemantic{synchronous} \gaspisemantic{non-local}
 \gaspisemantic{time-based blocking} procedure \gaspifunction{connect}.
@@ -1566,7 +1574,7 @@ gaspi_connect ( rank
 \gaspifunction{connect} builds up the communication infrastructure, passive as well as
 one-sided, between the local and the remote \GASPI{} process representing rank
 \parameter{rank}. The connection is bi-directional, i.\,e.\ it is sufficient
-if \gaspifunction{connect} is invoked by only one of the connection partners.
+that \gaspifunction{connect} is invoked by only one of the connection partners.
 % The operation is a \gaspisemantic{collective} operation between
 % the local \GASPI{} process and the remote \GASPI{} process, i.\,e.\ also the remote
 % rank has to invoke a correspondent \gaspifunction{connect} call.
@@ -1574,7 +1582,7 @@ if \gaspifunction{connect} is invoked by only one of the connection partners.
 In case of successful procedure completion, i.\,e.\ return value \GASPISUCC,
 the communication infrastructure is established. If there is
 an allocated segment, the segment can be used as a destination for passive
-communication between the two nodes. In case the connection has been established already,
+communication between the two nodes. In case the connection has already been established,
 e.\,g.\ by the connection partner, the return value is \GASPISUCC{}.
 
 In case of return value \GASPITIME, the communication infrastructure could not
@@ -1585,7 +1593,7 @@ In case of return value \GASPIGERR, the communication infrastructure could not
 be established between the local \GASPI{} process and the remote \GASPI{} process.
 
 In case of the latter two return values, a check of the state vector
-by invocation of \gaspifunction{state\_vec\_get} gives information
+by invocation of \gaspifunction{state\_vec\_get} gives information on
 whether the remote \GASPI{} process is still healthy.
 
 % It is a failure, if the remote rank is in the connect with another
@@ -1653,7 +1661,7 @@ if \gaspifunction{disconnect} is invoked by only one of the connection partners.
 In case of successful procedure completion, i.\,e.\ return value \GASPISUCC,
 the communication infrastructure is disconnected. Associated resources
 are freed on the local as well as on the remote side.
-In case the connection has been disconnected already,
+In case the connection has already been disconnected,
 e.\,g.\ by the connection partner, the return value is \GASPISUCC{}.
 
 In case of error the return value is \GASPIGERR{}.
@@ -1702,7 +1710,7 @@ There are procedures to query the state of the communication partners
 after a given communication request and also to reset the state after
 successful recovery. These are described in the following subsections.
 
-The state vector does not provide a global view, but each process has its own
+The state vector does not provide a global view, instead each process has its own
 state vector that may be different to the state vector of another process.
 
 \subsubsection{\gaspifunction{state\_vec\_get}}
@@ -1824,7 +1832,7 @@ procedure calls in case they return with either return value \GASPIGERR{} or \GA
 \GASPI{} aims at providing interoperability with MPI in order to allow
 for incremental porting of such applications.
 
-The Start-up of mixed MPI and \GASPI{} code is achieved by invoking
+The start-up of mixed MPI and \GASPI{} code is achieved by invoking
 \gaspifunction{proc\_init} in an existing MPI program.
 This way, MPI takes care of distributing and starting the binary and
 \GASPI{} just takes care of setting up its internal infrastructure.
@@ -1835,7 +1843,7 @@ This way, MPI takes care of distributing and starting the binary and
 %\end{todo}
 
 \GASPI{} and MPI communication should not occur at the same time, i.\,e.\
-only the program layout given in listing \ref{lst:embedded_gaspi} is supported
+only the program layout given in Listing~\ref{lst:embedded_gaspi} is supported
 
 \insertlisting{../examples/mpi.interop.c}{Embedded \GASPI{} program\label{lst:embedded_gaspi}}
 
