@@ -196,8 +196,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newenvironment{TDef}{\begin{trivlist}\item[]}{\finalsymb{$\lrcorner$}\end{trivlist}}
-% \newcommand{\TDefDefn}[2]{\begin{cbox}{EEEEEE}typedef {#1} {#2}\end{cbox}}
-\newcommand{\TDefDefn}[1]{\begin{cbox}{EEEEEE}{#1}\end{cbox}}
+\newcommand{\TDefDefn}[2]{\begin{cbox}{EEEEEE}typedef {#1} {#2}\end{cbox}}
+\newcommand{\TDefDef}[1]{\begin{cbox}{EEEEEE}{#1}\end{cbox}}
 \newcommand{\TDefDesc}[1]{\item[]{\itshape{#1}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -654,17 +654,17 @@ blocks the procedure for the shortest time possible, \ie the time
 in which the procedure call processes an atomic portion of its work.
 
 Example:
-\begin{listing}{1}
- err = WAIT (..., GASPI_BLOCK);
-\end{listing}
+\begin{lstlisting}[numbers=none]
+WAIT (..., GASPI_BLOCK);
+\end{lstlisting}
 Blocks until the communication queue is empty and may block indefinitely in case of a failure.
-\begin{listing}{1}
- err = WAIT (..., GASPI_TEST);
-\end{listing}
+\begin{lstlisting}[numbers=none]
+WAIT (..., GASPI_TEST);
+\end{lstlisting}
 Just check if the operation has completed and return as soon as possible.
-\begin{listing}{1}
- err = WAIT (..., 10);
-\end{listing}
+\begin{lstlisting}[numbers=none]
+WAIT (..., 10);
+\end{lstlisting}
 Blocks until the queue is empty or more than $10$ milliseconds have
 passed since wait has been called.
 
@@ -706,23 +706,17 @@ independently from the operations on other queues (separation of concerns).
 
 \GASPI{} procedures have three general return values:
 
-\begin{listing}[99]{2}
-GASPI_SUCCESS = 0
-GASPI_ERROR   = -1
-GASPI_TIMEOUT = 1
-\end{listing}
-
-\GASPISUCC{} implies that the procedure has completed successfully.
-
-\GASPITIME{} implies that the procedure could not complete in the
-given period of time. This does not necessitate an error. The
-procedure has to be invoked subsequently in order to fully complete
-the operation.
-
-\GASPIGERR{} implies that the procedure has terminated due to an error.
-There are no predefined error values specifying the detailed cause of an error.
-\gaspifunction{error\_message} translates the error code into a human
-readable format.
+\begin{description}
+ \item[\GASPISUCC{}] implies that the procedure has completed successfully.
+ \item[\GASPITIME{}] implies that the procedure could not complete in the
+  given period of time. This does not necessitate an error. The
+  procedure has to be invoked subsequently in order to fully complete
+  the operation.
+ \item[\GASPIGERR{}] implies that the procedure has terminated due to an error.
+  There are no predefined error values specifying the detailed cause of an error.
+  \gaspifunction{error\_message} translates the error code into a human
+  readable format.
+\end{description}
 
 \begin{implementoradvice}
 An implementation may provide specific error values. All error codes
@@ -741,33 +735,33 @@ and can be used to detect failures on remote processes.
 \subsection{Types}
 
 \begin{TDef}
-\TDefDefn{\gaspitype{rank}}
+\TDefDef{\gaspitype{rank}}
 \TDefDesc{The \GASPI{} rank type.}
 \end{TDef}
 
 \begin{TDef}
-\TDefDefn{\gaspitype{segment\_id}}
+\TDefDef{\gaspitype{segment\_id}}
 \TDefDesc{The \GASPI{} memory segment ID type.}
 \end{TDef}
 
 \begin{TDef}
-\TDefDefn{\gaspitype{offset}}
+\TDefDef{\gaspitype{offset}}
 \TDefDesc{The \GASPI{} offset type. Offsets are measured relative to
   the beginning of a memory segment in units of bytes.}
 \end{TDef}
 
 \begin{TDef}
-\TDefDefn{\gaspitype{size}}
+\TDefDef{\gaspitype{size}}
 \TDefDesc{The \GASPI{} size type. Sizes are measured in units of bytes.}
 \end{TDef}
 
 \begin{TDef}
-\TDefDefn{\gaspitype{queue\_id}}
+\TDefDef{\gaspitype{queue\_id}}
 \TDefDesc{The \GASPI{} queue ID type.}
 \end{TDef}
 
 \begin{TDef}
-\TDefDefn{\gaspitype{notification}}
+\TDefDef{\gaspitype{notification}}
 \TDefDesc{The \GASPI{} notification type.}
 \end{TDef}
 
@@ -777,12 +771,12 @@ optimizations.
 \end{implementoradvice}
 
 \begin{TDef}
-\TDefDefn{\gaspitype{notification\_id}}
+\TDefDef{\gaspitype{notification\_id}}
 \TDefDesc{The \GASPI{} notification ID type.}
 \end{TDef}
 
 \begin{TDef}
-\TDefDefn{\gaspitype{tag}}
+\TDefDef{\gaspitype{tag}}
 \TDefDesc{The \GASPI{} tag type. Tags are used to discriminate
   different messages in the passive communication channel.}
 \end{TDef}
@@ -794,60 +788,60 @@ optimizations.
 
 
 \begin{TDef}
-\TDefDefn{\gaspitype{atomic\_value}}
+\TDefDef{\gaspitype{atomic\_value}}
 \TDefDesc{The \GASPI{} global atomic value type.}
 \end{TDef}
 
 \begin{TDef}
-\TDefDefn{\gaspitype{return}}
+\TDefDef{\gaspitype{return}}
 \TDefDesc{The \GASPI{} return value type.}
 \end{TDef}
 
 \begin{TDef}
-\TDefDefn{{\tt vector<\gaspitype{return}>}}{\gaspitype{returns}}
+\TDefDef{{\tt vector<\gaspitype{return}>}}{\gaspitype{returns}}
 \TDefDesc{The vector type with return codes for individual processes. The
   length of the vector equals the number of processes in the \GASPI{}
   program.}
 \end{TDef}
 
 \begin{TDef}
-\TDefDefn{\gaspitype{timeout}}
+\TDefDef{\gaspitype{timeout}}
 \TDefDesc{The \GASPI{} timeout type.}
 \end{TDef}
 
 \begin{TDef}
-\TDefDefn{\gaspitype{number}}
+\TDefDef{\gaspitype{number}}
 \TDefDesc{A type that is used to count elements. That could be numbers
   of queues as well as the size of individual queues.}
 \end{TDef}
 
 \begin{TDef}
-\TDefDefn{\gaspitype{group}}
+\TDefDef{\gaspitype{group}}
 \TDefDesc{The \GASPI{} group type.}
 \end{TDef}
 
 \begin{TDef}
-\TDefDefn{pointer}{\gaspitype{pointer}}
+\TDefDef{\gaspitype{pointer}}
 \TDefDesc{A type that can point to some (area of) memory.}
 \end{TDef}
 
 \begin{TDef}
-\TDefDefn{\gaspitype{alloc}}
+\TDefDef{\gaspitype{alloc}}
 \TDefDesc{The \GASPI{} allocation policy type.}
 \end{TDef}
 
 \begin{TDef}
-\TDefDefn{\gaspitype{network}}
+\TDefDef{\gaspitype{network}}
 \TDefDesc{The \GASPI{} network infrastructure type.}
 \end{TDef}
 
 \begin{TDef}
-\TDefDefn{\gaspitype{bool}}
+\TDefDef{\gaspitype{bool}}
 \TDefDesc{The \GASPI{} boolean type.}
 \end{TDef}
 
 \begin{TDef}
-\TDefDefn{\gaspitype{string}}
+\TDefDef{\gaspitype{string}}
 \TDefDesc{The \GASPI{} string type.}
 \end{TDef}
 
@@ -855,30 +849,30 @@ optimizations.
 
 \subsubsection{Timeout values}
 \begin{TDef}
-\TDefDefn{\GASPIBLOCK{}} 
+\TDefDef{\GASPIBLOCK{}} 
 \TDefDesc{\GASPIBLOCK{} is a timeout value which blocks a procedure call until completion.}
 \end{TDef}
 
 \begin{TDef}
-\TDefDefn{\GASPITEST{}} 
+\TDefDef{\GASPITEST{}} 
 \TDefDesc{\GASPITEST{} is a timeout value which blocks a procedure call for the shortest time possible.}
 \end{TDef}
 
 \subsubsection{Function return values}
 \begin{TDef}
-\TDefDefn{\GASPISUCC{}} 
+\TDefDef{\GASPISUCC{}} 
 \TDefDesc{GASPI\_SUCCESS is returned if a procedure call is completed successfully.}
 \end{TDef}
 
 
 \begin{TDef}
-\TDefDefn{\GASPITIME{}} 
+\TDefDef{\GASPITIME{}} 
 \TDefDesc{GASPI\_TIMEOUT is returned if a procedure call ran into a timeout.}
 \end{TDef}
 
 
 \begin{TDef}
-\TDefDefn{\GASPIGERR{}} 
+\TDefDef{\GASPIGERR{}} 
 \TDefDesc{GASPI\_ERROR is returned if a procedure call finished with an error.}
 \end{TDef}
 
@@ -886,7 +880,7 @@ optimizations.
 
 \subsubsection{Allocation policies}
 \begin{TDef}
-\TDefDefn{\GASPIALLOCDEF{}} 
+\TDefDef{\GASPIALLOCDEF{}} 
 \TDefDesc{The \GASPIALLOCDEF{} policy uses the operating systems default memory allocation policy.}
 \end{TDef}
 
@@ -1000,9 +994,8 @@ will be used.
 % \item check how this works in fortran
 % \end{todo}
 
-\begin{listing}[99]{2}
+\begin{lstlisting}
 typedef struct {
-
   // maximum number of groups
   gaspi_number_t     group_max;
 
@@ -1032,9 +1025,8 @@ typedef struct {
   gaspi_bool_t       build_infrastructure
 
   void *             user_defined;
-
 } gaspi_configuration_t;
-\end{listing}
+\end{lstlisting}
 
 The definition of each of the configuration structure fields is as follows:
 
@@ -1199,8 +1191,8 @@ GASPI_PROC_INIT ( config
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_proc_init ( gaspi_configuration_t config
-                , gaspi_timeout_t timeout )
+gaspi_proc_init ( gaspi_configuration_t * const config
+                , gaspi_timeout_t const timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -1418,7 +1410,7 @@ GASPI_PROC_TERM ( timeout )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_proc_term ( gaspi_timeout_t timeout )
+gaspi_proc_term ( gaspi_timeout_t const timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -1475,8 +1467,8 @@ GASPI_PROC_KILL ( rank
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_proc_kill ( gaspi_rank_t rank
-                , gaspi_timeout_t timeout )
+gaspi_proc_kill ( gaspi_rank_t const rank
+                , gaspi_timeout_t const timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -1564,8 +1556,8 @@ GASPI_CONNECT ( rank
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_connect ( gaspi_rank_t rank
-              , gaspi_timeout_t timeout )
+gaspi_connect ( gaspi_rank_t const rank
+              , gaspi_timeout_t const timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -1646,8 +1638,8 @@ GASPI_DISCONNECT ( rank
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_disconnect ( gaspi_rank_t rank
-                 , gaspi_timeout_t timeout )
+gaspi_disconnect ( gaspi_rank_t const rank
+                 , gaspi_timeout_t const timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -1698,21 +1690,18 @@ know\-ledge about the state of the communication partners of each local
 \GASPI{} process.
 
 \GASPI{} provides a predefined type to describe the state of a remote \GASPI{} process,
-which is the \gaspitype{state} type
+which is the \gaspitype{state} type. \gaspitype{state} can have one of two values:
 
-\begin{listing}[99]{2}
-typedef enum { GASPI_STATE_HEALTHY = 0
-             , GASPI_STATE_CORRUPT = 1
-             } gaspi_state_t;
-\end{listing}
-
-GASPI\_STATE\_HEALTHY implies that the remote \GASPI{} process is healthy, i.\,e.\
-communication is possible. GASPI\_STATE\_CORRUPT means that the remote \GASPI{}
+\begin{description}
+ \item[GASPI\_STATE\_HEALTHY] implies that the remote \GASPI{} process is healthy, i.\,e.\
+communication is possible.
+ \item[GASPI\_STATE\_CORRUPT] means that the remote \GASPI{}
 process is corrupted, i.\,e.\ there is no communication possible.
+\end{description}
 
 \begin{TDef}
 \TDefDefn{{\tt vector<\gaspitype{state}>}}{\gaspitype{state\_vector}}
-\TDefDesc{The vector with state information for individual processes. The
+\TDefDesc{\gaspitype{state\_vector} is a vector with state information for individual processes. The
   length of the vector equals the number of processes in the \GASPI{}
   program and the entries are ordered based on the process ranks, i.\,e.\ entry~0
   of the vector represents the state of process with the rank~0.}
@@ -1985,19 +1974,38 @@ is a \gaspisemantic{synchronous} \gaspisemantic{local}
 \gaspisemantic{blocking} procedure which adds
 a given rank to an existing group.
 
+
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_group_add ( gaspi_group_t group
-                , gaspi_rank_t rank
-                )
+GASPI_GROUP_ADD ( group )
 \end{verbatim}
 \end{FDefSign}
+
 \parameterlistbegin
 \parameterlistitem{inout}{group}{the group to which the rank is added}
 \parameterlistitem{in}{rank}{the rank to add to the group}
 \parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_group_add ( gaspi_group_t * group
+                , gaspi_rank_t const rank
+                )
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_group_add ( group
+                , rank ) BIND(C)
+  TYPE(gaspi_group_t), INTENT(OUT) :: group
+  TYPE(gaspi_rank_t), INTENT(IN) :: group
+  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -2050,8 +2058,8 @@ GASPI_GROUP_COMMIT ( group
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_group_commit ( gaspi_group_t group
-                   , gaspi_timeout_t timeout
+gaspi_group_commit ( gaspi_group_t const group
+                   , gaspi_timeout_t const timeout
                    )
 \end{verbatim}
 \end{FDefSign}
