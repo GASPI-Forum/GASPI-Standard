@@ -383,12 +383,26 @@ All procedures are named in accordance with the following convention.
 The procedures have \gaspifunction{} as a prefix. The prefix
 is followed by the operation name.
 
-
 \subsection{Procedure specification}
 
-\begin{todo}
-\item Subsection empty so far... 
-\end{todo}
+GASPI has adopted the procedure specifiaction of MPI. Similar to the MPI standard, procedures in GASPI hence are first specified using a language independent notation. 
+Immediately below this, the arguments of the procedure are given and marked as IN or OUT. The meanings of these are:
+
+\begin{itemize}
+\item the call uses but does not update an argument marked IN. For the C procedures these arguments are const-correct.
+\item the call may update an argument marked OUT.
+\end{itemize}
+
+Similar to MPI, in GASPI the passing of aliased procedure parameters results in undefined behavior.  Below the procedure arguments the ANSI C version of the function is shown, and below this, a version of the same function is shown for Fortran 2003. For the latter the corresponding definitions and derived types have to be include via  
+
+\begin{FDefSign}
+\begin{verbatim}
+use, intrinisic :: ISO_C_BINDING
+use GASPI_C_BINDING
+\end{verbatim}
+\end{FDefSign}
+
+
 
 \subsection{Semantic terms}
 
@@ -1143,7 +1157,7 @@ GASPI_CONFIG_SET ( config )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_config_set ( gaspi_configuration_t * const config )
+gaspi_config_set ( gaspi_configuration_t *config )
 \end{verbatim}
 \end{FDefSign}
 
@@ -1191,7 +1205,7 @@ GASPI_PROC_INIT ( config
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_proc_init ( gaspi_configuration_t * const config
+gaspi_proc_init ( gaspi_configuration_t *config
                 , gaspi_timeout_t const timeout )
 \end{verbatim}
 \end{FDefSign}
@@ -1990,7 +2004,7 @@ GASPI_GROUP_ADD ( group )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_group_add ( gaspi_group_t * const group
+gaspi_group_add ( gaspi_group_t *group
                 , gaspi_rank_t const rank
                 )
 \end{verbatim}
@@ -2191,7 +2205,7 @@ GASPI_GROUP_NUM ( group_num )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_group_num ( gaspi_number_t * const group_num )
+gaspi_group_num ( gaspi_number_t *group_num )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2244,7 +2258,7 @@ GASPI_GROUP_SIZE ( group
 \begin{verbatim}
 gaspi_return_t
 gaspi_group_size ( gaspi_group_t const group
-                 , gaspi_number_t * const group_size
+                 , gaspi_number_t *group_size
                  )
 \end{verbatim}
 \end{FDefSign}
@@ -2297,7 +2311,7 @@ GASPI_GROUP_RANKS ( group
 \begin{verbatim}
 gaspi_return_t
 gaspi_group_ranks ( gaspi_group_t const group
-                  , gaspi_rank_t * const group_ranks
+                  , gaspi_rank_t *group_ranks
                   )
 \end{verbatim}
 \end{FDefSign}
@@ -2893,7 +2907,7 @@ GASPI_SEGMENT_NUM ( segment_num )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_segment_num ( gaspi_number_t * const segment_num )
+gaspi_segment_num ( gaspi_number_t *segment_num )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2947,7 +2961,7 @@ GASPI_SEGMENT_LIST ( num
 \begin{verbatim}
 gaspi_return_t
 gaspi_segment_list ( gaspi_number_t const num
-                   , gaspi_segment_id_t * const segment_id_list 
+                   , gaspi_segment_id_t *segment_id_list 
                    )
 \end{verbatim}
 \end{FDefSign}
@@ -3005,7 +3019,7 @@ GASPI_SEGMENT_PTR ( segment_id
 \begin{verbatim}
 gaspi_return_t
 gaspi_segment_ptr ( gaspi_segment_id_t const segment_id
-                  , gaspi_pointer_t const pointer
+                  , gaspi_pointer_t pointer
                   )
 \end{verbatim}
 \end{FDefSign}
@@ -3960,7 +3974,7 @@ GASPI_NOTIFY_RESET ( notification_id
 \begin{verbatim}
 gaspi_return_t
 gaspi_notify_reset ( gaspi_notification_id_t const notification_id
-                   , gaspi_notification_t * const old_notification_val
+                   , gaspi_notification_t *old_notification_val
                    )
 \end{verbatim}
 \end{FDefSign}
@@ -4196,12 +4210,12 @@ GASPI_WRITE_LIST ( num
 \begin{verbatim}
 gaspi_return_t
 gaspi_write_list ( gaspi_number_t const num
-                 , gaspi_segment_id_t * const segment_id_local
-                 , gaspi_offset_t * const offset_local
+                 , gaspi_segment_id_t *segment_id_local
+                 , gaspi_offset_t *offset_local
                  , gaspi_rank_t const rank
-                 , gaspi_segment_id_t * const segment_id_remote
-                 , gaspi_offset_t * const offset_remote
-                 , gaspi_size_t * const size
+                 , gaspi_segment_id_t *segment_id_remote
+                 , gaspi_offset_t *offset_remote
+                 , gaspi_size_t *size
                  , gaspi_queue_id_t const queue
                  , gaspi_timeout_t const timeout
                  )
@@ -4300,12 +4314,12 @@ GASPI_WRITE_LIST_NOTIFY
 gaspi_return_t
 gaspi_write_list_notify
                 ( gaspi_number_t const num
-                , gaspi_segment_id_t * const segment_id_local
-                , gaspi_offset_t * const offset_local
+                , gaspi_segment_id_t *segment_id_local
+                , gaspi_offset_t *offset_local
                 , gaspi_rank_t const rank
-                , gaspi_segment_id_t * const segment_id_remote
-                , gaspi_offset_t * const offset_remote
-                , gaspi_size_t * const size
+                , gaspi_segment_id_t *segment_id_remote
+                , gaspi_offset_t *offset_remote
+                , gaspi_size_t *size
                 , gaspi_notification_id_t const notification_id
                 , gaspi_notification_t const notification_value
                 , gaspi_queue_id_t const queue
@@ -4403,12 +4417,12 @@ GASPI_READ_LIST ( num
 \begin{verbatim}
 gaspi_return_t
 gaspi_read_list ( gaspi_number_t const num
-                , gaspi_segment_id_t * const segment_id_local
-                , gaspi_offset_t * const offset_local
+                , gaspi_segment_id_t *segment_id_local
+                , gaspi_offset_t *offset_local
                 , gaspi_rank_t const rank
-                , gaspi_segment_id_t * const segment_id_remote
-                , gaspi_offset_t * const offset_remote
-                , gaspi_size_t * const size
+                , gaspi_segment_id_t *segment_id_remote
+                , gaspi_offset_t *offset_remote
+                , gaspi_size_t *size
                 , gaspi_queue_id_t const queue
                 , gaspi_timeout_t const timeout
                 )
@@ -4475,8 +4489,8 @@ GASPI_QUEUE_SIZE ( queue
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_queue_size ( gaspi_queue_id_t queue
-                 , gaspi_number_t queue_size
+gaspi_queue_size ( gaspi_queue_id_t const queue
+                 , gaspi_number_t *queue_size
                  )
 \end{verbatim}
 \end{FDefSign}
@@ -4531,8 +4545,8 @@ GASPI_QUEUE_PURGE ( queue
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_queue_purge ( gaspi_queue_id_t queue
-                  , gaspi_timeout_t timeout
+gaspi_queue_purge ( gaspi_queue_id_t const queue
+                  , gaspi_timeout_t const timeout
                   )
 \end{verbatim}
 \end{FDefSign}
@@ -4633,11 +4647,11 @@ GASPI_PASSIVE_SEND ( segment_id_local
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_passive_send ( gaspi_segment_id_t segment_id_local
-                   , gaspi_offset_t offset_local
-                   , gaspi_rank_t rank
-                   , gaspi_size_t size
-                   , gaspi_timeout_t timeout
+gaspi_passive_send ( gaspi_segment_id_t const segment_id_local
+                   , gaspi_offset_t const offset_local
+                   , gaspi_rank_t const rank
+                   , gaspi_size_t const size
+                   , gaspi_timeout_t const timeout
                    )
 \end{verbatim}
 \end{FDefSign}
@@ -4761,11 +4775,11 @@ GASPI_PASSIVE_RECEIVE ( segment_id_local
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_passive_receive ( gaspi_segment_id_t segment_id_local
-                      , gaspi_offset_t offset_local
-                      , gaspi_rank_t rank
-                      , gaspi_size_t size
-                      , gaspi_timeout_t timeout
+gaspi_passive_receive ( gaspi_segment_id_t const segment_id_local
+                      , gaspi_offset_t const offset_local
+                      , gaspi_rank_t *rank
+                      , gaspi_size_t const size
+                      , gaspi_timeout_t const timeout
                       )
 \end{verbatim}
 \end{FDefSign}
@@ -4877,13 +4891,13 @@ GASPI_PASSIVE_QUEUE_PURGE (timeout)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_passive_queue_purge (gaspi_timeout_t timeout)
+gaspi_passive_queue_purge (gaspi_timeout_t const timeout)
 \end{verbatim}
 \end{FDefSign}
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_passive_queue_purge ( gaspi_timeout_t timeout
+gaspi_passive_queue_purge ( timeout
                           , ireturn
                           ) BIND(C)
     TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
@@ -4940,7 +4954,7 @@ given value to a globally acessible value.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-GASPI_ATOMIC_FETCH_ADD (  segment_id
+GASPI_ATOMIC_FETCH_ADD ( segment_id
                        , offset
                        , rank
                        , value_add
@@ -4962,12 +4976,12 @@ GASPI_ATOMIC_FETCH_ADD (  segment_id
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_atomic_fetch_add ( gaspi_segment_id_t segment_id
-                       , gaspi_offset_t offset
-                       , gaspi_rank_t rank
-                       , gaspi_atomic_value_t value_add
-                       , gaspi_atomic_value_t value_old
-                       , gaspi_timeout_t timeout
+gaspi_atomic_fetch_add ( gaspi_segment_id_t const segment_id
+                       , gaspi_offset_t const offset
+                       , gaspi_rank_t const rank
+                       , gaspi_atomic_value_t const value_add
+                       , gaspi_atomic_value_t *value_old
+                       , gaspi_timeout_t const timeout
                        )
 \end{verbatim}
 \end{FDefSign}
@@ -5043,7 +5057,7 @@ in case these are equal the old value is replaced by a new value.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-GASPI_ATOMIC_COMPARE_SWAP (  segment_id
+GASPI_ATOMIC_COMPARE_SWAP ( segment_id
                           , offset
                           , rank
                           , comparator
@@ -5067,20 +5081,20 @@ GASPI_ATOMIC_COMPARE_SWAP (  segment_id
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_atomic_compare_swap ( gaspi_segment_id_t segment_id
-                          , gaspi_offset_t offset
-                          , gaspi_rank_t rank
-                          , gaspi_atomic_value_t comparator
-                          , gaspi_atomic_value_t value_new
-                          , gaspi_atomic_value_t value_old
-                          , gaspi_timeout_t timeout
+gaspi_atomic_compare_swap ( gaspi_segment_id_t const segment_id
+                          , gaspi_offset_t const offset
+                          , gaspi_rank_t const rank
+                          , gaspi_atomic_value_t const comparator
+                          , gaspi_atomic_value_t const value_new
+                          , gaspi_atomic_value_t *value_old
+                          , gaspi_timeout_t const timeout
                           )
 \end{verbatim}
 \end{FDefSign}
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_atomic_compare_swap (  segment_id
+gaspi_atomic_compare_swap ( segment_id
                           , offset
                           , rank
                           , comparator
@@ -5263,16 +5277,16 @@ GASPI_BARRIER ( group
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_barrier ( gaspi_group_t group
-              , gaspi_timeout_t timeout
+gaspi_barrier ( gaspi_group_t const group
+              , gaspi_timeout_t const timeout
               )
 \end{verbatim}
 \end{FDefSign}
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_barrier ( gaspi_group_t group
-              , gaspi_timeout_t timeout
+gaspi_barrier ( group
+              , timeout
               , ireturn
               ) BIND(C)
     TYPE(gaspi_group_t), INTENT(IN) :: group
@@ -5384,11 +5398,11 @@ GASPI_ALLREDUCE ( buffer_send
 gaspi_return_t
 gaspi_allreduce ( gaspi_pointer_t buffer_send
                 , gaspi_pointer_t buffer_receive
-                , gaspi_number_t num
-                , gaspi_operation_t operation
-                , gaspi_datatype_t datatype
-                , gaspi_group_t group
-                , gaspi_timeout_t timeout
+                , gaspi_number_t const num
+                , gaspi_operation_t const operation
+                , gaspi_datatype_t const datatype
+                , gaspi_group_t const group
+                , gaspi_timeout_t const timeout
                 )
 \end{verbatim}
 \end{FDefSign}
@@ -5552,12 +5566,12 @@ GASPI_ALLREDUCE_USER ( buffer_send
 gaspi_return_t
 gaspi_allreduce_user ( gaspi_pointer_t buffer_send
                      , gaspi_pointer_t buffer_receive
-                     , gaspi_number_t num
-                     , gaspi_size_t size_element
-                     , gaspi_reduce_operation_t reduce_operation
-                     , gaspi_reduce_state_t reduce_state
-                     , gaspi_group_t group
-                     , gaspi_timeout_t timeout
+                     , gaspi_number_t const num
+                     , gaspi_size_t const size_element
+                     , gaspi_reduce_operation_t const reduce_operation
+                     , gaspi_reduce_state_t const reduce_state
+                     , gaspi_group_t const group
+                     , gaspi_timeout_t const timeout
                      )
 \end{verbatim}
 \end{FDefSign}
@@ -5638,22 +5652,21 @@ GASPI_REDUCE_OPERATION ( operand_one
 \begin{verbatim}
 gaspi_return_t
 gaspi_reduce_operation ( gaspi_pointer_t operand_one
-                       , gaspi_pointer_t operand_two
+                       , gaspi_pointer_t operand_t constwo
                        , gaspi_pointer_t result
-                       , gaspi_state_t state
-                       , gaspi_timeout_t timeout
+                       , gaspi_state_t const state
+                       , gaspi_timeout_t const timeout
                        )
 \end{verbatim}
 \end{FDefSign}
 
 \begin{FDefSign}
 \begin{verbatim}
-
-gaspi_reduce_operation ( gaspi_pointer_t operand_one
-                       , gaspi_pointer_t operand_two
-                       , gaspi_pointer_t result
-                       , gaspi_state_t state
-                       , gaspi_timeout_t timeout
+gaspi_reduce_operation ( operand_one
+                       , operand_two
+                       , result
+                       , state
+                       , timeout
                        , ireturn
                        ) BIND(C)
     TYPE(gaspi_pointer_t), INTENT(IN) :: operand_one
@@ -5748,7 +5761,7 @@ GASPI_GROUP_MAX (group_max)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_group_max (gaspi_number_t group_max)
+gaspi_group_max (gaspi_number_t *group_max)
 \end{verbatim}
 \end{FDefSign}
 
@@ -5783,7 +5796,7 @@ GASPI_SEGMENT_MAX (segment_max)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_segment_max (gaspi_number_t segment_max)
+gaspi_segment_max (gaspi_number_t *segment_max)
 \end{verbatim}
 \end{FDefSign}
 
@@ -5819,7 +5832,7 @@ GASPI_QUEUE_NUM (queue_num)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_queue_num (gaspi_number_t queue_num)
+gaspi_queue_num (gaspi_number_t *queue_num)
 \end{verbatim}
 \end{FDefSign}
 \begin{FDefSign}
@@ -5851,7 +5864,7 @@ GASPI_QUEUE_SIZE_MAX ( queue_size_max )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_queue_size_max ( gaspi_number_t queue_size_max )
+gaspi_queue_size_max ( gaspi_number_t* queue_size_max )
 \end{verbatim}
 \end{FDefSign}
 
@@ -5884,7 +5897,7 @@ GASPI_TRANSFER_SIZE_MAX (transfer_size_max)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_transfer_size_max (gaspi_size_t transfer_size_max)
+gaspi_transfer_size_max (gaspi_size_t *transfer_size_max)
 \end{verbatim}
 \end{FDefSign}
 
@@ -5917,7 +5930,7 @@ GASPI_NOTIFICATION_NUM (notification_num)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_notification_num (gaspi_number_t notification_num)
+gaspi_notification_num (gaspi_number_t *notification_num)
 \end{verbatim}
 \end{FDefSign}
 
@@ -5962,6 +5975,7 @@ gaspi_notification_num ( notification_num
 GASPI_PASSIVE_TRANSFER_SIZE_MAX (transfer_size_max)
 \end{verbatim}
 \end{FDefSign}
+
 \parameterlistbegin
 \parameterlistitem{out}{transfer\_size\_max}{maximal transfer size per single passive communication request}
 \parameterlistend
@@ -5969,7 +5983,7 @@ GASPI_PASSIVE_TRANSFER_SIZE_MAX (transfer_size_max)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_passive_transfer_size_max (gaspi_size_t transfer_size_max)
+gaspi_passive_transfer_size_max (gaspi_size_t *transfer_size_max)
 \end{verbatim}
 \end{FDefSign}
 
@@ -6004,7 +6018,7 @@ GASPI_ALLREDUCE_BUF_SIZE (buf_size)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_allreduce_buf_size (gaspi_size_t buf_size)
+gaspi_allreduce_buf_size (gaspi_size_t *buf_size)
 \end{verbatim}
 \end{FDefSign}
 
@@ -6036,7 +6050,7 @@ GASPI_ALLREDUCE_ELEM_MAX (elem_max)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_allreduce_elem_max (gaspi_number_t elem_max)
+gaspi_allreduce_elem_max (gaspi_number_t *elem_max)
 \end{verbatim}
 \end{FDefSign}
 
@@ -6071,7 +6085,7 @@ GASPI_NETWORK_TYPE (network_type)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_network_type (gaspi_network_t network_type)
+gaspi_network_type (gaspi_network_t *network_type)
 \end{verbatim}
 \end{FDefSign}
 
@@ -6103,7 +6117,7 @@ GASPI_BUILD_INFRASTRUCTURE (build_infrastructure)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_build_infrastructure (gaspi_bool_t build_infrastructure)
+gaspi_build_infrastructure (gaspi_bool_t *build_infrastructure)
 \end{verbatim}
 \end{FDefSign}
 
@@ -6145,7 +6159,7 @@ GASPI_VERSION (version)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_version (float version)
+gaspi_version (float *version)
 \end{verbatim}
 \end{FDefSign}
 
@@ -6154,7 +6168,7 @@ gaspi_version (float version)
 gaspi_version ( version
               , ireturn 
               ) BIND(C)
-    TYPE(float), INTENT(OUT) :: version
+    REAL(kind=c_float), INTENT(OUT) :: version
     TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
@@ -6191,7 +6205,7 @@ GASPI_TIME_GET (wtime)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_time_get (gaspi_time_t wtime)
+gaspi_time_get (gaspi_time_t *wtime)
 \end{verbatim}
 \end{FDefSign}
 
@@ -6235,7 +6249,7 @@ GASPI_TIME_TICKS (resolution)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_time_ticks (gaspi_time_t resolution)
+gaspi_time_ticks (gaspi_time_t *resolution)
 \end{verbatim}
 \end{FDefSign}
 
@@ -6276,9 +6290,8 @@ procedure which translates an error code to a text message.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_error_message ( gaspi_return_t error_code
-                    , gaspi_string_t error_message
+GASPI_ERROR_MESSAGE ( error_code
+                    , error_message
                     )
 \end{verbatim}
 \end{FDefSign}
@@ -6286,6 +6299,29 @@ gaspi_error_message ( gaspi_return_t error_code
 \parameterlistitem{in}{error\_code}{the error code to be translated}
 \parameterlistitem{out}{error\_message}{the error message}
 \parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_error_message ( gaspi_return_t const error_code
+                    , gaspi_string_t *error_message
+                    )
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_error_message ( error_code
+                    , error_message
+                    , ireturn
+                    ) BIND(C)
+    TYPE(gaspi_return_t), INTENT(IN) :: error_code
+    TYPE(gaspi_string_t), INTENT(OUT) :: error_message
+    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
+
 \executionphaseany
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -6329,13 +6365,32 @@ Instead the user can call \gaspifunction{statistic\_counter\_max} in order to de
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_statistic_counter_max ( gaspi_number_t counter_max )
+GASPI_STATISTIC_COUNTER_MAX ( counter_max )
 \end{verbatim}
 \end{FDefSign}
+
 \parameterlistbegin
 \parameterlistitem{out}{counter\_max}{the maximum value for \gaspitype{statistic\_counter}. The allowed value range is $0 \leq counter < counter\_max$ }
 \parameterlistend
+
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_statistic_counter_max ( gaspi_number_t *counter_max )
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_statistic_counter_max ( counter_max
+                            , ireturn
+                            ) BIND(C)
+    TYPE(gaspi_number_t), INTENT(OUT) :: counter_max
+    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
 \executionphaseany
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -6369,12 +6424,11 @@ A \GASPI{} implementation is free to extend the above enumeration.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_statistic_counter_info ( gaspi_statistic_counter_t counter
-                             , gaspi_statistic_argument_t counter_argument
-                             , gaspi_string_t counter_name
-                             , gaspi_string_t counter_description
-                             , gaspi_number_t verbosity_level
+GASPI_STATISTIC_COUNTER_INFO ( const counter
+                             , counter_argument
+                             , counter_name
+                             , counter_description
+                             , verbosity_level
                              )
 \end{verbatim}
 \end{FDefSign}
@@ -6385,6 +6439,37 @@ gaspi_statistic_counter_info ( gaspi_statistic_counter_t counter
 \parameterlistitem{out}{counter\_description}{a more verbose description of this counter}
 \parameterlistitem{out}{verbosity\_level}{minimum verbosity level to activate this counter (at least $1$)}
 \parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_statistic_counter_info ( gaspi_statistic_counter_t const counter
+                             , gaspi_statistic_argument_t *counter_argument
+                             , gaspi_string_t *counter_name
+                             , gaspi_string_t *counter_description
+                             , gaspi_number_t *verbosity_level
+                             )
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+GASPI_STATISTIC_COUNTER_INFO ( counter
+                             , counter_argument
+                             , counter_name
+                             , counter_description
+                             , verbosity_level
+                             , ireturn
+                             ) BIND(C)
+    TYPE(gaspi_statistic_counter_t), INTENT(IN) ::  counter
+    TYPE(gaspi_statistic_argument_t), INTENT(OUT) ::  counter_argument
+    TYPE(gaspi_string_t), INTENT(OUT) ::  counter_name
+    TYPE(gaspi_string_t), INTENT(OUT) ::  counter_description
+    TYPE(gaspi_number_t), INTENT(OUT) ::  verbosity_level
+    TYPE(gaspi_return_t), INTENT(OUT) ::  ireturn
+\end{verbatim}
+\end{FDefSign}
+
 \executionphaseany
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -6410,13 +6495,31 @@ It is not guaranteed, that counters with a minimum verbosity level of $0$ are co
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_statistic_verbosity_level ( gaspi_number_t verbosity_level )
+GASPI_STATISTIC_VERBOSITY_LEVEL ( verbosity_level )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
 \parameterlistitem{in}{verbosity\_level}{the level of desired verbosity}
 \parameterlistend
+
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_statistic_verbosity_level ( gaspi_number_t const verbosity_level )
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_statistic_verbosity_level ( verbosity_level
+                                , ireturn
+                                ) BIND(C)
+    TYPE(gaspi_number_t), INTENT(IN) ::  verbosity_level 
+    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
 \executionphaseany
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -6433,10 +6536,9 @@ procedure which retrieves a statistical counter from the local \GASPI{} process.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_statistic_counter_get ( gaspi_statistic_counter_t counter
-                            , gaspi_statistic_argument_t argument
-                            , gaspi_number_t value
+GASPI_STATISTIC_COUNTER_GET ( counter
+                            , argument
+                            , value
                             )
 \end{verbatim}
 \end{FDefSign}
@@ -6445,6 +6547,32 @@ gaspi_statistic_counter_get ( gaspi_statistic_counter_t counter
 \parameterlistitem{in}{argument}{the argument for the counter}
 \parameterlistitem{out}{value}{the current value of the counter}
 \parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_statistic_counter_get ( gaspi_statistic_counter_t const counter
+                            , gaspi_statistic_argument_t const argument
+                            , gaspi_number_t *value
+                            )
+\end{verbatim}
+\end{FDefSign}
+
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_statistic_counter_get ( counter
+                            , argument
+                            , value
+                            , ireturn
+                            ) BIND(C)
+    TYPE(gaspi_statistic_counter_t), INTENT(IN) ::  counter
+    TYPE(gaspi_statistic_argument_t), INTENT(IN) ::  argument
+    TYPE(gaspi_number_t), INTENT(OUT) ::  value
+    TYPE(gaspi_return_t), INTENT(OUT) ::  ireturn
+\end{verbatim}
+\end{FDefSign}
+
 \executionphaseany
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -6470,13 +6598,31 @@ procedure which sets a statistical counter to 0.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_statistic_counter_reset (gaspi_statistic_counter_t counter)
+GASPI_STATISTIC_COUNTER_RESET (counter)
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
 \parameterlistitem{in}{counter}{the counter to be reset}
 \parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_statistic_counter_reset (gaspi_statistic_counter_t const counter)
+\end{verbatim}
+\end{FDefSign}
+
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_statistic_counter_reset ( counter
+                              , ireturn
+                              ) BIND(C)
+    TYPE(gaspi_statistic_counter_t), INTENT(IN) :: counter
+    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
 \executionphaseany
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -6547,13 +6693,29 @@ The meaning of \parameter{argument} is specified by the used event tracer.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t
-gaspi_pcontrol ( gaspi_pointer_t argument )
+GASPI_PCONTROL ( argument )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
 \parameterlistitem{inout}{argument}{}
 \parameterlistend
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_pcontrol ( gaspi_pointer_t argument )
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_pcontrol ( argument
+               , ireturn
+               ) BIND(C)
+    TYPE(gaspi_pointer_t), INTENT(INOUT) ::  argument
+    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
+
 \executionphaseany
 \FStdRetDescNOTimeout
 \end{FDef}
