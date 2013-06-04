@@ -259,7 +259,7 @@ Specification of a general purpose API for communication\\
 ~\\
 draft, version 0.92
 }
-
+%TODO
 \author{Daniel Gr\"unewald et al.\\
 Fraunhofer ITWM, Fraunhofer Platz 1, 67663 Kaiserslautern
 }
@@ -281,7 +281,7 @@ Fraunhofer ITWM, Fraunhofer Platz 1, 67663 Kaiserslautern
 % \end{todo}
 
 \section{About the document}
-
+%TODO NICHT MEHR DRAFT??
 This is a draft version for comment only. There are parts of a
 complete specification missing, for example you will find (nearly)
 nothing about language bindings. On the other hand, there could be
@@ -296,9 +296,10 @@ like.
 \subsection{Overview and Goals}
 \label{subsec::Overview}
 
-\GASPI{} is a Partitioned Global Address Space (PGAS) API. It aims at
-scalable, flexible and failure tolerant computing in parallel
-computing environments.  \GASPI{} targets extreme scalability and aims
+\GASPI{} stands for Global Address Space Programming Interface and
+is a Partitioned Global Address Space (PGAS) API. It aims at
+extreme scalability, flexibility, and failure tollerance scalable for parallel
+computing environments.  \GASPI{} aims
 to initiate a paradigm shift from bulk-synchronous two-sided
 communication patterns towards an asynchronous communication and
 execution model. To that end \GASPI{} leverages one-sided RDMA driven
@@ -308,12 +309,15 @@ language (like e.\,g.\ Chapel from Cray), nor an extension to a
 language (like e.\,g.\ Co-Array Fortran). Instead---very much in the
 spirit of MPI---it complements existing languages like C/C++ or
 Fortran with a PGAS API which enables the application to leverage the
-concept of the Partitioned Global Adress Space.  In contrast to
+concept of the Partitioned Global Adress Space. In contrast to
 e.\,g.\ OpenShmem or Global Arrays, \GASPI{} is not limited to a
 single memory model, but rather provides configurable RDMA
-PGAS memory segments.  By means of these segments \GASPI{} does not
-merely support a single Partitioned Global Address Space, but rather a
-multitude of Partitioned Global Address Spaces. In \GASPI{} it is hence
+PGAS memory segments.
+% By means of these segments \GASPI{} does not
+% merely support a single Partitioned Global Address Space, but rather a
+% multitude of Partitioned Global Address Spaces.
+% Widerspricht sich das nicht? Erst viele und als nächste alle in einen Adressraum?
+In \GASPI{} it is hence
 quite possible for different memory management systems---or indeed
 different PGAS applications---to co-exist in the same single global
 address space. \GASPI{} is failure tolerant in the sense that it
@@ -335,37 +339,36 @@ define a novel specification for a PGAS API (\GASPI{}, based on GPI) and to
 make this novel \GASPI{} specification a reliable, scalable and universal
 tool for the HPC community.
 
-\subsubsection{Application requirements}
+% \subsubsection{Application requirements}
+% 
+% The following application requirements have been identified:
+% 
+% \begin{itemize}
+% \item one-sided asynchronous remote read/write operations
+% \item allreduce (also for subgroups)
+% \item barrier (also for subgroups)
+% \item passive communication
+% \item atomic operations
+% \end{itemize}
 
-The following application requirements have been identified:
 
-\begin{itemize}
-\item one-sided asynchronous remote read/write operations
-\item allreduce (also for subgroups)
-\item barrier (also for subgroups)
-\item broadcast (also for subgroups)
-\item passive communication
-\item atomic operations
-\end{itemize}
+\subsection{Design goals}
 
-
-\subsubsection{Design goals}
-
-From the application requirements the following design goals have been deduced:
+\GASPI{} has been designed with the following goals in mind:
 
 \begin{itemize}
 \item Extreme scalability.
+\item Efficient one sided asynchronous remote read/write operations.
 \item Multi-segment support to support \eg heterogeneous systems and NUMA-pinning.
 \item Dynamic allocation of segments.
-\item Timeout mechanisms and failure tolerance.
-\item Group support for collectives.
-\item Large flexibility in the number of queues, queue sizes, atomic
+\item Timeout mechanisms to allow failure tolerant programming.
+\item Collective operations for groups of processes.
+\item Flexibility in the number of message queues, the queue sizes, atomic
   operations etc.
 \item A maximum freedom to implementors, where details are left to the
   implementation.
 \item A strong standard library which takes care of convenience
   procedures and cosmetics. The specification should be simple and solid.
-\item GPI is the base and we should improve from there where necessary.
 \end{itemize}
 
 %\subsection{Organization of this document}
