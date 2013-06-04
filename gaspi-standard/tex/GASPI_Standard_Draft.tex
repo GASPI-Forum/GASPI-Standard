@@ -541,7 +541,7 @@ in the subsequent topic-specific sections.
 Address Space (\emph{PGAS}) model. Each \GASPI{} process may host 
 parts (called segments) of the global address space. A local segment 
 can be accessed with standard load/store operations and remote segments
-can be accessed by every thread on every \GASPI{} process using the
+can be accessed by every thread of every \GASPI{} process using the
 \GASPI{} read and write operations.
 
 \GASPI{} was designed with remote direct memory access (RDMA) in mind.
@@ -632,9 +632,8 @@ fair distributed updates of globally shared parts of data.
 
 \subsection{\GASPI{} global atomics}
 
-\GASPI{} provides atomic operations, i.\,e. integral types that can be
-manipulated through atomic procedures. These atomic procedures are
-guaranteed to execute from start to end without fear of preemption
+\GASPI{} provides atomic operations for integral types, i.\,e. such variables can
+be manipulated atomically without fear of preemption
 causing corruption.  There are two basic atomic operations:
 \function{fetch\_and\_add} and \function{compare\_and\_swap}. The
 values can be used as global shared variables and to synchronise
@@ -666,20 +665,19 @@ for an indefinitely amount of time in case of an error.
 blocks the procedure for the shortest time possible, \ie the time
 in which the procedure call processes an atomic portion of its work.
 
-Example:
-\begin{lstlisting}[numbers=none]
+Examples:
+\begin{lstlisting}[numbers=none,caption=Blocks until the communication queue is empty and may block indefinitely in case of a failure.]
 WAIT (..., GASPI_BLOCK);
 \end{lstlisting}
-Blocks until the communication queue is empty and may block indefinitely in case of a failure.
-\begin{lstlisting}[numbers=none]
+
+\begin{lstlisting}[numbers=none,caption=Just check if the operation has completed and return as soon as possible.]
 WAIT (..., GASPI_TEST);
 \end{lstlisting}
-Just check if the operation has completed and return as soon as possible.
-\begin{lstlisting}[numbers=none]
+
+\begin{lstlisting}[numbers=none,caption=Blocks until the queue is empty or more than $10$ milliseconds have passed since wait has been called.]
 WAIT (..., 10);
 \end{lstlisting}
-Blocks until the queue is empty or more than $10$ milliseconds have
-passed since wait has been called.
+
 
 \subsection{\GASPI{} collective communication}
 
@@ -733,7 +731,7 @@ independently from the operations on other queues (separation of concerns).
 
 \begin{implementoradvice}
 An implementation may provide specific error values. All error codes
-in the range $(-2,\ldots,-999)$ are reserved and must not be used.
+in the range $[-2,\ldots,-999]$ are reserved and must not be used.
 If there are predefined error codes, each of the return codes must have
 a corresponding error message.
 \end{implementoradvice}
@@ -873,7 +871,7 @@ optimizations.
 
 \subsubsection{Function return values}
 \begin{TDef}
-\TDefDef{\GASPISUCC{}} 
+\TDefDef{\GASPISUCC{}}
 \TDefDesc{GASPI\_SUCCESS is returned if a procedure call is completed successfully.}
 \end{TDef}
 
@@ -889,7 +887,16 @@ optimizations.
 \TDefDesc{GASPI\_ERROR is returned if a procedure call finished with an error.}
 \end{TDef}
 
+\subsubsection{State vector states}
+\begin{TDef}
+\TDefDef{GASPI\_STATE\_HEALTHY} 
+\TDefDesc{GASPI\_STATE\_HEALTHY implies that a remote \GASPI{} process is healthy and communication is possible.}
+\end{TDef}
 
+\begin{TDef}
+\TDefDef{GASPI\_STATE\_CORRUPT}
+\TDefDesc{GASPI\_STATE\_CORRUPT implies that the remote \GASPI{} process is corrupted and communication is impossible.}
+\end{TDef}
 
 \subsubsection{Allocation policies}
 \begin{TDef}
@@ -907,28 +914,26 @@ A \GASPI{} implementation is free to provide additional allocation policies.
 \subsection{Introduction and overview}
 \label{SubSec:ExecPhases}
 
-\GASPI{} does not fix a SPMD (Single Program, Multiple Data) or MPMD
-(Multiple Program, Multiple Data) style in its approach to
-parallelism.  Hence, either a single program or different programs are
-started and initialized on the desired target computational units. How
-the \GASPI{} application is started and initialized is not specified
-and is implementation specific.
+\GASPI{} allows both SPMD (Single Program, Multiple Data) and MPMD
+(Multiple Program, Multiple Data) style program execution.
+Hence, either a single program or different programs can be
+started on the computational units. How
+a \GASPI{} application is started and initialized is implementation specific.
 
-The concept of rank is attributed to each created process. Ranks are a
-central aspect which allows applications to identify processes and
-therefore make processing elements act on different tasks or data,
-even if only a single program is started.
+A rank is attributed to each created process. Ranks are a
+central aspect as they allow applications to identify processes and
+therefore allow to distribute work among the processes.
 
-There is also the concept of segments. Segments are memory regions
-that may be globally available, to be written to or read from. In general,
+Furthermore, \GASPI{} provides segments. Segments are 
+globally accessable memory regions. In general,
 the execution of a \GASPI{} process can be considered as split
 into several consecutive phases:
 
 \begin{itemize}
-\item \textbf{Setup}
+\item \textbf{Setup (optional)}
   \begin{description}
-  \item Setting up configuration parameters (optional)
-  \item Performing environment checks (optional)
+  \item Setting up configuration parameters 
+  \item Performing environment checks
   \end{description}
 \item \textbf{Initialization}
   \begin{description}
@@ -938,14 +943,14 @@ into several consecutive phases:
    \item Creation of segments or groups (optional)
 %    \item Creation of segments (optional).
   \end{description}
-\item \textbf{Working}
+\item \textbf{Working (optional)}
   \begin{description}
-   \item Body of the application
-  \begin{description}
-    \item Communication calls (optional)
-    \item Collective operations (optional)
-    \item Atomic operations (optional)
-  \end{description}
+%    \item Body of the application
+%   \begin{description}
+    \item Communication calls
+    \item Collective operations
+    \item Atomic operations
+%   \end{description}
   \end{description}
 \item \textbf{Shutdown}
   \begin{description}
@@ -973,23 +978,22 @@ one or more groups.
 Segments are contiguous blocks of memory that may be accessed
 globally by all processes and where global data should be placed.
 
-After the initialization, the application can proceed with its real
+After the initialization, the application can proceed with its
 \textbf{working} phase and use the functionalities of \GASPI{} (communication,
 collectives, atomic operations, etc.).
 
-Before terminating, the application should call the
-\textbf{shutdown} procedure (see Section~\ref{sec:shutdown}) so that the
-resources and communication infrastructure is cleaned up.
+The application should call the
+\textbf{shutdown} procedure (see Section~\ref{sec:shutdown}) before it is terminated
+so that all resources and the communication infrastructure is cleaned up.
 
-The entire set of execution phases beginning from the setup phase
-and ending with the shutdown phase defines a \GASPI{} life cycle.
+The entire set of execution phases define the \GASPI{} life cycle.
 In principle, several life cycles can be invoked in one \GASPI{}
 program.
 
-\begin{useradvice}
-Calling a routine in a given execution phase which is not supposed
-to be executed in that execution phase results in undefined behavior.
-\end{useradvice}
+% \begin{useradvice}
+Calling a routine in an execution phase in which it is not supposed
+to be executed in results in undefined behavior.
+% \end{useradvice}
 
 \subsection{Process configuration}
 
@@ -1007,7 +1011,7 @@ will be used.
 % \item check how this works in fortran
 % \end{todo}
 
-\begin{lstlisting}
+\begin{lstlisting}[caption=GASPI configuration structure.]
 typedef struct {
   // maximum number of groups
   gaspi_number_t     group_max;
@@ -1156,7 +1160,7 @@ GASPI_CONFIG_SET ( config )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_config_set ( gaspi_configuration_t *config )
+gaspi_config_set ( gaspi_configuration_t const *config )
 \end{verbatim}
 \end{FDefSign}
 
@@ -1204,7 +1208,7 @@ GASPI_PROC_INIT ( config
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_proc_init ( gaspi_configuration_t *config
+gaspi_proc_init ( gaspi_configuration_t const *config
                 , gaspi_timeout_t const timeout )
 \end{verbatim}
 \end{FDefSign}
@@ -4209,12 +4213,12 @@ GASPI_WRITE_LIST ( num
 \begin{verbatim}
 gaspi_return_t
 gaspi_write_list ( gaspi_number_t const num
-                 , gaspi_segment_id_t *segment_id_local
-                 , gaspi_offset_t *offset_local
+                 , gaspi_segment_id_t const *segment_id_local
+                 , gaspi_offset_t const *offset_local
                  , gaspi_rank_t const rank
-                 , gaspi_segment_id_t *segment_id_remote
-                 , gaspi_offset_t *offset_remote
-                 , gaspi_size_t *size
+                 , gaspi_segment_id_t const *segment_id_remote
+                 , gaspi_offset_t const *offset_remote
+                 , gaspi_size_t const *size
                  , gaspi_queue_id_t const queue
                  , gaspi_timeout_t const timeout
                  )
@@ -4313,12 +4317,12 @@ GASPI_WRITE_LIST_NOTIFY
 gaspi_return_t
 gaspi_write_list_notify
                 ( gaspi_number_t const num
-                , gaspi_segment_id_t *segment_id_local
-                , gaspi_offset_t *offset_local
+                , gaspi_segment_id_t const *segment_id_local
+                , gaspi_offset_t const *offset_local
                 , gaspi_rank_t const rank
-                , gaspi_segment_id_t *segment_id_remote
-                , gaspi_offset_t *offset_remote
-                , gaspi_size_t *size
+                , gaspi_segment_id_t const *segment_id_remote
+                , gaspi_offset_t const *offset_remote
+                , gaspi_size_t const *size
                 , gaspi_notification_id_t const notification_id
                 , gaspi_notification_t const notification_value
                 , gaspi_queue_id_t const queue
@@ -4416,12 +4420,12 @@ GASPI_READ_LIST ( num
 \begin{verbatim}
 gaspi_return_t
 gaspi_read_list ( gaspi_number_t const num
-                , gaspi_segment_id_t *segment_id_local
-                , gaspi_offset_t *offset_local
+                , gaspi_segment_id_t const *segment_id_local
+                , gaspi_offset_t const *offset_local
                 , gaspi_rank_t const rank
-                , gaspi_segment_id_t *segment_id_remote
-                , gaspi_offset_t *offset_remote
-                , gaspi_size_t *size
+                , gaspi_segment_id_t const *segment_id_remote
+                , gaspi_offset_t const *offset_remote
+                , gaspi_size_t const *size
                 , gaspi_queue_id_t const queue
                 , gaspi_timeout_t const timeout
                 )
@@ -4489,7 +4493,7 @@ GASPI_QUEUE_SIZE ( queue
 \begin{verbatim}
 gaspi_return_t
 gaspi_queue_size ( gaspi_queue_id_t const queue
-                 , gaspi_number_t *queue_size
+                 , gaspi_number_t const *queue_size
                  )
 \end{verbatim}
 \end{FDefSign}
@@ -4776,7 +4780,7 @@ GASPI_PASSIVE_RECEIVE ( segment_id_local
 gaspi_return_t
 gaspi_passive_receive ( gaspi_segment_id_t const segment_id_local
                       , gaspi_offset_t const offset_local
-                      , gaspi_rank_t *rank
+                      , gaspi_rank_t const *rank
                       , gaspi_size_t const size
                       , gaspi_timeout_t const timeout
                       )
@@ -5392,6 +5396,7 @@ GASPI_ALLREDUCE ( buffer_send
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
 
+%TODO CONST POINTER
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
