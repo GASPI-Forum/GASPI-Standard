@@ -731,7 +731,7 @@ independently from the operations on other queues (separation of concerns).
 
 \begin{implementoradvice}
 An implementation may provide specific error values. All error codes
-in the range $[-2,\ldots,-999]$ are reserved and must not be used.
+in the range $[-1,\ldots,-999]$ are reserved and must not be used.
 If there are predefined error codes, each of the return codes must have
 a corresponding error message.
 \end{implementoradvice}
@@ -856,6 +856,15 @@ optimizations.
 \TDefDesc{The \GASPI{} string type.}
 \end{TDef}
 
+
+\begin{TDef}
+\TDefDef{\gaspitype{statistic\_counter}}
+\TDefDesc{The \GASPI{} statistic counter type.}
+\end{TDef}
+
+
+
+
 \subsection{Constants}
 
 \subsubsection{Timeout values}
@@ -908,6 +917,8 @@ optimizations.
 A \GASPI{} implementation is free to provide additional allocation policies.
 \end{implementoradvice}
 
+\subsubsection{Statistics interface}
+A \GASPI{} implementation is free to define constants of the type \gaspitype{statistic\_counter} for specific statistics.
 
 \section{Execution model}
 
@@ -1093,8 +1104,7 @@ structure parameters need to be the same on all \GASPI{} processes.
 The user has the possibility to set the values on her own or leave the
 default values. Each field (where applicable) also has a maximum value
 to avoid user errors that might lead to too much instability or
-scalability problems (for example, the number of queues). The maximum
-values applied will be the current GPI values.
+scalability problems (for example, the number of queues).
 
 \subsubsection{\gaspifunction{config\_get}}
 
@@ -6346,18 +6356,6 @@ The statistics part provides the means to allow the user to collect basic profil
 The event tracing part describes the requirements for an \GASPI{} implementation in order to support the transparent interception and inspection of function calls.
 
 \subsection{Statistics}
-
-\subsubsection{\gaspitype{statistic\_counter}}
-
-The statistic interface provides access to statistic and performance variables of the \GASPI{} implementation.
-It is based on the type \gaspitype{statistic\_counter}, which determines a particular statistical counter.
-
-\begin{listing}[99]{2}
-typedef unsigned int gaspi_statistic_counter_t;
-\end{listing}
-
-A \GASPI{} implementation is free to define symbolic constants of the type \gaspitype{statistic\_counter} for specific statistics.
-
 
 \subsubsection{\gaspifunction{statistic\_counter\_max}}
 
