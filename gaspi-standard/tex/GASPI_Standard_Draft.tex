@@ -837,6 +837,11 @@ optimizations.
 \end{TDef}
 
 \begin{TDef}
+\TDefDef{\gaspitype{const\_pointer}}
+\TDefDesc{A type that can point to some (area of) memory that cannot be modified using this pointer.}
+\end{TDef}
+
+\begin{TDef}
 \TDefDef{\gaspitype{alloc}}
 \TDefDesc{The \GASPI{} allocation policy type.}
 \end{TDef}
@@ -855,7 +860,6 @@ optimizations.
 \TDefDef{\gaspitype{string}}
 \TDefDesc{The \GASPI{} string type.}
 \end{TDef}
-
 
 \begin{TDef}
 \TDefDef{\gaspitype{statistic\_counter}}
@@ -1437,7 +1441,7 @@ GASPI_PROC_TERM ( timeout )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_proc_term ( gaspi_timeout_t const timeout )
+gaspi_proc_term ( gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -1494,8 +1498,8 @@ GASPI_PROC_KILL ( rank
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_proc_kill ( gaspi_rank_t const rank
-                , gaspi_timeout_t const timeout )
+gaspi_proc_kill ( gaspi_rank_t rank
+                , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -1583,8 +1587,8 @@ GASPI_CONNECT ( rank
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_connect ( gaspi_rank_t const rank
-              , gaspi_timeout_t const timeout )
+gaspi_connect ( gaspi_rank_t rank
+              , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -1665,8 +1669,8 @@ GASPI_DISCONNECT ( rank
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_disconnect ( gaspi_rank_t const rank
-                 , gaspi_timeout_t const timeout )
+gaspi_disconnect ( gaspi_rank_t rank
+                 , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2018,7 +2022,7 @@ GASPI_GROUP_ADD ( group )
 \begin{verbatim}
 gaspi_return_t
 gaspi_group_add ( gaspi_group_t *group
-                , gaspi_rank_t const rank
+                , gaspi_rank_t rank
                 )
 \end{verbatim}
 \end{FDefSign}
@@ -2085,8 +2089,8 @@ GASPI_GROUP_COMMIT ( group
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_group_commit ( gaspi_group_t const group
-                   , gaspi_timeout_t const timeout
+gaspi_group_commit ( gaspi_group_t group
+                   , gaspi_timeout_t timeout
                    )
 \end{verbatim}
 \end{FDefSign}
@@ -2164,7 +2168,7 @@ GASPI_GROUP_DELETE ( group )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_group_delete ( gaspi_group_t const group )
+gaspi_group_delete ( gaspi_group_t group )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2270,7 +2274,7 @@ GASPI_GROUP_SIZE ( group
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_group_size ( gaspi_group_t const group
+gaspi_group_size ( gaspi_group_t group
                  , gaspi_number_t *group_size
                  )
 \end{verbatim}
@@ -2323,7 +2327,7 @@ GASPI_GROUP_RANKS ( group
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_group_ranks ( gaspi_group_t const group
+gaspi_group_ranks ( gaspi_group_t group
                   , gaspi_rank_t *group_ranks
                   )
 \end{verbatim}
@@ -2446,9 +2450,9 @@ GASPI_SEGMENT_ALLOC ( segment_id
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_segment_alloc ( gaspi_segment_id_t const segment_id
-                    , gaspi_size_t const size
-                    , gaspi_alloc_t const alloc_policy
+gaspi_segment_alloc ( gaspi_segment_id_t segment_id
+                    , gaspi_size_t size
+                    , gaspi_alloc_t alloc_policy
                     )
 \end{verbatim}
 \end{FDefSign}
@@ -2530,9 +2534,9 @@ GASPI_SEGMENT_REGISTER ( segment_id
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_segment_register ( gaspi_segment_id_t const segment_id
-                       , gaspi_rank_t const rank
-                       , gaspi_timeout_t const timeout
+gaspi_segment_register ( gaspi_segment_id_t segment_id
+                       , gaspi_rank_t rank
+                       , gaspi_timeout_t timeout
                        )
 \end{verbatim}
 \end{FDefSign}
@@ -2634,11 +2638,11 @@ GASPI_SEGMENT_CREATE ( segment_id
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_segment_create ( gaspi_segment_id_t const segment_id
-                     , gaspi_size_t const size
-                     , gaspi_group_t const group
-                     , gaspi_timeout_t const timeout
-                     , gaspi_alloc_t const alloc_policy
+gaspi_segment_create ( gaspi_segment_id_t segment_id
+                     , gaspi_size_t size
+                     , gaspi_group_t group
+                     , gaspi_timeout_t timeout
+                     , gaspi_alloc_t alloc_policy
                      )
 \end{verbatim}
 \end{FDefSign}
@@ -2745,7 +2749,7 @@ GASPI_SEGMENT_DELETE ( segment_id )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_segment_delete ( gaspi_segment_id_t const segment_id )
+gaspi_segment_delete ( gaspi_segment_id_t segment_id )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2973,7 +2977,7 @@ GASPI_SEGMENT_LIST ( num
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_segment_list ( gaspi_number_t const num
+gaspi_segment_list ( gaspi_number_t num
                    , gaspi_segment_id_t *segment_id_list 
                    )
 \end{verbatim}
@@ -3031,8 +3035,8 @@ GASPI_SEGMENT_PTR ( segment_id
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_segment_ptr ( gaspi_segment_id_t const segment_id
-                  , gaspi_pointer_t pointer
+gaspi_segment_ptr ( gaspi_segment_id_t segment_id
+                  , gaspi_pointer_t *pointer
                   )
 \end{verbatim}
 \end{FDefSign}
@@ -3218,14 +3222,14 @@ GASPI_WRITE ( segment_id_local
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_write ( gaspi_segment_id_t const segment_id_local
-            , gaspi_offset_t const offset_local
-            , gaspi_rank_t const rank
-            , gaspi_segment_id_t const segment_id_remote
-            , gaspi_offset_t const offset_remote
-            , gaspi_size_t const size
-            , gaspi_queue_id_t const queue
-            , gaspi_timeout_t const timeout
+gaspi_write ( gaspi_segment_id_t segment_id_local
+            , gaspi_offset_t offset_local
+            , gaspi_rank_t rank
+            , gaspi_segment_id_t segment_id_remote
+            , gaspi_offset_t offset_remote
+            , gaspi_size_t size
+            , gaspi_queue_id_t queue
+            , gaspi_timeout_t timeout
             )
 \end{verbatim}
 \end{FDefSign}
@@ -3368,14 +3372,14 @@ GASPI_READ ( segment_id_local
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_read ( gaspi_segment_id_t const segment_id_local
-           , gaspi_offset_t const offset_local
-           , gaspi_rank_t const rank
-           , gaspi_segment_id_t const segment_id_remote
-           , gaspi_offset_t const offset_remote
-           , gaspi_size_t const size
-           , gaspi_queue_id_t const queue
-           , gaspi_timeout_t const timeout
+gaspi_read ( gaspi_segment_id_t segment_id_local
+           , gaspi_offset_t offset_local
+           , gaspi_rank_t rank
+           , gaspi_segment_id_t segment_id_remote
+           , gaspi_offset_t offset_remote
+           , gaspi_size_t size
+           , gaspi_queue_id_t queue
+           , gaspi_timeout_t timeout
            )
 \end{verbatim}
 \end{FDefSign}
@@ -3505,8 +3509,8 @@ GASPI_WAIT ( queue
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_wait ( gaspi_queue_id_t const queue
-           , gaspi_timeout_t const timeout
+gaspi_wait ( gaspi_queue_id_t queue
+           , gaspi_timeout_t timeout
            )
 \end{verbatim}
 \end{FDefSign}
@@ -3663,11 +3667,11 @@ GASPI_NOTIFY ( rank
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_notify ( gaspi_rank_t const rank
-             , gaspi_notification_id_t const notification_id
-             , gaspi_notification_t const notification_value
-             , gaspi_queue_id_t const queue
-             , gaspi_timeout_t const timeout
+gaspi_notify ( gaspi_rank_t rank
+             , gaspi_notification_id_t notification_id
+             , gaspi_notification_t notification_value
+             , gaspi_queue_id_t queue
+             , gaspi_timeout_t timeout
              )
 \end{verbatim}
 \end{FDefSign}
@@ -3865,9 +3869,9 @@ GASPI_NOTIFY_WAITSOME ( notification_begin
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_notify_waitsome ( gaspi_notification_id_t const notification_begin
-                      , gaspi_number_t const notification_num
-                      , gaspi_timeout_t const timeout
+gaspi_notify_waitsome ( gaspi_notification_id_t notification_begin
+                      , gaspi_number_t notification_num
+                      , gaspi_timeout_t timeout
                       )
 \end{verbatim}
 \end{FDefSign}
@@ -3986,7 +3990,7 @@ GASPI_NOTIFY_RESET ( notification_id
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_notify_reset ( gaspi_notification_id_t const notification_id
+gaspi_notify_reset ( gaspi_notification_id_t notification_id
                    , gaspi_notification_t *old_notification_val
                    )
 \end{verbatim}
@@ -4122,16 +4126,16 @@ GASPI_WRITE_NOTIFY ( segment_id_local
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_write_notify ( gaspi_segment_id_t const segment_id_local
-                   , gaspi_offset_t const offset_local
-                   , gaspi_rank_t const rank
-                   , gaspi_segment_id_t const segment_id_remote
-                   , gaspi_offset_t const offset_remote
-                   , gaspi_size_t const size
-                   , gaspi_notification_id_t const notification_id
-                   , gaspi_notification_t const notification_value
-                   , gaspi_queue_id_t const queue
-                   , gaspi_timeout_t const timeout
+gaspi_write_notify ( gaspi_segment_id_t segment_id_local
+                   , gaspi_offset_t offset_local
+                   , gaspi_rank_t rank
+                   , gaspi_segment_id_t segment_id_remote
+                   , gaspi_offset_t offset_remote
+                   , gaspi_size_t size
+                   , gaspi_notification_id_t notification_id
+                   , gaspi_notification_t notification_value
+                   , gaspi_queue_id_t queue
+                   , gaspi_timeout_t timeout
                    )
 \end{verbatim}
 \end{FDefSign}
@@ -4222,15 +4226,15 @@ GASPI_WRITE_LIST ( num
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_write_list ( gaspi_number_t const num
+gaspi_write_list ( gaspi_number_t num
                  , gaspi_segment_id_t const *segment_id_local
                  , gaspi_offset_t const *offset_local
-                 , gaspi_rank_t const rank
+                 , gaspi_rank_t rank
                  , gaspi_segment_id_t const *segment_id_remote
                  , gaspi_offset_t const *offset_remote
                  , gaspi_size_t const *size
-                 , gaspi_queue_id_t const queue
-                 , gaspi_timeout_t const timeout
+                 , gaspi_queue_id_t queue
+                 , gaspi_timeout_t timeout
                  )
 \end{verbatim}
 \end{FDefSign}
@@ -4326,17 +4330,17 @@ GASPI_WRITE_LIST_NOTIFY
 \begin{verbatim}
 gaspi_return_t
 gaspi_write_list_notify
-                ( gaspi_number_t const num
+                ( gaspi_number_t num
                 , gaspi_segment_id_t const *segment_id_local
                 , gaspi_offset_t const *offset_local
-                , gaspi_rank_t const rank
+                , gaspi_rank_t rank
                 , gaspi_segment_id_t const *segment_id_remote
                 , gaspi_offset_t const *offset_remote
                 , gaspi_size_t const *size
-                , gaspi_notification_id_t const notification_id
-                , gaspi_notification_t const notification_value
-                , gaspi_queue_id_t const queue
-                , gaspi_timeout_t const timeout
+                , gaspi_notification_id_t notification_id
+                , gaspi_notification_t notification_value
+                , gaspi_queue_id_t queue
+                , gaspi_timeout_t timeout
                 )
 \end{verbatim}
 \end{FDefSign}
@@ -4429,15 +4433,15 @@ GASPI_READ_LIST ( num
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_read_list ( gaspi_number_t const num
+gaspi_read_list ( gaspi_number_t num
                 , gaspi_segment_id_t const *segment_id_local
                 , gaspi_offset_t const *offset_local
-                , gaspi_rank_t const rank
+                , gaspi_rank_t rank
                 , gaspi_segment_id_t const *segment_id_remote
                 , gaspi_offset_t const *offset_remote
                 , gaspi_size_t const *size
-                , gaspi_queue_id_t const queue
-                , gaspi_timeout_t const timeout
+                , gaspi_queue_id_t queue
+                , gaspi_timeout_t timeout
                 )
 \end{verbatim}
 \end{FDefSign}
@@ -4502,7 +4506,7 @@ GASPI_QUEUE_SIZE ( queue
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_queue_size ( gaspi_queue_id_t const queue
+gaspi_queue_size ( gaspi_queue_id_t queue
                  , gaspi_number_t const *queue_size
                  )
 \end{verbatim}
@@ -4558,8 +4562,8 @@ GASPI_QUEUE_PURGE ( queue
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_queue_purge ( gaspi_queue_id_t const queue
-                  , gaspi_timeout_t const timeout
+gaspi_queue_purge ( gaspi_queue_id_t queue
+                  , gaspi_timeout_t timeout
                   )
 \end{verbatim}
 \end{FDefSign}
@@ -4660,11 +4664,11 @@ GASPI_PASSIVE_SEND ( segment_id_local
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_passive_send ( gaspi_segment_id_t const segment_id_local
-                   , gaspi_offset_t const offset_local
-                   , gaspi_rank_t const rank
-                   , gaspi_size_t const size
-                   , gaspi_timeout_t const timeout
+gaspi_passive_send ( gaspi_segment_id_t segment_id_local
+                   , gaspi_offset_t offset_local
+                   , gaspi_rank_t rank
+                   , gaspi_size_t size
+                   , gaspi_timeout_t timeout
                    )
 \end{verbatim}
 \end{FDefSign}
@@ -4788,11 +4792,11 @@ GASPI_PASSIVE_RECEIVE ( segment_id_local
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_passive_receive ( gaspi_segment_id_t const segment_id_local
-                      , gaspi_offset_t const offset_local
+gaspi_passive_receive ( gaspi_segment_id_t segment_id_local
+                      , gaspi_offset_t offset_local
                       , gaspi_rank_t const *rank
-                      , gaspi_size_t const size
-                      , gaspi_timeout_t const timeout
+                      , gaspi_size_t size
+                      , gaspi_timeout_t timeout
                       )
 \end{verbatim}
 \end{FDefSign}
@@ -4904,7 +4908,7 @@ GASPI_PASSIVE_QUEUE_PURGE (timeout)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_passive_queue_purge (gaspi_timeout_t const timeout)
+gaspi_passive_queue_purge (gaspi_timeout_t timeout)
 \end{verbatim}
 \end{FDefSign}
 
@@ -4989,12 +4993,12 @@ GASPI_ATOMIC_FETCH_ADD ( segment_id
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_atomic_fetch_add ( gaspi_segment_id_t const segment_id
-                       , gaspi_offset_t const offset
-                       , gaspi_rank_t const rank
-                       , gaspi_atomic_value_t const value_add
+gaspi_atomic_fetch_add ( gaspi_segment_id_t segment_id
+                       , gaspi_offset_t offset
+                       , gaspi_rank_t rank
+                       , gaspi_atomic_value_t value_add
                        , gaspi_atomic_value_t *value_old
-                       , gaspi_timeout_t const timeout
+                       , gaspi_timeout_t timeout
                        )
 \end{verbatim}
 \end{FDefSign}
@@ -5094,13 +5098,13 @@ GASPI_ATOMIC_COMPARE_SWAP ( segment_id
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_atomic_compare_swap ( gaspi_segment_id_t const segment_id
-                          , gaspi_offset_t const offset
-                          , gaspi_rank_t const rank
-                          , gaspi_atomic_value_t const comparator
-                          , gaspi_atomic_value_t const value_new
+gaspi_atomic_compare_swap ( gaspi_segment_id_t segment_id
+                          , gaspi_offset_t offset
+                          , gaspi_rank_t rank
+                          , gaspi_atomic_value_t comparator
+                          , gaspi_atomic_value_t value_new
                           , gaspi_atomic_value_t *value_old
-                          , gaspi_timeout_t const timeout
+                          , gaspi_timeout_t timeout
                           )
 \end{verbatim}
 \end{FDefSign}
@@ -5290,8 +5294,8 @@ GASPI_BARRIER ( group
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_barrier ( gaspi_group_t const group
-              , gaspi_timeout_t const timeout
+gaspi_barrier ( gaspi_group_t group
+              , gaspi_timeout_t timeout
               )
 \end{verbatim}
 \end{FDefSign}
@@ -5406,17 +5410,16 @@ GASPI_ALLREDUCE ( buffer_send
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
 
-%TODO CONST POINTER
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_allreduce ( gaspi_pointer_t buffer_send
+gaspi_allreduce ( gaspi_const_pointer_t buffer_send
                 , gaspi_pointer_t buffer_receive
-                , gaspi_number_t const num
-                , gaspi_operation_t const operation
-                , gaspi_datatype_t const datatype
-                , gaspi_group_t const group
-                , gaspi_timeout_t const timeout
+                , gaspi_number_t num
+                , gaspi_operation_t operation
+                , gaspi_datatype_t datatype
+                , gaspi_group_t group
+                , gaspi_timeout_t timeout
                 )
 \end{verbatim}
 \end{FDefSign}
@@ -5578,14 +5581,14 @@ GASPI_ALLREDUCE_USER ( buffer_send
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_allreduce_user ( gaspi_pointer_t buffer_send
+gaspi_allreduce_user ( gaspi_const_pointer_t buffer_send
                      , gaspi_pointer_t buffer_receive
-                     , gaspi_number_t const num
-                     , gaspi_size_t const size_element
-                     , gaspi_reduce_operation_t const reduce_operation
-                     , gaspi_reduce_state_t const reduce_state
-                     , gaspi_group_t const group
-                     , gaspi_timeout_t const timeout
+                     , gaspi_number_t num
+                     , gaspi_size_t size_element
+                     , gaspi_reduce_operation_t reduce_operation
+                     , gaspi_reduce_state_t reduce_state
+                     , gaspi_group_t group
+                     , gaspi_timeout_t timeout
                      )
 \end{verbatim}
 \end{FDefSign}
@@ -5665,11 +5668,11 @@ GASPI_REDUCE_OPERATION ( operand_one
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_reduce_operation ( gaspi_pointer_t operand_one
-                       , gaspi_pointer_t operand_t constwo
+gaspi_reduce_operation ( gaspi_const_pointer_t operand_one
+                       , gaspi_const_pointer_t operand_t constwo
                        , gaspi_pointer_t result
-                       , gaspi_state_t const state
-                       , gaspi_timeout_t const timeout
+                       , gaspi_state_t state
+                       , gaspi_timeout_t timeout
                        )
 \end{verbatim}
 \end{FDefSign}
@@ -6317,7 +6320,7 @@ GASPI_ERROR_MESSAGE ( error_code
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_error_message ( gaspi_return_t const error_code
+gaspi_error_message ( gaspi_return_t error_code
                     , gaspi_string_t *error_message
                     )
 \end{verbatim}
@@ -6445,7 +6448,7 @@ GASPI_STATISTIC_COUNTER_INFO ( const counter
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_statistic_counter_info ( gaspi_statistic_counter_t const counter
+gaspi_statistic_counter_info ( gaspi_statistic_counter_t counter
                              , gaspi_statistic_argument_t *counter_argument
                              , gaspi_string_t *counter_name
                              , gaspi_string_t *counter_description
@@ -6508,7 +6511,7 @@ GASPI_STATISTIC_VERBOSITY_LEVEL ( verbosity_level )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_statistic_verbosity_level ( gaspi_number_t const verbosity_level )
+gaspi_statistic_verbosity_level ( gaspi_number_t verbosity_level )
 \end{verbatim}
 \end{FDefSign}
 
@@ -6553,8 +6556,8 @@ GASPI_STATISTIC_COUNTER_GET ( counter
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_statistic_counter_get ( gaspi_statistic_counter_t const counter
-                            , gaspi_statistic_argument_t const argument
+gaspi_statistic_counter_get ( gaspi_statistic_counter_t counter
+                            , gaspi_statistic_argument_t argument
                             , gaspi_number_t *value
                             )
 \end{verbatim}
@@ -6610,7 +6613,7 @@ GASPI_STATISTIC_COUNTER_RESET (counter)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_statistic_counter_reset (gaspi_statistic_counter_t const counter)
+gaspi_statistic_counter_reset (gaspi_statistic_counter_t counter)
 \end{verbatim}
 \end{FDefSign}
 
