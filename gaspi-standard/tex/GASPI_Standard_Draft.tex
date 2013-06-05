@@ -423,7 +423,7 @@ The following semantic terms are used throughout the document:
 \newcommand{\progress}[2]{\gentextwithline{Progress}{0}{#1}{1em}{#2}{|-|}}
 
 \begin{description}
-\item[nonblocking] A procedure is nonblocking if the procedure may
+\item[non-blocking] A procedure is non-blocking if the procedure may
   return before the operation completes.
 \begin{center}
 \begin{tikzpicture}
@@ -1860,7 +1860,7 @@ procedure calls in case they return with either return value \GASPIGERR{} or \GA
 \GASPI{} aims at providing interoperability with MPI in order to allow
 for incremental porting of such applications.
 
-The start-up of mixed MPI and \GASPI{} code is achieved by invoking
+The startup of mixed MPI and \GASPI{} code is achieved by invoking
 \gaspifunction{proc\_init} in an existing MPI program.
 This way, MPI takes care of distributing and starting the binary and
 \GASPI{} just takes care of setting up its internal infrastructure.
@@ -2414,7 +2414,7 @@ among the group members.
 
 During the lifetime of an application there is no segment available
 unless it is explicitly created with \gaspifunction{segment\_alloc}
-or \gaspifunction{segment\_create} after the \GASPI{} start-up.
+or \gaspifunction{segment\_create} after the \GASPI{} startup.
 
 \subsection{Segment creation}
 
@@ -3946,7 +3946,7 @@ undefined.
   In a multi-threaded application the code in listing
   \ref{lst:waitsome_select.c} selects one thread to act on the change
   of a single notification. The code waits in a blocking manner and thus
-  cannot be used in fault tolerant applications.
+  cannot be used in failure tolerant applications.
 \end{useradvice}
 
 \insertlisting{waitsome_select.c}{Blocking waitsome in a multi-threaded application\label{lst:waitsome_select.c}}
