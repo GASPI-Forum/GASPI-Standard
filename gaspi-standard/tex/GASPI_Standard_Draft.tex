@@ -317,7 +317,7 @@ PGAS memory segments.
 % merely support a single Partitioned Global Address Space, but rather a
 % multitude of Partitioned Global Address Spaces.
 % Widerspricht sich das nicht? Erst viele und als nächste alle in einen Adressraum?
-GASPI allows application developers to map the memory heterogeneity of a modern supercomputer node to these PGAS segments. As an example GASPI allows users to map the main memory of a GPGPU or Xeon Phi to a specific segment, to configure a GASPI segment per memory controller in a CC-NUMA system or to map non-volatile RAM to a specific segment. All these segments can directly read and write from/to each other – within the node and across all nodes.
+GASPI allows application developers to map the memory heterogeneity of a modern supercomputer node to these PGAS segments. As an example GASPI allows users to map the main memory of a GPGPU or Xeon Phi to a specific segment, to configure a GASPI segment per memory controller in a CC-NUMA system or to map non-volatile RAM to a specific segment. All these segments can directly read and write from/to each other - within the node and across all nodes.
 \GASPI{} is failure tolerant in the sense that it provides timeout mechanisms for all non-local procedures, failure
 detection and the possibility to adapt to shrinking or growing node sets.
 
