@@ -5586,7 +5586,7 @@ gaspi_allreduce_user ( gaspi_const_pointer_t buffer_send
                      , gaspi_number_t num
                      , gaspi_size_t size_element
                      , gaspi_reduce_operation_t reduce_operation
-                     , gaspi_reduce_state_t reduce_state
+                     , gaspi_state_t reduce_state
                      , gaspi_group_t group
                      , gaspi_timeout_t timeout
                      )
@@ -5610,7 +5610,7 @@ gaspi_allreduce_user ( buffer_send
     TYPE(gaspi_number_t), INTENT(IN) :: num
     TYPE(gaspi_size_t), INTENT(IN) :: size_element
     TYPE(gaspi_reduce_operation_t), INTENT(IN) :: reduce_operation
-    TYPE(gaspi_reduce_state_t), INTENT(IN) :: reduce_state
+    TYPE(gaspi_state_t), INTENT(IN) :: reduce_state
     TYPE(gaspi_group_t), INTENT(IN) :: group
     TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
     TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
@@ -5671,7 +5671,7 @@ gaspi_return_t
 gaspi_reduce_operation ( gaspi_const_pointer_t operand_one
                        , gaspi_const_pointer_t operand_t constwo
                        , gaspi_pointer_t result
-                       , gaspi_reduce_state_t state
+                       , gaspi_state_t state
                        , gaspi_timeout_t timeout
                        )
 \end{verbatim}
@@ -5689,7 +5689,7 @@ gaspi_reduce_operation ( operand_one
     TYPE(gaspi_pointer_t), INTENT(IN) :: operand_one
     TYPE(gaspi_pointer_t), INTENT(IN) :: operand_two
     TYPE(gaspi_pointer_t), INTENT(IN) :: result
-    TYPE(gaspi_reduce_state_t), INTENT(IN) :: state
+    TYPE(gaspi_state_t), INTENT(IN) :: state
     TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
     TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
