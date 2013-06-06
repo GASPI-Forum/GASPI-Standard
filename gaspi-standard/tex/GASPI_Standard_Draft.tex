@@ -3299,8 +3299,8 @@ Successive \gaspifunction{write} calls posted to the same queue and
 the same destination rank are not guaranteed to be non-overtaking.
 However, a subsequent \gaspifunction{notify}, which is posted to the same queue is 
 guaranteed to be non-overtaking.   In particular, one can hence assume, that if 
-the coorresponding notification has arrived on the remote process, the data from the
-earlier posted request to the same process hs alsoe arrived on the remote
+the corresponding notification has arrived on the remote process, the data from the
+earlier posted request to the same process has also arrived on the remote
 side.
 
 \gaspifunction{write} calls may be posted from every thread of the \GASPI{} process.
