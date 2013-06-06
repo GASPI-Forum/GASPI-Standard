@@ -5671,7 +5671,7 @@ gaspi_return_t
 gaspi_reduce_operation ( gaspi_const_pointer_t operand_one
                        , gaspi_const_pointer_t operand_t constwo
                        , gaspi_pointer_t result
-                       , gaspi_state_t state
+                       , gaspi_reduce_state_t state
                        , gaspi_timeout_t timeout
                        )
 \end{verbatim}
@@ -5689,7 +5689,7 @@ gaspi_reduce_operation ( operand_one
     TYPE(gaspi_pointer_t), INTENT(IN) :: operand_one
     TYPE(gaspi_pointer_t), INTENT(IN) :: operand_two
     TYPE(gaspi_pointer_t), INTENT(IN) :: result
-    TYPE(gaspi_state_t), INTENT(IN) :: state
+    TYPE(gaspi_reduce_state_t), INTENT(IN) :: state
     TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
     TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
