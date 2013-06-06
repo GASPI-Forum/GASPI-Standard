@@ -3449,6 +3449,7 @@ inserted into the given queue.
 %can assume, that if the data from the later request has arrived, also
 %the data from the earlier posted request to the same process have arrived.
 
+
 \gaspifunction{read} calls may be posted from every thread of the \GASPI{} process.
 
 If the procedure returns with \GASPITIME{}, the communication request could not be posted
@@ -3457,7 +3458,8 @@ for the same queue. A subsequent call of \gaspifunction{read} has to be
 invoked in order to complete the read call.
 
 A communication request posted to a given queue can be considered as completed, if the
-the correspondent \gaspifunction{wait} returns with \GASPISUCC{}.
+the correspondent \gaspifunction{wait} returns with \GASPISUCC{}. For coompleted  \gaspifunction{read}
+requests, the data is guaranteed to be locally available.
 
 If the queue to which the communication request is posted is full, i.\,e.\ that the number of
 posted communication requests has already reached the queue size of a given queue, the communication
@@ -5672,7 +5674,7 @@ GASPI_REDUCE_OPERATION ( operand_one
 \begin{verbatim}
 gaspi_return_t
 gaspi_reduce_operation ( gaspi_const_pointer_t operand_one
-                       , gaspi_const_pointer_t operand_t constwo
+                       , gaspi_const_pointer_t operand_two
                        , gaspi_pointer_t result
                        , gaspi_state_t state
                        , gaspi_timeout_t timeout
