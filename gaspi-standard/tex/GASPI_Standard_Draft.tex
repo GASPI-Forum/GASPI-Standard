@@ -606,9 +606,9 @@ The specification guarantees fairness of transfers posted to
 different queues, i.\,e.\ no queue should see its
 communication requests delayed indefinitely.
 
-Furthermore, the order of communication requests addressing the same remote \GASPI{}
-process posted to a given queue are preserved, both on the local as
-well as on the remote side.
+%Furthermore, the order of communication requests addressing the same remote \GASPI{}
+%process posted to a given queue are preserved, both on the local as
+%well as on the remote side.
 
 \insertlisting{ex.one_sided.pseudo}{Allgather with one-sided writes.}
 
@@ -3130,9 +3130,11 @@ for different tasks, e.\,g.\ one queue for operations on data and
 another queue for operations on meta-data.
 
 The different communication queues guarantee fair communication, i.\,e.\ no queue
-should see its communication requests delayed indefinitely. Furthermore,
-a single queue preserves the order of the communication requests on the local and the
-remote side if the remote rank of two requests is the same.
+should see its communication requests delayed indefinitely. 
+
+%Furthermore,
+%a single queue preserves the order of the communication requests on the local and the
+%remote side if the remote rank of two requests is the same.
 
 One-sided communication calls can basically be divided into two
 operation types: read and write.
