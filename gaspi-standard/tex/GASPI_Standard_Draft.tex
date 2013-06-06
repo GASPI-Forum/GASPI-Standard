@@ -3294,11 +3294,11 @@ been posted to the underlying network infrastructure. One new entry is
 inserted into the given queue.
 
 Successive \gaspifunction{write} calls posted to the same queue and
-the same destination rank are non-overtaking. Non-overtaking means
-that the order of communication requests is preserved on the remote
-side. In particular, one can assume, that if the data from the later
-request has arrived on the remote process, also the data from the
-earlier posted request to the same process have arrived on the remote
+the same destination rank are not guaranteed to be non-overtaking.
+However, a subsequent \gaspifunction{notify}, which is posted to the same queue is 
+guaranteed to be non-overtaking.   In particular, one can hence assume, that if 
+the coorresponding notification has arrived on the remote process, the data from the
+earlier posted request to the same process hs alsoe arrived on the remote
 side.
 
 \gaspifunction{write} calls may be posted from every thread of the \GASPI{} process.
@@ -3439,11 +3439,13 @@ After successful procedure completion, i.\,e.\ return value \GASPISUCC{}, the co
 been posted to the underlying network infrastructure. One new entry is
 inserted into the given queue.
 
-Successive \gaspifunction{read} calls posted to the same queue and the
-same destination rank are non-overtaking. Non-overtaking means that
-the order of communication requests is preserved. In particular, one
-can assume, that if the data from the later request has arrived, also
-the data from the earlier posted request to the same process have arrived.
+%
+% CHECK - TODO
+%Successive \gaspifunction{read} calls posted to the same queue and the
+%same destination rank are non-overtaking. Non-overtaking means that
+%the order of communication requests is preserved. In particular, one
+%can assume, that if the data from the later request has arrived, also
+%the data from the earlier posted request to the same process have arrived.
 
 \gaspifunction{read} calls may be posted from every thread of the \GASPI{} process.
 
@@ -3717,13 +3719,13 @@ underlying network infrastructure.
 
 %One new entry is inserted into the given queue.
 
-% Successive \gaspifunction{write} and \gaspifunction{notify} calls
-% posted to the same queue and the same destination rank are
-% non-overtaking. Non-overtaking means that the order of communication
-% requests is preserved on the remote side. In particular, one can
-% assume, that if the data from the later request has arrived on the
-% remote process, also the data from the earlier posted request to the
-% same process have arrived on the remote side.
+A \gaspifunction{notify} call which is posted subsequent to an arbitrary number of \gaspifunction{write} 
+requests and which is posted to the same queue and the same destination rank is guaranteed to be
+non-overtaking. Non-overtaking means that the order of communication
+requests is preserved on the remote side. In particular, one can
+assume, that if the data from the \gaspifunction{notify} request has arrived on the
+remote process, also the data from the earlier posted write request(s) to the
+same process have arrived on the remote side.
 
 \gaspifunction{notify} calls may be posted from every thread of the \GASPI{} process.
 
@@ -3746,11 +3748,11 @@ request fails.
   side.
 \end{useradvice}
 
-\begin{implementoradvice}
-\gaspifunction{notify} is semantically equivalent to an update of a local internally managed notification buffer
-with a subsequent \gaspifunction{write}. However, it should be implemented
-more efficiently, if supported by the network infrastructure.
-\end{implementoradvice}
+%\begin{implementoradvice}
+%\gaspifunction{notify} is semantically equivalent to an update of a local internally managed notification buffer
+%with a subsequent \gaspifunction{write}. However, it should be implemented
+%more efficiently, if supported by the network infrastructure.
+%\end{implementoradvice}
 
 %%%%%%%%%%%%% wait notification
 
@@ -3931,10 +3933,9 @@ undefined.
   inspecting only one notification is the following: The remote side
   uses a \gaspifunction{write} call followed by a subsequent call of
   \gaspifunction{notify} posted to the same queue and the same
-  destination rank. Since the order of communication requests on the remote side
-  is preserved, one can assume, that if the notification has arrived
-  on the remote process, then the previously posted request carrying
-  the work load have arrived.
+  destination rank. \GASPI{} guarantees, that if the notification has arrived
+  on the remote process, the previously posted request carrying
+  the work load has arrived as well.
 \end{useradvice}
 
 \begin{useradvice}
