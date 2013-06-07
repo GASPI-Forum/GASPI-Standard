@@ -3031,7 +3031,7 @@ GASPI_SEGMENT_PTR ( segment_id
 \begin{verbatim}
 gaspi_return_t
 gaspi_segment_ptr ( gaspi_segment_id_t segment_id
-                  , gaspi_pointer_t *pointer )
+                  , gaspi_pointer_t pointer )
 \end{verbatim}
 \end{FDefSign}
 
@@ -3860,7 +3860,8 @@ GASPI_NOTIFY_WAITSOME ( notification_begin
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_notify_waitsome ( gaspi_notification_id_t notification_begin
+gaspi_notify_waitsome ( gaspi_notification_id_t 
+                              notification_begin
                       , gaspi_number_t notification_num
                       , gaspi_timeout_t timeout )
 \end{verbatim}
@@ -3874,7 +3875,7 @@ gaspi_notify_waitsome ( notification_begin
                       , timeout
                       , ireturn
                       ) BIND(C)
-  TYPE(gaspi_notification_id_t), INTENT(IN) :: notification_begin
+  TYPE(gaspi_notification_id_t), INTENT(IN):: notification_begin
   TYPE(gaspi_number_t), INTENT(IN) :: notification_num
   TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
   TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
@@ -5570,7 +5571,7 @@ gaspi_allreduce_user ( buffer_send
     TYPE(gaspi_pointer_t), INTENT(IN) :: buffer_receive
     TYPE(gaspi_number_t), INTENT(IN) :: num
     TYPE(gaspi_size_t), INTENT(IN) :: size_element
-    TYPE(gaspi_reduce_operation_t), INTENT(IN) :: reduce_operation
+    TYPE(gaspi_reduce_operation_t), INTENT(IN):: reduce_operation
     TYPE(gaspi_reduce_state_t), INTENT(IN) :: reduce_state
     TYPE(gaspi_group_t), INTENT(IN) :: group
     TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
@@ -6387,7 +6388,7 @@ A \GASPI{} implementation is free to extend the above enumeration.
 \begin{FDefSign}
 \begin{verbatim}
 GASPI_STATISTIC_COUNTER_INFO ( const counter
-                             , counter_argument
+                             , argument
                              , counter_name
                              , counter_description
                              , verbosity_level )
@@ -6405,7 +6406,8 @@ GASPI_STATISTIC_COUNTER_INFO ( const counter
 \begin{verbatim}
 gaspi_return_t
 gaspi_statistic_counter_info ( gaspi_statistic_counter_t counter
-                             , gaspi_statistic_argument_t *counter_argument
+                             , gaspi_statistic_argument_t 
+                                     *argument
                              , gaspi_string_t *counter_name
                              , gaspi_string_t *counter_description
                              , gaspi_number_t *verbosity_level )
@@ -6415,14 +6417,14 @@ gaspi_statistic_counter_info ( gaspi_statistic_counter_t counter
 \begin{FDefSign}
 \begin{verbatim}
 GASPI_STATISTIC_COUNTER_INFO ( counter
-                             , counter_argument
+                             , argument
                              , counter_name
                              , counter_description
                              , verbosity_level
                              , ireturn
                              ) BIND(C)
     TYPE(gaspi_statistic_counter_t), INTENT(IN) ::  counter
-    TYPE(gaspi_statistic_argument_t), INTENT(OUT) ::  counter_argument
+    TYPE(gaspi_statistic_argument_t), INTENT(OUT) ::  argument
     TYPE(gaspi_string_t), INTENT(OUT) ::  counter_name
     TYPE(gaspi_string_t), INTENT(OUT) ::  counter_description
     TYPE(gaspi_number_t), INTENT(OUT) ::  verbosity_level
@@ -6466,7 +6468,7 @@ GASPI_STATISTIC_VERBOSITY_LEVEL ( verbosity_level )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_statistic_verbosity_level ( gaspi_number_t verbosity_level )
+gaspi_statistic_verbosity_level ( gaspi_number_t verbosity_level)
 \end{verbatim}
 \end{FDefSign}
 
