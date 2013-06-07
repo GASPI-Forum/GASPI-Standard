@@ -1,0 +1,22 @@
+This perl script help to execute a gaspi/gpi-application
+with a batchsystem on hpc-plattform.
+
+Configuration:
+1.) set the path to your gaspi_run binary:
+
+ my $gaspi_run     = "/home/cherold/GPI2-rc1/bin/gaspi_run";
+
+2.) set the path where the machinefile will be created:
+
+ my $machine_file  = "/home/cherold/GPI2-rc1/machinefile";
+
+3.) set the batchsystem variable where your host and cpu
+    informations are saved (e.g. LSF:  LSB_MCPU_HOSTS):
+
+my $lsf_pe_var    = "LSB_MCPU_HOSTS";
+
+4.) make the perl script executable:
+ 
+ chmod u+x ./gaspi_lsf_run.pl
+
+5.) run the application
