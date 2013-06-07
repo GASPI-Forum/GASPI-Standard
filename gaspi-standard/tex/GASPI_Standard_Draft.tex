@@ -302,22 +302,16 @@ extreme scalability, high flexibility and failure tolerance for parallel
 computing environments.  \GASPI{} aims
 to initiate a paradigm shift from bulk-synchronous two-sided
 communication patterns towards an asynchronous communication and
-execution model. To that end \GASPI{} leverages one-sided RDMA driven
-communication in a Partitioned Global Address Space. In contrast to
-other efforts in the PGAS community, \GASPI{} is neither a new
-language (like Chapel from Cray), nor an extension to a
+execution model. To that end \GASPI{} leverages remote completion and 
+one-sided RDMA driven communication in a Partitioned Global Address Space.
+
+\GASPI{} is neither a new language (like Chapel from Cray), nor an extension to a
 language (like Co-Array Fortran or UPC). Instead---very much in the
 spirit of MPI---it complements existing languages like C/C++ or
 Fortran with a PGAS API which enables the application to leverage the
-concept of the Partitioned Global Adress Space. In contrast to
-e.\,g.\ OpenShmem or Global Arrays, \GASPI{} is not limited to a
+concept of the Partitioned Global Adress Space. \GASPI{} is not limited to a
 single memory model, but rather provides configurable RDMA
-PGAS memory segments.
-% By means of these segments \GASPI{} does not
-% merely support a single Partitioned Global Address Space, but rather a
-% multitude of Partitioned Global Address Spaces.
-% Widerspricht sich das nicht? Erst viele und als nächste alle in einen Adressraum?
-GASPI allows application developers to map the memory heterogeneity of a modern supercomputer node to these PGAS segments. As an example GASPI allows users to map the main memory of a GPGPU or Xeon Phi to a specific segment, to configure a GASPI segment per memory controller in a CC-NUMA system or to map non-volatile RAM to a specific segment. All these segments can directly read and write from/to each other - within the node and across all nodes.
+PGAS memory segments. GASPI allows application developers to map the memory heterogeneity of a modern supercomputer node to these PGAS segments. As an example GASPI allows users to map the main memory of a GPGPU or Xeon Phi to a specific segment, to configure a GASPI segment per memory controller in a CC-NUMA system or to map non-volatile RAM to a specific segment. All these segments can directly read and write from/to each other - within the node and across all nodes.
 \GASPI{} is failure tolerant in the sense that it provides timeout mechanisms for all non-local procedures, failure
 detection and the possibility to adapt to shrinking or growing node sets.
 
