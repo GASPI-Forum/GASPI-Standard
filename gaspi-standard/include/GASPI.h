@@ -1149,7 +1149,7 @@ gaspi_return_t
 gaspi_reduce_operation ( gaspi_pointer_t operand_one
                        , gaspi_pointer_t operand_two
                        , gaspi_pointer_t result
-                       , gaspi_state_t state
+                       , gaspi_reduce_state_t state
                        , gaspi_timeout_t timeout
                        );
 

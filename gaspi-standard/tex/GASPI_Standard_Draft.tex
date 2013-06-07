@@ -255,7 +255,7 @@ basicstyle=\ttfamily
 
 \title{\GASPI{}: Global Address Space Programming Interface\\
 ~\\
-Specification of a general purpose API for communication\\
+Specification of a PGAS API for communication\\
 ~\\
 draft, version 0.92
 }
@@ -280,15 +280,15 @@ Fraunhofer ITWM, Fraunhofer Platz 1, 67663 Kaiserslautern
 %   once and not again and again.
 % \end{todo}
 
-\section{About the document}
+%\section{About the document}
 %TODO NICHT MEHR DRAFT??
-This is a draft version for comment only. There are parts of a
-complete specification missing, for example you will find (nearly)
-nothing about language bindings. On the other hand, there could be
-very well too much redundancy at some places. However, most of the
-ideas for a new PGAS API are included in this draft version and it
-should give you a good impression of how the final version will look
-like.
+%This is a draft version for comment only. There are parts of a
+%complete specification missing, for example you will find (nearly)
+%nothing about language bindings. On the other hand, there could be
+%very well too much redundancy at some places. However, most of the
+%ideas for a new PGAS API are included in this draft version and it
+%should give you a good impression of how the final version will look
+%like.
 
 \section{Introduction to \GASPI{}}
 \label{sec::Intro}
@@ -354,11 +354,11 @@ tool for the HPC community.
 
 \begin{itemize}
 \item Extreme scalability.
-\item Efficient one sided asynchronous remote read/write operations.
+\item Efficient one sided asynchronous remote read/write operations based on remote completion.
 \item Multi-segment support to support \eg heterogeneous systems and NUMA-pinning.
 \item Dynamic allocation of segments.
 \item Timeout mechanisms to allow failure tolerant programming.
-\item Collective operations for groups of processes.
+\item Asynchronous collective operations for groups of processes.
 \item Flexibility in the number of message queues, the queue sizes, atomic
   operations etc.
 \item A maximum freedom to implementors, where details are left to the
@@ -392,7 +392,9 @@ Immediately below this, the arguments of the procedure are given and marked as I
 \item the call may update an argument marked OUT.
 \end{itemize}
 
-Similar to MPI, in GASPI the passing of aliased procedure parameters results in undefined behavior.  Below the procedure arguments the ANSI C version of the function is shown, and below this, a version of the same function is shown for Fortran 2003. For the latter the corresponding definitions and derived types have to be include via  
+Similar to MPI, in GASPI the passing of aliased procedure parameters results in undefined behavior.  
+
+Below the procedure arguments the ANSI C version of the function is shown, and below this, a version of the same function is shown for Fortran 2003. For the latter the corresponding definitions and derived types have to be include via  
 
 \begin{FDefSign}
 \begin{verbatim}
@@ -556,7 +558,7 @@ with computation.
 %\GASPI{} has a high flexibility in the configuration of the runtime
 %parameters.
 
-\GASPI{} has the concept of ranks. Each \GASPI{} process receives
+\GASPI{} preserves the concept of ranks. Each \GASPI{} process receives
 a unique rank that identifies it during its runtime.
 
 \subsection{\GASPI{} groups}
@@ -584,8 +586,9 @@ Address Space.
 One-sided asynchronous communication is the basic communication
 mechanism provided by \GASPI{}. The one-sided communication comes
 in two flavors.  There are read and write operations from and into the
-Partitioned Global Address Space. These
-operations are non-blocking and asynchronous, allowing the program to continue
+Partitioned Global Address Space. For the write operations GASPI makes use of the 
+concept of remote completion in the form of so-called notifications. 
+One-sided operations are non-blocking and asynchronous, allowing the program to continue
 its execution along the data transfer. The actual data transfer is managed
 by the underlying network infrastructure.
 
@@ -1676,7 +1679,7 @@ gaspi_disconnect ( gaspi_rank_t rank
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_diconnect ( rank
+gaspi_disconnect ( rank
                 , timeout ) BIND(C)
   TYPE(gaspi_rank_t), INTENT(IN) :: rank
   TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
@@ -2022,8 +2025,7 @@ GASPI_GROUP_ADD ( group )
 \begin{verbatim}
 gaspi_return_t
 gaspi_group_add ( gaspi_group_t *group
-                , gaspi_rank_t rank
-                )
+                , gaspi_rank_t rank )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2076,8 +2078,7 @@ group.
 \begin{FDefSign}
 \begin{verbatim}
 GASPI_GROUP_COMMIT ( group
-                   , timeout
-                   )
+                   , timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2090,8 +2091,7 @@ GASPI_GROUP_COMMIT ( group
 \begin{verbatim}
 gaspi_return_t
 gaspi_group_commit ( gaspi_group_t group
-                   , gaspi_timeout_t timeout
-                   )
+                   , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2260,8 +2260,7 @@ the number of ranks of a given group.
 \begin{FDefSign}
 \begin{verbatim}
 GASPI_GROUP_SIZE ( group
-                 , group_size
-                 )
+                 , group_size )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2275,8 +2274,7 @@ GASPI_GROUP_SIZE ( group
 \begin{verbatim}
 gaspi_return_t
 gaspi_group_size ( gaspi_group_t group
-                 , gaspi_number_t *group_size
-                 )
+                 , gaspi_number_t *group_size )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2314,8 +2312,7 @@ a list of ranks of \GASPI{} processes forming the group.
 \begin{FDefSign}
 \begin{verbatim}
 GASPI_GROUP_RANKS ( group
-                  , group_ranks[group_size]
-                  )
+                  , group_ranks[group_size] )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2328,8 +2325,7 @@ GASPI_GROUP_RANKS ( group
 \begin{verbatim}
 gaspi_return_t
 gaspi_group_ranks ( gaspi_group_t group
-                  , gaspi_rank_t *group_ranks
-                  )
+                  , gaspi_rank_t *group_ranks )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2364,8 +2360,8 @@ In case of error, the return value is \GASPIGERR{}. The list
 
 \subsection{Introduction and overview}
 
-Modern hardware has an entire memory hierarchy concerning the
-bandwidth and latencies of read and write accesses. Among them are
+Modern hardware has an complex memory hierarchy with different
+bandwidth and latencies for read and write accesses. Among them are
 non-uniform memory access (\emph{NUMA}) partitions, solid state
 devices (\emph{SSD}s), graphical processing unit (\emph{GPU}) memory
 or many integrated cores (\emph{MIC}) memory.
@@ -2390,7 +2386,7 @@ by the application.
 
 Every \GASPI{} process may possess a certain number of segments (not
 necessarily equal to the number possessed by the other ranks) that may be accessed as common memory,
-whether is local---with normal memory operations---or remote---with
+whether locally ---with normal memory operations---or remotely---with
 the communication routines of \GASPI{}.
 
 In order to use a segment for communication between two processes,
@@ -2416,7 +2412,7 @@ procedure completion, a common segment is created on each \GASPI{}
 process forming the group which can be immediately used for communication
 among the group members.
 
-During the lifetime of an application there is no segment available
+During the lifetime of an application no segment is available
 unless it is explicitly created with \gaspifunction{segment\_alloc}
 or \gaspifunction{segment\_create} after the \GASPI{} startup.
 
@@ -2434,8 +2430,7 @@ given allocation policy.
 \begin{verbatim}
 GASPI_SEGMENT_ALLOC ( segment_id
                     , size
-                    , alloc_policy
-                    )
+                    , alloc_policy )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2452,8 +2447,7 @@ GASPI_SEGMENT_ALLOC ( segment_id
 gaspi_return_t
 gaspi_segment_alloc ( gaspi_segment_id_t segment_id
                     , gaspi_size_t size
-                    , gaspi_alloc_t alloc_policy
-                    )
+                    , gaspi_alloc_t alloc_policy )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2482,8 +2476,16 @@ to be unique in the local \GASPI{} process. Creating a new segment
 with an existing segment ID results in undefined behavior. Note that
 the total number of segments is restricted by the underlying hardware
 capabilities. The maximum number of supported segments can be
-retrieved by invoking \gaspifunction{segment\_max}.  The \parameter{alloc\_policy}
-is used to pass an allocation policy. The default allocation policy behavior is left to the implementation.
+retrieved by invoking \gaspifunction{segment\_max}. 
+
+Allocation of segments in \GASPI{} allows for various so-called policies.
+The default policy in a cc-numa mode for example might be an allocation 
+of socket-local memory, a different policy might allow to map GPGPU memory
+into the main memory of the host and yet another policy might allow for a direct access
+of external non-volitle RAM.
+
+The \parameter{alloc\_policy}  is used to pass an allocation policy. The default allocation policy behavior is left to the implementation.
+The default allocation parameter is GASPI\_ALLOC\_DEFAULT.
 
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{},
 the segment can be accessed locally.
@@ -2518,8 +2520,7 @@ It is a \gaspisemantic{synchronous} \gaspisemantic{non-local}
 \begin{verbatim}
 GASPI_SEGMENT_REGISTER ( segment_id
                        , rank
-                       , timeout
-                       )
+                       , timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2536,8 +2537,7 @@ GASPI_SEGMENT_REGISTER ( segment_id
 gaspi_return_t
 gaspi_segment_register ( gaspi_segment_id_t segment_id
                        , gaspi_rank_t rank
-                       , gaspi_timeout_t timeout
-                       )
+                       , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2621,8 +2621,7 @@ GASPI_SEGMENT_CREATE ( segment_id
                      , size
                      , group
                      , timeout
-                     , alloc_policy
-                     )
+                     , alloc_policy )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2642,8 +2641,7 @@ gaspi_segment_create ( gaspi_segment_id_t segment_id
                      , gaspi_size_t size
                      , gaspi_group_t group
                      , gaspi_timeout_t timeout
-                     , gaspi_alloc_t alloc_policy
-                     )
+                     , gaspi_alloc_t alloc_policy )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2964,8 +2962,7 @@ a list of locally allocated segment IDs.
 \begin{FDefSign}
 \begin{verbatim}
 GASPI_SEGMENT_LIST ( num
-                   , segment_id_list[num] 
-                   )
+                   , segment_id_list[num] )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2978,8 +2975,7 @@ GASPI_SEGMENT_LIST ( num
 \begin{verbatim}
 gaspi_return_t
 gaspi_segment_list ( gaspi_number_t num
-                   , gaspi_segment_id_t *segment_id_list 
-                   )
+                   , gaspi_segment_id_t *segment_id_list )
 \end{verbatim}
 \end{FDefSign}
 
@@ -3020,8 +3016,7 @@ represented by a given segment ID. It is a \gaspisemantic{synchronous}
 \begin{FDefSign}
 \begin{verbatim}
 GASPI_SEGMENT_PTR ( segment_id
-                  , pointer
-                  )
+                  , pointer )
 \end{verbatim}
 \end{FDefSign}
 
@@ -3036,8 +3031,7 @@ GASPI_SEGMENT_PTR ( segment_id
 \begin{verbatim}
 gaspi_return_t
 gaspi_segment_ptr ( gaspi_segment_id_t segment_id
-                  , gaspi_pointer_t *pointer
-                  )
+                  , gaspi_pointer_t *pointer )
 \end{verbatim}
 \end{FDefSign}
 
@@ -3205,8 +3199,7 @@ GASPI_WRITE ( segment_id_local
             , offset_remote
             , size
             , queue
-            , timeout
-            )
+            , timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -3231,8 +3224,7 @@ gaspi_write ( gaspi_segment_id_t segment_id_local
             , gaspi_offset_t offset_remote
             , gaspi_size_t size
             , gaspi_queue_id_t queue
-            , gaspi_timeout_t timeout
-            )
+            , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -3354,8 +3346,7 @@ GASPI_READ ( segment_id_local
            , offset_remote
            , size
            , queue
-           , timeout
-           )
+           , timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -3381,8 +3372,7 @@ gaspi_read ( gaspi_segment_id_t segment_id_local
            , gaspi_offset_t offset_remote
            , gaspi_size_t size
            , gaspi_queue_id_t queue
-           , gaspi_timeout_t timeout
-           )
+           , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -3502,8 +3492,7 @@ It is an \gaspisemantic{asynchronous} \gaspisemantic{non-local}
 \begin{FDefSign}
 \begin{verbatim}
 GASPI_WAIT ( queue
-           , timeout
-           )
+           , timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -3516,8 +3505,7 @@ GASPI_WAIT ( queue
 \begin{verbatim}
 gaspi_return_t
 gaspi_wait ( gaspi_queue_id_t queue
-           , gaspi_timeout_t timeout
-           )
+           , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -3656,8 +3644,7 @@ GASPI_NOTIFY ( rank
              , notification_id
              , notification_value
              , queue
-             , timeout
-             )
+             , timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -3677,8 +3664,7 @@ gaspi_notify ( gaspi_rank_t rank
              , gaspi_notification_id_t notification_id
              , gaspi_notification_t notification_value
              , gaspi_queue_id_t queue
-             , gaspi_timeout_t timeout
-             )
+             , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -3861,8 +3847,7 @@ procedure.
 \begin{verbatim}
 GASPI_NOTIFY_WAITSOME ( notification_begin
                       , notification_num
-                      , timeout
-                      )
+                      , timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -3877,8 +3862,7 @@ GASPI_NOTIFY_WAITSOME ( notification_begin
 gaspi_return_t
 gaspi_notify_waitsome ( gaspi_notification_id_t notification_begin
                       , gaspi_number_t notification_num
-                      , gaspi_timeout_t timeout
-                      )
+                      , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -3982,8 +3966,7 @@ initialization procedure which resets the given notification to zero. It is a
 \begin{FDefSign}
 \begin{verbatim}
 GASPI_NOTIFY_RESET ( notification_id
-                   , old_notification_val
-                   )
+                   , old_notification_val )
 \end{verbatim}
 \end{FDefSign}
 
@@ -3996,8 +3979,7 @@ GASPI_NOTIFY_RESET ( notification_id
 \begin{verbatim}
 gaspi_return_t
 gaspi_notify_reset ( gaspi_notification_id_t notification_id
-                   , gaspi_notification_t *old_notification_val
-                   )
+                   , gaspi_notification_t *old_notification_val )
 \end{verbatim}
 \end{FDefSign}
 
@@ -4109,8 +4091,7 @@ GASPI_WRITE_NOTIFY ( segment_id_local
                    , notification_id
                    , notification_value
                    , queue
-                   , timeout
-                   )
+                   , timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -4140,8 +4121,7 @@ gaspi_write_notify ( gaspi_segment_id_t segment_id_local
                    , gaspi_notification_id_t notification_id
                    , gaspi_notification_t notification_value
                    , gaspi_queue_id_t queue
-                   , gaspi_timeout_t timeout
-                   )
+                   , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -4210,8 +4190,7 @@ GASPI_WRITE_LIST ( num
                  , offset_remote[num]
                  , size[num]
                  , queue
-                 , timeout
-                 )
+                 , timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -4239,8 +4218,7 @@ gaspi_write_list ( gaspi_number_t num
                  , gaspi_offset_t const *offset_remote
                  , gaspi_size_t const *size
                  , gaspi_queue_id_t queue
-                 , gaspi_timeout_t timeout
-                 )
+                 , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -4311,8 +4289,7 @@ GASPI_WRITE_LIST_NOTIFY
                 , notification_id
                 , notification_value
                 , queue
-                , timeout
-                )
+                , timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -4345,8 +4322,7 @@ gaspi_write_list_notify
                 , gaspi_notification_id_t notification_id
                 , gaspi_notification_t notification_value
                 , gaspi_queue_id_t queue
-                , gaspi_timeout_t timeout
-                )
+                , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -4418,8 +4394,7 @@ GASPI_READ_LIST ( num
                 , offset_remote[num]
                 , size[num]
                 , queue
-                , timeout
-                )
+                , timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -4446,8 +4421,7 @@ gaspi_read_list ( gaspi_number_t num
                 , gaspi_offset_t const *offset_remote
                 , gaspi_size_t const *size
                 , gaspi_queue_id_t queue
-                , gaspi_timeout_t timeout
-                )
+                , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -4499,8 +4473,7 @@ of open communication requests posted to a given queue.
 \begin{FDefSign}
 \begin{verbatim}
 GASPI_QUEUE_SIZE ( queue
-                 , queue_size
-                 )
+                 , queue_size )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
@@ -4512,8 +4485,7 @@ GASPI_QUEUE_SIZE ( queue
 \begin{verbatim}
 gaspi_return_t
 gaspi_queue_size ( gaspi_queue_id_t queue
-                 , gaspi_number_t const *queue_size
-                 )
+                 , gaspi_number_t const *queue_size )
 \end{verbatim}
 \end{FDefSign}
 
@@ -4555,8 +4527,7 @@ has an undefined value.
 \begin{FDefSign}
 \begin{verbatim}
 GASPI_QUEUE_PURGE ( queue
-                  , timeout
-                  )
+                  , timeout )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
@@ -4568,8 +4539,7 @@ GASPI_QUEUE_PURGE ( queue
 \begin{verbatim}
 gaspi_return_t
 gaspi_queue_purge ( gaspi_queue_id_t queue
-                  , gaspi_timeout_t timeout
-                  )
+                  , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -4653,8 +4623,7 @@ GASPI_PASSIVE_SEND ( segment_id_local
                    , offset_local
                    , rank
                    , size
-                   , timeout
-                   )
+                   , timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -4673,8 +4642,7 @@ gaspi_passive_send ( gaspi_segment_id_t segment_id_local
                    , gaspi_offset_t offset_local
                    , gaspi_rank_t rank
                    , gaspi_size_t size
-                   , gaspi_timeout_t timeout
-                   )
+                   , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -4781,8 +4749,7 @@ GASPI_PASSIVE_RECEIVE ( segment_id_local
                       , offset_local
                       , rank
                       , size
-                      , timeout
-                      )
+                      , timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -4801,8 +4768,7 @@ gaspi_passive_receive ( gaspi_segment_id_t segment_id_local
                       , gaspi_offset_t offset_local
                       , gaspi_rank_t const *rank
                       , gaspi_size_t size
-                      , gaspi_timeout_t timeout
-                      )
+                      , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -4981,8 +4947,7 @@ GASPI_ATOMIC_FETCH_ADD ( segment_id
                        , rank
                        , value_add
                        , value_old
-                       , timeout
-                       )
+                       , timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -5003,8 +4968,7 @@ gaspi_atomic_fetch_add ( gaspi_segment_id_t segment_id
                        , gaspi_rank_t rank
                        , gaspi_atomic_value_t value_add
                        , gaspi_atomic_value_t *value_old
-                       , gaspi_timeout_t timeout
-                       )
+                       , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -5085,8 +5049,7 @@ GASPI_ATOMIC_COMPARE_SWAP ( segment_id
                           , comparator
                           , value_new
                           , value_old
-                          , timeout
-                          )
+                          , timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -5109,8 +5072,7 @@ gaspi_atomic_compare_swap ( gaspi_segment_id_t segment_id
                           , gaspi_atomic_value_t comparator
                           , gaspi_atomic_value_t value_new
                           , gaspi_atomic_value_t *value_old
-                          , gaspi_timeout_t timeout
-                          )
+                          , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -5287,8 +5249,7 @@ an asynchronous procedure.
 \begin{FDefSign}
 \begin{verbatim}
 GASPI_BARRIER ( group
-              , timeout
-              )
+              , timeout )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
@@ -5300,8 +5261,7 @@ GASPI_BARRIER ( group
 \begin{verbatim}
 gaspi_return_t
 gaspi_barrier ( gaspi_group_t group
-              , gaspi_timeout_t timeout
-              )
+              , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -5401,8 +5361,7 @@ GASPI_ALLREDUCE ( buffer_send
                 , operation
                 , datatype
                 , group
-                , timeout
-                )
+                , timeout )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
@@ -5424,8 +5383,7 @@ gaspi_allreduce ( gaspi_const_pointer_t buffer_send
                 , gaspi_operation_t operation
                 , gaspi_datatype_t datatype
                 , gaspi_group_t group
-                , gaspi_timeout_t timeout
-                )
+                , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -5568,8 +5526,7 @@ GASPI_ALLREDUCE_USER ( buffer_send
                      , reduce_operation
                      , reduce_state
                      , group
-                     , timeout
-                     )
+                     , timeout )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
@@ -5591,10 +5548,9 @@ gaspi_allreduce_user ( gaspi_const_pointer_t buffer_send
                      , gaspi_number_t num
                      , gaspi_size_t size_element
                      , gaspi_reduce_operation_t reduce_operation
-                     , gaspi_state_t reduce_state
+                     , gaspi_reduce_state_t reduce_state
                      , gaspi_group_t group
-                     , gaspi_timeout_t timeout
-                     )
+                     , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -5615,7 +5571,7 @@ gaspi_allreduce_user ( buffer_send
     TYPE(gaspi_number_t), INTENT(IN) :: num
     TYPE(gaspi_size_t), INTENT(IN) :: size_element
     TYPE(gaspi_reduce_operation_t), INTENT(IN) :: reduce_operation
-    TYPE(gaspi_state_t), INTENT(IN) :: reduce_state
+    TYPE(gaspi_reduce_state_t), INTENT(IN) :: reduce_state
     TYPE(gaspi_group_t), INTENT(IN) :: group
     TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
     TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
@@ -5659,8 +5615,7 @@ GASPI_REDUCE_OPERATION ( operand_one
                        , operand_two
                        , result
                        , state
-                       , timeout
-                       )
+                       , timeout )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
@@ -5676,9 +5631,8 @@ gaspi_return_t
 gaspi_reduce_operation ( gaspi_const_pointer_t operand_one
                        , gaspi_const_pointer_t operand_two
                        , gaspi_pointer_t result
-                       , gaspi_state_t state
-                       , gaspi_timeout_t timeout
-                       )
+                       , gaspi_reduce_state_t state
+                       , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -5694,7 +5648,7 @@ gaspi_reduce_operation ( operand_one
     TYPE(gaspi_pointer_t), INTENT(IN) :: operand_one
     TYPE(gaspi_pointer_t), INTENT(IN) :: operand_two
     TYPE(gaspi_pointer_t), INTENT(IN) :: result
-    TYPE(gaspi_state_t), INTENT(IN) :: state
+    TYPE(gaspi_reduce_state_t), INTENT(IN) :: state
     TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
     TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
@@ -5732,7 +5686,7 @@ a pointer to a function with the prototype described above.
 The allreduce state type
 
 \begin{TDef}
-\TDefDefn{void*}{\gaspitype{state}}
+\TDefDefn{void*}{\gaspitype{reduce\_state}}
 \TDefDesc{The \GASPI{} reduction operation state type}
 \end{TDef}
 
@@ -6313,8 +6267,7 @@ procedure which translates an error code to a text message.
 \begin{FDefSign}
 \begin{verbatim}
 GASPI_ERROR_MESSAGE ( error_code
-                    , error_message
-                    )
+                    , error_message )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
@@ -6326,8 +6279,7 @@ GASPI_ERROR_MESSAGE ( error_code
 \begin{verbatim}
 gaspi_return_t
 gaspi_error_message ( gaspi_return_t error_code
-                    , gaspi_string_t *error_message
-                    )
+                    , gaspi_string_t *error_message )
 \end{verbatim}
 \end{FDefSign}
 
@@ -6438,8 +6390,7 @@ GASPI_STATISTIC_COUNTER_INFO ( const counter
                              , counter_argument
                              , counter_name
                              , counter_description
-                             , verbosity_level
-                             )
+                             , verbosity_level )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
@@ -6457,8 +6408,7 @@ gaspi_statistic_counter_info ( gaspi_statistic_counter_t counter
                              , gaspi_statistic_argument_t *counter_argument
                              , gaspi_string_t *counter_name
                              , gaspi_string_t *counter_description
-                             , gaspi_number_t *verbosity_level
-                             )
+                             , gaspi_number_t *verbosity_level )
 \end{verbatim}
 \end{FDefSign}
 
@@ -6548,8 +6498,7 @@ procedure which retrieves a statistical counter from the local \GASPI{} process.
 \begin{verbatim}
 GASPI_STATISTIC_COUNTER_GET ( counter
                             , argument
-                            , value
-                            )
+                            , value )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
@@ -6563,8 +6512,7 @@ GASPI_STATISTIC_COUNTER_GET ( counter
 gaspi_return_t
 gaspi_statistic_counter_get ( gaspi_statistic_counter_t counter
                             , gaspi_statistic_argument_t argument
-                            , gaspi_number_t *value
-                            )
+                            , gaspi_number_t *value )
 \end{verbatim}
 \end{FDefSign}
 
