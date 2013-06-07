@@ -3074,10 +3074,9 @@ managed.
 
 \GASPI{} does not provide dedicated memory management functionality
 for the local segments. This is left to the application.
-High performance is the guiding principle of \GASPI{}.
-A good problem-related implementation of a memory management is always better
-than any predefined implementation. A default implementation cannot
-include knowledge about the specific problem.
+Since a default implementation for memory management cannot include knowledge about the specific problem, a 
+good problem-related implementation of a memory management will always better
+than any predefined implementation.
 
 \gaspisemantic{Local} and \gaspisemantic{non-local} \GASPI{} procedures
 specify in general memory addresses within the Partitioned Global Address Space by
@@ -3087,7 +3086,6 @@ addresses, since memory addresses of memory segments could be and
 normally are different on different \GASPI{} processes.
 
 A local buffer is specified by the pair \parameter{segment\_id}, \parameter{offset}.
-The rank parameter is superfluous since it can be derived from the rank of the local \GASPI{} process.
 The buffer  is located at address
 \begin{equation}
 \mbox{buffer\_address} = \mbox{base\_addr}\left(\, \mbox{segment\_id} \,\right) + \mbox{offset} \nonumber
@@ -3133,20 +3131,13 @@ should see its communication requests delayed indefinitely.
 One-sided communication calls can basically be divided into two
 operation types: read and write.
 The read operations transfer data from a remote segment
-to a local segment.
-For the write operation, it is vice versa.
+to a local segment. The write operations transfer data from a local segment
+to a remote segment.
+
 
 The number of communication queues and their size can be configured at initialization
 time, otherwise default values will be used. The default values are implementation
 dependent. Maximum values are also defined.
-
-Due to the direct memory access of one-sided communication calls, some
-notes regarding the memory addresses should be made: Memory addresses
-within the Partitioned Global Address Space are specified uniquely by
-the triple consisting of the rank, segment identifier and the
-offset. This prevents a global all-to-all distribution of memory
-addresses, since the memory addresses of memory segments could be and
-normally are different on different \GASPI{} processes.
 
 For the write operation there are four different variants that allow different
 communication patterns:
@@ -3310,7 +3301,7 @@ posted communication requests has already reached the queue size of a given queu
 request fails and the procedure returns with return value \GASPIGERR{}.
 If a saturated queue is detected, there are the following two options:
 Either one invokes a \gaspifunction{wait} on the given queue in order to wait for all the
-posted requests to be finished. Or one tries to use another queue.
+posted requests to be finished. Alternatively it is possible to use another queue.
 
 \begin{useradvice}\label{useradvice:gaspi_write}
   Return value \GASPISUCC{} does not mean, that the data has been transferred
@@ -3474,7 +3465,6 @@ posted requests to be finished. Or one tries to use another queue.
   interleaving of the data that was present when the call was issued
   and the data that was transferred from the remote side.
 
-  Use \gaspifunction{notify} to synchronise the communication.
 \end{useradvice}
 
 %%%%%%%%%%%%%%% wait
@@ -3530,7 +3520,7 @@ After successful procedure completion, i.\,e.\ return value
 processed by the network infrastructure and the queue is cleaned up.
 After that, any communication request which has been posted to the
 given queue can be considered as completed on the local and remote
-sides.
+side. For completed requests the transmitted data is available for the application.
 
 \gaspifunction{wait} procedure calls may be posted from every thread
 of the local \GASPI{} process.  However, the wait operation is a
@@ -3614,16 +3604,16 @@ process in every communication request. However, at some point,
 the remote process needs the information as to whether the data
 which has been sent to that process has arrived and is valid.
 
-Therefore, \GASPI{} provides so-called weak synchronisation primitives
+To this end \GASPI{} provides so-called weak synchronisation primitives
 which allows the application to inform the remote side that the data
 has been transferred by updating a notification on the remote
-side. These notifications must be attached to the same queue to which
+side. These notifications must be submitted to the same queue to which
 the data payload has been attached. Otherwise, causality is not
 guaranteed.
 
 As counterpart, there are
 routines which wait for an update of a single or even an entire set of
-notifications. This is not thread save. There is a thread safe atomic function
+notifications. There is a thread safe atomic function
 to reset the local notification with a given ID which returns the value
 of the notification before it is reset.
 
@@ -4714,6 +4704,13 @@ passive communication request is posted, i.\,e.\ the number of posted
 communication requests has already reached the queue size, the
 communication request fails and the procedure returns with return
 value \GASPIGERR{}.
+ 
+\begin{useradvice}
+  Since the passive receive will try to match every corresponding
+  send, the buffer sizes for send/recv need to match for all ranks 
+  for the passive communication within one passive send/recv 
+  communication step.   
+\end{useradvice}
 
 \begin{useradvice}\emph{[see also the advice in \ref{useradvice:gaspi_write} on page \pageref{useradvice:gaspi_write}]}
   It is allowed to write data to the source location while the
@@ -4827,7 +4824,7 @@ sending process and associated to the communication request.
 
 Successive \gaspifunction{passive\_receive} calls posted by two
 different threads using two different target locations are
-allowed. However, either the first incoming data is received by the
+allowed. However, the first incoming data is received either by the
 first thread or the by the second. That means that the
 \gaspifunction{passive\_receive} should be posted only from a single
 thread of a \GASPI{} process.
@@ -6409,7 +6406,8 @@ gaspi_statistic_counter_info ( gaspi_statistic_counter_t counter
                              , gaspi_statistic_argument_t 
                                      *argument
                              , gaspi_string_t *counter_name
-                             , gaspi_string_t *counter_description
+                             , gaspi_string_t 
+                                     *counter_description
                              , gaspi_number_t *verbosity_level )
 \end{verbatim}
 \end{FDefSign}
