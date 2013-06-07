@@ -1134,7 +1134,7 @@ gaspi_config_get ( gaspi_configuration_t *config )
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_config_get ( config ) BIND(C)
+  gaspi_config_get ( config ) BIND(C)
   TYPE(gaspi_configuration_t), INTENT(OUT) :: config
   TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
@@ -1206,28 +1206,24 @@ of the application. It is a \gaspisemantic{non-local} \gaspisemantic{synchronous
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-GASPI_PROC_INIT ( config
-                , timeout )
+GASPI_PROC_INIT ( timeout )
 \end{verbatim}
 \end{FDefSign}
 
 \parameterlistbegin
-\parameterlistitem{in}{config}{the configuration to be used}
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
 
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_proc_init ( gaspi_configuration_t const *config
-                , gaspi_timeout_t const timeout )
+gaspi_proc_init ( gaspi_timeout_t const timeout )
 \end{verbatim}
 \end{FDefSign}
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_config_set ( config ) BIND(C)
-  TYPE(gaspi_configuration_t), INTENT(IN) :: config
+gaspi_proc_init ( timeout ) BIND(C)
   TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
   TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
@@ -1270,13 +1266,15 @@ Note, that a subsequent change of the number of running
 \GASPI{} processes invalidates \GASPIGROUPALL{} for the old running processes.
 Also the return value of \gaspifunction{proc\_num} is changed.
 
-The configuration structure should be created by the application before passing
-it to the \gaspifunction{proc\_init} procedure.
+The configuration structure should be created and modified by the
+application before calling the \gaspifunction{proc\_init} procedure.
 
-After successful procedure completion, \gaspifunction{proc\_init} returns
-\GASPISUCC{} and it guarantees that the application has been started
-on all hosts. In case that the \parameter{build\_infrastructure}
-is set, return value \GASPISUCC{} also implies that the communication infrastructure is up and ready to be used.
+After successful procedure completion, \gaspifunction{proc\_init}
+returns \GASPISUCC{} and it guarantees that the application has been
+started on all hosts. In case that
+the \parameter{build\_infrastructure} is set, return value
+\GASPISUCC{} also implies that the communication infrastructure is up
+and ready to be used.
 
 In case the application could not be initialized in line with the timeout
 pa\-ra\-me\-ter, the return value is \GASPITIME{}. The application has not been initialized
@@ -2494,6 +2492,11 @@ destination segment for \gaspifunction{passive\_receive}.
 A return value \GASPIGERR{} indicates that the segment allocation failed.
 The segment cannot be used locally or for passive communication.
 
+\begin{useradvice}
+  A GASPI implementation may allocate more memory than requested by the
+  application for internal management.
+\end{useradvice}
+
 \begin{implementoradvice}
 In case of non-uniform memory access architectures, the memory should be allocated
 close to the calling process. The allocation policy of the calling process should
@@ -2711,6 +2714,11 @@ communication requests which are invoked by the other remote processes forming t
 In case of the latter two return values, a check of the state vector
 by invocation of \gaspifunction{state\_vec\_get} gives information
 whether the involved remote \GASPI{} processes are still healthy.
+
+\begin{useradvice}
+  A GASPI implementation may allocate more memory than requested by the
+  application for internal management.
+\end{useradvice}
 
 \begin{implementoradvice}
 In case of non-uniform memory access architectures, the memory should be allocated
@@ -3624,7 +3632,8 @@ involve only the local process.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-GASPI_NOTIFY ( rank
+GASPI_NOTIFY ( segment_id
+             , rank
              , notification_id
              , notification_value
              , queue
@@ -3633,6 +3642,7 @@ GASPI_NOTIFY ( rank
 \end{FDefSign}
 
 \parameterlistbegin
+\parameterlistitem{in}{segment\_id}{the remote segment bound to the notification}
 \parameterlistitem{in}{rank}{the remote rank to notify}
 \parameterlistitem{in}{notification\_id}{the remote notification ID}
 \parameterlistitem{in}{notification\_value}{the notification value ($>0$) to write}
@@ -3644,7 +3654,8 @@ GASPI_NOTIFY ( rank
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_notify ( gaspi_rank_t rank
+gaspi_notify ( gaspi_segment_id_t segment_id
+             , gaspi_rank_t rank
              , gaspi_notification_id_t notification_id
              , gaspi_notification_t notification_value
              , gaspi_queue_id_t queue
@@ -3654,13 +3665,15 @@ gaspi_notify ( gaspi_rank_t rank
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_notify ( rank
+gaspi_notify ( segment_id
+             , rank
              , notification_id
              , notification_value
              , queue
              , timeout
              , ireturn
              ) BIND(C)
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
   TYPE(gaspi_rank_t), INTENT(IN) :: rank
   TYPE(gaspi_notification_id_t), INTENT(IN) :: notification_id
   TYPE(gaspi_notification_t), INTENT(IN) :: notification_value
@@ -3829,24 +3842,29 @@ procedure.
 
 \begin{FDefSign}
 \begin{verbatim}
-GASPI_NOTIFY_WAITSOME ( notification_begin
+GASPI_NOTIFY_WAITSOME ( segment_id
+                      , notification_begin
                       , notification_num
+                      , first_id
                       , timeout )
 \end{verbatim}
 \end{FDefSign}
 
 \parameterlistbegin
+\parameterlistitem{in}{segment\_id}{the segment bound to the notification}
 \parameterlistitem{in}{notification\_begin}{the local notification ID for the first notification to wait for}
 \parameterlistitem{in}{notification\_num}{the number of notification ID's to wait for}
+\parameterlistitem{out}{first\_id}{the id of the first notification that arrived}
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
 
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_notify_waitsome ( gaspi_notification_id_t 
-                              notification_begin
+gaspi_notify_waitsome ( gaspi_segment_id_t segment_id
+                      , gaspi_notification_id_t notification_begin
                       , gaspi_number_t notification_num
+                      , gaspi_notification_id_t *first_id
                       , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
@@ -3854,13 +3872,17 @@ gaspi_notify_waitsome ( gaspi_notification_id_t
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_notify_waitsome ( notification_begin
+gaspi_notify_waitsome ( segment_id
+                      , notification_begin
                       , notification_num
+                      , first_id
                       , timeout
                       , ireturn
                       ) BIND(C)
+  TYPE(gaspi_segment_id_t), INTENT(IN):: segment_id
   TYPE(gaspi_notification_id_t), INTENT(IN):: notification_begin
   TYPE(gaspi_number_t), INTENT(IN) :: notification_num
+  TYPE(gaspi_notification_id_t), INTENT(OUT):: first_id
   TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
   TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
@@ -3950,12 +3972,14 @@ initialization procedure which resets the given notification to zero. It is a
 
 \begin{FDefSign}
 \begin{verbatim}
-GASPI_NOTIFY_RESET ( notification_id
+GASPI_NOTIFY_RESET ( segment_id
+                   , notification_id
                    , old_notification_val )
 \end{verbatim}
 \end{FDefSign}
 
 \parameterlistbegin
+\parameterlistitem{in}{segment\_id}{the segment bound to the notification}
 \parameterlistitem{in}{notification\_id}{the local notification ID to reset}
 \parameterlistitem{out}{old\_notification\_val}{notification value before reset}
 \parameterlistend
@@ -3963,17 +3987,20 @@ GASPI_NOTIFY_RESET ( notification_id
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_notify_reset ( gaspi_notification_id_t notification_id
+gaspi_notify_reset ( gaspi_segment_id_t segment_id
+                   , gaspi_notification_id_t notification_id
                    , gaspi_notification_t *old_notification_val)
 \end{verbatim}
 \end{FDefSign}
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_notify_reset ( notification_id
+gaspi_notify_reset ( segment_id
+                   , notification_id
                    , old_notification_val
                    , ireturn
                    ) BIND(C)
+  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
   TYPE(gaspi_notification_id_t), INTENT(IN) :: notification_id
   TYPE(gaspi_notification_t),INTENT(OUT):: old_notification_val
   TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
