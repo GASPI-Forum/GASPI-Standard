@@ -10,9 +10,10 @@ typedef struct {
 
 extern void gaspi_printf(char * format, ... );
 
-// strong symbols
-extern "C" 
-{
+#ifdef __cplusplus 
+extern "C" {
+#endif 
+
 	gaspi_return_t pgaspi_proc_rank(gaspi_rank_t *rank);
 	gaspi_return_t pgaspi_proc_init( gaspi_configuration_t configuration, gaspi_timeout_t timeout);
 	gaspi_return_t pgaspi_proc_term(gaspi_timeout_t timeout );
@@ -85,12 +86,14 @@ extern "C"
 	gaspi_return_t pgaspi_passive_receive ( gaspi_segment_id_t segment_id_local
            , gaspi_offset_t offset_local
            , gaspi_size_t size
-           , gaspi_rank_t* rank
-           , gaspi_tag_t* tag
+           , gaspi_rank_t rank
+           , gaspi_tag_t tag
            , gaspi_timeout_t timeout
            );
-	gaspi_return_t pgaspi_queue_size(gaspi_queue_id_t queue
-			, gaspi_number_t* queue_size);
+  gaspi_return_t pgaspi_passive_queue_size( gaspi_number_t * queue_size );
+  gaspi_return_t pgaspi_passive_queue_size_max( gaspi_number_t * queue_size );
+	gaspi_return_t pgaspi_queue_size(gaspi_queue_id_t queue, gaspi_number_t* queue_size);
+  gaspi_return_t pgaspi_queue_size_max ( gaspi_queue_id_t queue , gaspi_number_t* queue_size);
 	gaspi_return_t pgaspi_time_get(gaspi_time_t* wtime);
 	gaspi_return_t pgaspi_statistic_verbosity_level(gaspi_number_t _verbosity_level);
 	gaspi_return_t pgaspi_statistic_counter_max(gaspi_statistic_counter_t* counter_max);
@@ -105,6 +108,9 @@ extern "C"
 			, gaspi_number_t value
 			);
 	gaspi_return_t pgaspi_statistic_counter_reset (gaspi_statistic_counter_t counter);
-}
+
+#ifdef __cplusplus 
+} 
+#endif 
 
 #endif

@@ -898,8 +898,8 @@ gaspi_return_t
 gaspi_passive_receive ( gaspi_segment_id_t segment_id_local
                       , gaspi_offset_t offset_local
                       , gaspi_size_t size
-                      , gaspi_rank_t* rank
-                      , gaspi_tag_t* tag
+                      , gaspi_rank_t rank
+                      , gaspi_tag_t tag
                       , gaspi_timeout_t timeout
                       );
 
@@ -914,7 +914,7 @@ gaspi_passive_receive ( gaspi_segment_id_t segment_id_local
 \retval GASPI_ERROR: operation has terminated with an error*/
 
 gaspi_return_t
-gaspi_passive_queue_size (gaspi_number_t queue_size);
+gaspi_passive_queue_size (gaspi_number_t *queue_size);
 
 
 /*!
@@ -927,7 +927,7 @@ gaspi_passive_queue_size (gaspi_number_t queue_size);
 \retval GASPI_ERROR: operation has terminated with an error*/
 
 gaspi_return_t
-gaspi_passive_queue_size_max  (gaspi_number_t queue_size);
+gaspi_passive_queue_size_max  (gaspi_number_t *queue_size);
 
 
 /*!

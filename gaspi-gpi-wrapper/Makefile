@@ -1,7 +1,7 @@
 TOPROOT = $(PWD)
 
 #change me
-GPI_DIR = /home/huenich/gpi/gpi-SDK
+GPI_DIR = /home/harry/gpilib/
 
 BIN_DIR = $(PWD)/bin/
 LIB_DIR = $(PWD)/lib/

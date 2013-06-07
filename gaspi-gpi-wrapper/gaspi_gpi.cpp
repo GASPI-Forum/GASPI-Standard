@@ -23,6 +23,8 @@
 #pragma weak gaspi_passive_send     = pgaspi_passive_send
 #pragma weak gaspi_passive_wait     = pgaspi_passive_wait
 #pragma weak gaspi_passive_receive  = pgaspi_passive_receive
+#pragma weak gaspi_passive_queue_size  = pgaspi_passive_queue_size
+#pragma weak gaspi_passive_queue_size_max  = pgaspi_passive_queue_size_max
 #pragma weak gaspi_segment_ptr      = pgaspi_segment_ptr
 #pragma weak gaspi_allreduce        = pgaspi_allreduce
 #pragma weak gaspi_queue_size      = pgaspi_queue_size
@@ -315,22 +317,33 @@ extern gaspi_return_t pgaspi_passive_wait (gaspi_timeout_t timeout)
 extern gaspi_return_t pgaspi_passive_receive ( gaspi_segment_id_t segment_id_local
            , gaspi_offset_t offset_local
            , gaspi_size_t size
-           , gaspi_rank_t* rank
-           , gaspi_tag_t* tag
+           , gaspi_rank_t rank
+           , gaspi_tag_t tag
            , gaspi_timeout_t timeout
            )
 {
 	assert(segment_id_local == 0);
 	assert(timeout == GASPI_BLOCK);
-	
-	int senderRank = -1;
-	if(CHECK(recvDmaPassiveGPI(offset_local, size, &senderRank)) == GASPI_ERROR)
+	int *target = (int *) malloc( sizeof(int) );
+  	target[0] = rank;
+	if(CHECK(recvDmaPassiveGPI(offset_local, size, target)) == GASPI_ERROR)
 		return GASPI_ERROR;
-	
-	*rank = senderRank;
-	
+	free(target);
 	return GASPI_SUCCESS;
 }           
+
+extern gaspi_return_t pgaspi_passive_queue_size( gaspi_number_t * queue_size )
+{
+  *queue_size = openDMAPassiveRequestsGPI();
+  return GASPI_SUCCESS;
+}
+
+extern gaspi_return_t pgaspi_passive_queue_size_max( gaspi_number_t * queue_size )
+{
+  *queue_size = getQueueDepthGPI();
+  return GASPI_SUCCESS;
+}
+
 
 gaspi_return_t
 pgaspi_segment_ptr ( gaspi_segment_id_t segment_id
@@ -377,6 +390,13 @@ pgaspi_queue_size(gaspi_queue_id_t queue, gaspi_number_t* queue_size)
 	*queue_size = (gaspi_number_t) temp;
 
 	return GASPI_SUCCESS;
+}
+
+gaspi_return_t 
+pgaspi_queue_size_max ( gaspi_queue_id_t queue , gaspi_number_t* queue_size)
+{
+  *queue_size = getQueueDepthGPI();
+  return GASPI_SUCCESS;
 }
 
 gaspi_return_t
