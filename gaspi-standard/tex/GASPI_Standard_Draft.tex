@@ -972,10 +972,10 @@ into several consecutive phases:
 
 
 In the \textbf{setup} phase, the application may retrieve and modify
-the \GASPI{} configuration structure (see Section~\ref{subsubsec:confstruct})
+the \GASPI{} configuration structure (see Sect.~\ref{subsubsec:confstruct})
 determining the \GASPI{} runtime behavior. Optionally (but
 advisable), the application can perform environment checks (see
-Section~\ref{sec:envcheck}) to make sure the application can be
+Sect.~\ref{sec:envcheck}) to make sure the application can be
 started safely and correctly.
 
 In the \textbf{initialization} phase, the \GASPI{} runtime environment
@@ -995,7 +995,7 @@ After the initialization, the application can proceed with its
 collectives, atomic operations, etc.).
 
 The application should call the
-\textbf{shutdown} procedure (see Section~\ref{sec:shutdown}) before it is terminated
+\textbf{shutdown} procedure (see Sect.~\ref{sec:shutdown}) before it is terminated
 so that all resources and the communication infrastructure is cleaned up.
 
 The entire set of execution phases define the \GASPI{} life cycle.
@@ -1051,7 +1051,7 @@ typedef struct {
   gaspi_network_t    network;
 
   // communication infrastructure build up notification
-  gaspi_bool_t       build_infrastructure
+  gaspi_bool_t       build_infrastructure;
 
   void *             user_defined;
 } gaspi_configuration_t;
@@ -1092,14 +1092,14 @@ The default configuration structure can be retrieved by \gaspifunction{config\_g
 % All fields of the default configuration structure are optional and do not need
 % to be explicitly initialized.
 Its default values are implementation dependent. If
-some of the parameters are externally set by the program and assigned with \gaspifunction{config\_set},
+some of the parameters are set by the program and assigned with \gaspifunction{config\_set},
 the requested values are just proposals.
 Depending on the underlying hardware capabilities,
 the implementation is allowed to overrule these proposals.
 \gaspifunction{config\_set} has to be used in order to commit modifications
 of the configuration structure before the initialization routine is invoked.
 The actual values of the parameters can be retrieved by the corresponding \GASPI{}
-getter routines (see section \ref{sec:getterfn}) after the successful program initialization. The values of the configuration
+getter routines (see Sect.~\ref{sec:getterfn}) after the successful program initialization. The values of the configuration
 structure parameters need to be the same on all \GASPI{} processes.
 
 The user has the possibility to set the values on her own or leave the
