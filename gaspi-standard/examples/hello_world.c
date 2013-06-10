@@ -7,8 +7,8 @@ main (int argc, char *argv[])
 {
   gaspi_proc_init (GASPI_BLOCK);
 
-  gaspi_rank_t iProc = GASPI_NORANK;
-  gaspi_rank_t nProc = GASPI_NORANK;
+  gaspi_rank_t iProc;
+  gaspi_rank_t nProc;
 
   gaspi_proc_rank (&iProc);
   gaspi_proc_num (&nProc);
