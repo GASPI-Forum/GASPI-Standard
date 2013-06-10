@@ -13,11 +13,13 @@ sub generateMachineFile($)
   my $FILE;
   my @pes = split(/ /, shift);
   
+  for( my $i = 0 ; $i < scalar( @pes ) ; $i += 2 ) {
+    $host_cpu{$pes[$i]} = $pes[$i + 1];
+  }
   open( $FILE, ">$machine_file") or die "Can't open machinefile:\n $!";
   
-  for( my $i = 0 ; $i < scalar( @pes ) ; $i += 2 ) {
-    print $FILE "$pes[$i]\n" x $pes[$i + 1];
-    $host_cpu{$pes[$i]} = $pes[$i + 1];
+  foreach my $key ( sort( keys %host_cpu ) ) { 
+    print $FILE "$key\n" x $host_cpu{$key};
   }
   
   close($FILE);
@@ -27,6 +29,7 @@ if( scalar( @ARGV ) == 0 ) {
   print "No arguments given !!\n";
   exit 1;
 }
+
 if (grep /--help/, @ARGV) {
   print "#############################################################################\n";
   print "#                   Execution of an gaspi application:                      #\n";
@@ -45,7 +48,7 @@ if( ! defined $ENV{$lsf_pe_var} ) {
 
 generateMachineFile( $ENV{$lsf_pe_var} );
 
-my $exec = "ssh ".(keys %host_cpu)[0]." $gaspi_run -m $machine_file ";
+my $exec = "ssh ".sort((keys %host_cpu))[0]." $gaspi_run -m $machine_file ";
 $exec .= join(' ', @ARGV);
-print "<< execution on master node ",(keys %host_cpu)[0]," >>\n";
+print "<< execution on master node ",(sort(keys %host_cpu))[0]," >>\n";
 exec $exec;
