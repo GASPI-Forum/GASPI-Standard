@@ -9,7 +9,7 @@ void success_or_die ( const char* file, const int line
 {
   if (ec != GASPI_SUCCESS)
     {
-      gaspi_string_t str = GASPI_NOSTRING;
+      gaspi_string_t str;
 
       gaspi_error_message (ec, &str);
 
