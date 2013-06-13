@@ -72,26 +72,22 @@ main (int argc, char *argv[])
     }
 
   gaspi_notification_id_t notify_cnt = nProc;
-  const gaspi_notification_id_t notify_ID_max = nProc;
+  gaspi_notification_id_t first_notify_id;
 
   while (notify_cnt > 0)
   {
-    ASSERT (gaspi_notify_waitsome (segment_id_dst, 0, nProc, GASPI_BLOCK));
+    ASSERT (gaspi_notify_waitsome (segment_id_dst, 0, nProc
+				   , GASPI_BLOCK, &first_notify_id));
 
-    for ( gaspi_notification_id_t notify_ID = 0
-        ; notify_ID < notify_ID_max
-        ; ++notify_ID
-        )
-      {
-        gaspi_notification_id_t notify_val = 0;
+    gaspi_notification_id_t notify_val = 0;
 
-        ASSERT (gaspi_notify_reset (notify_ID, &notify_val));
+    ASSERT (gaspi_notify_reset (segment_id_dst, first_notify_id
+                               , &notify_val));
 
-        if (notify_val != 0)
-          {
-            --notify_cnt;
-          }
-      }
+    if (notify_val != 0)
+       {
+         --notify_cnt;
+       }
   }
 
   dump (dst, nProc);

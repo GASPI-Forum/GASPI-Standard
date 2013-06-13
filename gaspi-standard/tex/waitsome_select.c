@@ -7,26 +7,24 @@ extern void process ( const gaspi_notification_id_t id
 
 void blocking_waitsome ( const gaspi_notification_id_t id_begin
                        , const gaspi_notification_id_t id_end
+                       , const gaspi_segment_id_t seg_id
                        )
 {
-  ASSERT ( gaspi_notify_waitsome ( id_begin
+  gaspi_notification_id_t first_id;
+  
+  ASSERT ( gaspi_notify_waitsome ( seg_id
+				  , id_begin
                                  , id_end - id_begin
+                                 , &first_id
                                  , GASPI_BLOCK
                                  )
          );
 
-  for (gaspi_notification_id_t i = id_begin; i < id_end; ++i)
-    {
-      gaspi_notification_t val = 0;
+  gaspi_notification_t val = 0;
 
-      // atomic reset
-      ASSERT (gaspi_notify_reset (i, &val));
+  // atomic reset
+  ASSERT (gaspi_notify_reset (seg_id, first_id, &val));
 
-      // re-check, other threads are notified too!
-      if (val != 0)
-        {
-          process (i, val);
-        }
-
-    }
+  // other threads are notified too!
+  process (first_id, val);
 }
