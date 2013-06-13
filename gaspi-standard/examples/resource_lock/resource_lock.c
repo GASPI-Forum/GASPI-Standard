@@ -20,7 +20,7 @@ global_lock_init ( const gaspi_segment_id_t seg,
                  , const gaspi_timeout_t timeout
                  )
 {
-  gaspi_rank_t iProc = GASPI_NORANK;
+  gaspi_rank_t iProc;
 	  
   SUCCESS_OR_RETURN (gaspi_proc_rank (&iProc));
 
@@ -50,7 +50,7 @@ global_try_lock ( const gaspi_segment_id_t seg,
                 , const gaspi_timeout_t timeout
                 )
 {
-  gaspi_rank_t iProc = GASPI_NORANK;
+  gaspi_rank_t iProc;
 
   SUCCESS_OR_RETURN (gaspi_proc_rank (&iProc));
 
@@ -78,7 +78,7 @@ global_unlock ( const gaspi_segment_id_t seg,
               , const gaspi_timeout_t timeout
               )
 {
-  gaspi_rank_t iProc = GASPI_NORANK;
+  gaspi_rank_t iProc;
 
   SUCCESS_OR_RETURN (gaspi_proc_rank (&iProc));
 

@@ -797,7 +797,7 @@ optimizations.
 
 \begin{TDef}
 \TDefDef{\gaspitype{atomic\_value}}
-\TDefDesc{The \GASPI{} global atomic value type.}
+\TDefDesc{The \GASPI{} global atomic value type. An atomic value is unsigned and its maximum value can be queried using \gaspifunction{atomic\_max}.}
 \end{TDef}
 
 \begin{TDef}
@@ -5993,6 +5993,40 @@ gaspi_passive_transfer_size_max ( transfer_size_max
 \end{verbatim}
 \end{FDefSign}
 
+\executionphasework
+\FStdRetDescNOTimeout
+\end{FDef}
+
+\subsection{Getter functions related to atomic operations}
+
+\subsubsection{\gaspifunction{atomic\_max}}
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+GASPI_ATOMIC_MAX (max_value)
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{out}{max\_value}{the maximum value an gaspi\_atomic\_value\_t can hold}
+\parameterlistend
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_network_type (gaspi_atomic_value_t *max_value)
+\end{verbatim}
+\end{FDefSign}
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_network_type ( max_value
+                   , ireturn 
+                   ) BIND(C)
+    TYPE(gaspi_atomic_value_t), INTENT(OUT) :: max_value
+    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+\end{verbatim}
+\end{FDefSign}
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
