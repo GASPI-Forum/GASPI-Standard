@@ -1308,11 +1308,11 @@ yet. A subsequent invocation is required to completely initialize the applicatio
 
 In case of error, the return value is \GASPIGERR{}. The application is not initialized.
 
-%TODO: how to guaranntee this?
-In case of the return value \GASPITIME{} or \GASPIGERR{}, a check of the state vector
-by invocation of \gaspifunction{state\_vec\_get} gives information about
-whether the involved remote \GASPI{} processes are healthy or whether they
-are corrupted.
+
+% In case of the return value \GASPITIME{} or \GASPIGERR{}, a check of the state vector
+% by invocation of \gaspifunction{state\_vec\_get} gives information about
+% whether the involved remote \GASPI{} processes are healthy or whether they
+% are corrupted.
 
 
 \begin{implementoradvice}
@@ -1814,10 +1814,6 @@ initialized during \gaspifunction{proc\_init}. It is updated, case
 required, in each of the following operations:
 
 \begin{itemize}
- \item process management
-   \begin{itemize}
-     \item \gaspifunction{proc\_init}
-   \end{itemize}
 \item group commitment
   \begin{itemize}
     \item \gaspifunction{group\_commit}
