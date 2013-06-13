@@ -25,10 +25,12 @@ main (int argc, char *argv[])
 
   ASSERT (gaspi_segment_create ( segment_id_src, segment_size
                                , GASPI_GROUP_ALL, GASPI_BLOCK
+                               , GASPI_ALLOC_DEFAULT                               
                                )
          );
   ASSERT (gaspi_segment_create ( segment_id_dst, segment_size
                                , GASPI_GROUP_ALL, GASPI_BLOCK
+                               , GASPI_ALLOC_DEFAULT                               
                                )
          );
 
