@@ -305,15 +305,23 @@ communication patterns towards an asynchronous communication and
 execution model. To that end \GASPI{} leverages remote completion and 
 one-sided RDMA driven communication in a Partitioned Global Address Space.
 
-\GASPI{} is neither a new language (like Chapel from Cray), nor an extension to a
-language (like Co-Array Fortran or UPC). Instead---very much in the
-spirit of MPI---it complements existing languages like C/C++ or
-Fortran with a PGAS API which enables the application to leverage the
-concept of the Partitioned Global Adress Space. \GASPI{} is not limited to a
-single memory model, but rather provides configurable RDMA
-PGAS memory segments. GASPI allows application developers to map the memory heterogeneity of a modern supercomputer node to these PGAS segments. As an example GASPI allows users to map the main memory of a GPGPU or Xeon Phi to a specific segment, to configure a GASPI segment per memory controller in a CC-NUMA system or to map non-volatile RAM to a specific segment. All these segments can directly read and write from/to each other - within the node and across all nodes.
-\GASPI{} is failure tolerant in the sense that it provides timeout mechanisms for all non-local procedures, failure
-detection and the possibility to adapt to shrinking or growing node sets.
+\GASPI{} is neither a new language (like Chapel from Cray), nor an
+extension to a language (like Co-Array Fortran or UPC). Instead---very
+much in the spirit of MPI---it complements existing languages like
+C/C++ or Fortran with a PGAS API which enables the application to
+leverage the concept of the Partitioned Global Adress Space. \GASPI{}
+is not limited to a single memory model, but rather provides
+configurable RDMA PGAS memory segments. GASPI allows application
+developers to map the memory heterogeneity of a modern supercomputer
+node to these PGAS segments. As an example GASPI allows users to map
+the main memory of a GPGPU or Xeon Phi to a specific segment, to
+configure a GASPI segment per memory controller in a CC-NUMA system or
+to map non-volatile RAM to a specific segment. All these segments can
+directly read and write from/to each other - within the node and
+across all nodes.  \GASPI{} is failure tolerant in the sense that it
+provides timeout mechanisms for all non-local procedures, failure
+detection and the possibility to adapt to shrinking or growing node
+sets.
 
 \subsection{History}
 The \GASPI{} specification originates from the PGAS API of the Fraunhofer
@@ -365,30 +373,37 @@ tool for the HPC community.
 
 \section{\GASPI{} terms and conventions}
 
-This section describes notational terms and conventions used throughout the \GASPI{}
-document.
+This section describes notational terms and conventions used
+throughout the \GASPI{} document.
 
 %\subsection{Document Notation}
 
 \subsection{Naming Conventions}
 
 All procedures are named in accordance with the following convention.
-The procedures have \gaspifunction{} as a prefix. The prefix
-is followed by the operation name.
+The procedures have \gaspifunction{} as a prefix. The prefix is
+followed by the operation name.
 
 \subsection{Procedure specification}
 
-GASPI has adopted the procedure specifiaction of MPI. Similar to the MPI standard, procedures in GASPI hence are first specified using a language independent notation. 
-Immediately below this, the arguments of the procedure are given and marked as IN or OUT. The meanings of these are:
+GASPI has adopted the procedure specifiaction of MPI. Similar to the
+MPI standard, procedures in GASPI hence are first specified using a
+language independent notation.  Immediately below this, the arguments
+of the procedure are given and marked as IN or OUT. The meanings of
+these are:
 
 \begin{itemize}
 \item the call uses but does not update an argument marked IN. For the C procedures these arguments are const-correct.
 \item the call may update an argument marked OUT.
 \end{itemize}
 
-Similar to MPI, in GASPI the passing of aliased procedure parameters results in undefined behavior.  
+Similar to MPI, in GASPI the passing of aliased procedure parameters
+results in undefined behavior.
 
-Below the procedure arguments the ANSI C version of the function is shown, and below this, a version of the same function is shown for Fortran 2003. For the latter the corresponding definitions and derived types have to be include via  
+Below the procedure arguments the ANSI C version of the function is
+shown, and below this, a version of the same function is shown for
+Fortran 2003. For the latter the corresponding definitions and derived
+types have to be include via
 
 \begin{FDefSign}
 \begin{verbatim}
@@ -466,20 +481,25 @@ The following semantic terms are used throughout the document:
   may not be synchronising.
 \item[predefined] A predefined type is a datatype with a predefined
   constant name.
-\item[timeout]  A timeout is a mechanism required by procedures that
-  might block (see blocking above). Timeout here is defined as the maximum
-  time (in milliseconds) a called procedure will wait for outstanding communication
-  from other processes. The special value \numprint{0}  (defined as \GASPITEST{}) indicates
-  that the procedure will complete all local operations. The procedure subsequently returns
-  the current status without waiting for data from other processes (non-blocking). On the other hand the
-  special value \numprint{-1} (defined as \GASPIBLOCK{}) instructs the procedure to wait indefinitely (blocking).
-  A number greater than \numprint{0} indicates the maximum time the procedure will wait for
-  data from other ranks (time-based blocking).  The timeouts hence are soft: The timeout value $n$ does
-  not imply that the called procedure will return after $n$  milliseconds. It just means that the procedure should wait for at
-  most $n$ milliseconds for data from other processes.
-\item[synchronous]
-  A procedure is called synchronous if progress towards
-  completion only is achieved as long as  the application is inside (executing) the procedure.
+\item[timeout] A timeout is a mechanism required by procedures that
+  might block (see blocking above). Timeout here is defined as the
+  maximum time (in milliseconds) a called procedure will wait for
+  outstanding communication from other processes. The special value
+  \numprint{0} (defined as \GASPITEST{}) indicates that the procedure
+  will complete all local operations. The procedure subsequently
+  returns the current status without waiting for data from other
+  processes (non-blocking). On the other hand the special value
+  \numprint{-1} (defined as \GASPIBLOCK{}) instructs the procedure to
+  wait indefinitely (blocking).  A number greater than \numprint{0}
+  indicates the maximum time the procedure will wait for data from
+  other ranks (time-based blocking).  The timeouts hence are soft: The
+  timeout value $n$ does not imply that the called procedure will
+  return after $n$ milliseconds. It just means that the procedure
+  should wait for at most $n$ milliseconds for data from other
+  processes.
+\item[synchronous] A procedure is called synchronous if progress
+  towards completion only is achieved as long as the application is
+  inside (executing) the procedure.
 \begin{center}
 \begin{tikzpicture}
 \timeline{\baselineskip};
@@ -521,8 +541,8 @@ not true.
 
 \subsection{Examples}
 
-The examples in this document are for illustration purposes only. They are not intended
-to specify the semantics.
+The examples in this document are for illustration purposes only. They
+are not intended to specify the semantics.
 
 
 \section{\GASPI{} concepts}
@@ -563,28 +583,30 @@ restricted to the processes forming the group.
 
 \subsection{\GASPI{} segments}
 
-Modern hardware typically involves a hierarchy of memory with respect to the
-bandwidth and latencies of read and write accesses. Within that hierarchy are
-non-uniform memory access (\emph{NUMA}) partitions, solid state
-devices (\emph{SSD}s), graphical processing unit (\emph{GPU}) memory
-or many integrated cores (\emph{MIC}) memory.  The \GASPI{} memory
-segments are supposed to map this variety of hardware layers to the software
-layer. In the spirit of the PGAS approach, these \GASPI{} segments
-may be globally accessible from every thread of every \GASPI{} process.
-\GASPI{} segments can also be used to leverage different memory models within
-a single application or to even run different applications in a single Partitioned Global
-Address Space.
+Modern hardware typically involves a hierarchy of memory with respect
+to the bandwidth and latencies of read and write accesses. Within that
+hierarchy are non-uniform memory access (\emph{NUMA}) partitions,
+solid state devices (\emph{SSD}s), graphical processing unit
+(\emph{GPU}) memory or many integrated cores (\emph{MIC}) memory.  The
+\GASPI{} memory segments are supposed to map this variety of hardware
+layers to the software layer. In the spirit of the PGAS approach,
+these \GASPI{} segments may be globally accessible from every thread
+of every \GASPI{} process.  \GASPI{} segments can also be used to
+leverage different memory models within a single application or to
+even run different applications in a single Partitioned Global Address
+Space.
 
 \subsection{\GASPI{} one-sided communication}
 
 One-sided asynchronous communication is the basic communication
-mechanism provided by \GASPI{}. The one-sided communication comes
-in two flavors.  There are read and write operations from and into the
-Partitioned Global Address Space. For the write operations GASPI makes use of the 
-concept of remote completion in the form of so-called notifications. 
-One-sided operations are non-blocking and asynchronous, allowing the program to continue
-its execution along the data transfer. The actual data transfer is managed
-by the underlying network infrastructure.
+mechanism provided by \GASPI{}. The one-sided communication comes in
+two flavors.  There are read and write operations from and into the
+Partitioned Global Address Space. For the write operations GASPI makes
+use of the concept of remote completion in the form of so-called
+notifications.  One-sided operations are non-blocking and
+asynchronous, allowing the program to continue its execution along the
+data transfer. The actual data transfer is managed by the underlying
+network infrastructure.
 
 %From the application point of view, a transfer can be considered as
 %completed if a corresponding wait operation has successfully returned.
@@ -593,15 +615,15 @@ by the underlying network infrastructure.
 
 \subsection{\GASPI{} queues}
 
-\GASPI{} offers the possibility to use different queues to handle the communication requests.
-The requests can be submitted to one of the supported
-queues. These queues allow more scalability and can be used as
-channels for different types of requests where similar types of
+\GASPI{} offers the possibility to use different queues to handle the
+communication requests.  The requests can be submitted to one of the
+supported queues. These queues allow more scalability and can be used
+as channels for different types of requests where similar types of
 requests are queued and then get synchronised together but
-independently from the other ones (separation of concerns).
-The specification guarantees fairness of transfers posted to
-different queues, i.\,e.\ no queue should see its
-communication requests delayed indefinitely.
+independently from the other ones (separation of concerns).  The
+specification guarantees fairness of transfers posted to different
+queues, i.\,e.\ no queue should see its communication requests delayed
+indefinitely.
 
 %Furthermore, the order of communication requests addressing the same remote \GASPI{}
 %process posted to a given queue are preserved, both on the local as
@@ -629,8 +651,8 @@ fair distributed updates of globally shared parts of data.
 
 \subsection{\GASPI{} global atomics}
 
-\GASPI{} provides atomic operations for integral types, i.\,e. such variables can
-be manipulated atomically without fear of preemption
+\GASPI{} provides atomic operations for integral types, i.\,e. such
+variables can be manipulated atomically without fear of preemption
 causing corruption.  There are two basic atomic operations:
 \function{fetch\_and\_add} and \function{compare\_and\_swap}. The
 values can be used as global shared variables and to synchronise
@@ -697,11 +719,11 @@ allreduce operation and a barrier can run at the same time.
 % i.\,e.\ with progress being achieved outside of the call.
 
 \begin{implementoradvice}
-\GASPI{} does not regulate
-whether individual collective operations should internally be handled synchronously
-or asynchronously, however: \GASPI{} aims at an efficient, low-overhead programming model.
-If asynchronous operation is supported, it should leverage external network-resources, rather than
-consuming CPU cycles.
+  \GASPI{} does not regulate whether individual collective operations
+  should internally be handled synchronously or asynchronously,
+  however: \GASPI{} aims at an efficient, low-overhead programming
+  model.  If asynchronous operation is supported, it should leverage
+  external network-resources, rather than consuming CPU cycles.
 \end{implementoradvice}
 
 \GASPI{} supports the following collective operations: barriers, reductions with predefined operations,
@@ -783,21 +805,22 @@ optimizations.
 \TDefDesc{The \GASPI{} notification ID type.}
 \end{TDef}
 
-\begin{TDef}
-\TDefDef{\gaspitype{tag}}
-\TDefDesc{The \GASPI{} tag type. Tags are used to discriminate
-  different messages in the passive communication channel.}
-\end{TDef}
+% \begin{TDef}
+% \TDefDef{\gaspitype{tag}}
+% \TDefDesc{The \GASPI{} tag type. Tags are used to discriminate
+%   different messages in the passive communication channel.}
+% \end{TDef}
 
-\begin{implementoradvice} The sum of the sizes of \gaspitype{notification} and
-\gaspitype{tag} should be at most 8 bytes in order to allow for Infiniband specific
-optimizations.
+\begin{implementoradvice} The sum of the sizes of
+  \gaspitype{notification} should be at most 8 bytes in order to allow
+  for Infiniband specific optimizations.
 \end{implementoradvice}
 
 
 \begin{TDef}
-\TDefDef{\gaspitype{atomic\_value}}
-\TDefDesc{The \GASPI{} global atomic value type. An atomic value is unsigned and its maximum value can be queried using \gaspifunction{atomic\_max}.}
+  \TDefDef{\gaspitype{atomic\_value}} \TDefDesc{The \GASPI{} global
+    atomic value type. An atomic value is unsigned and its maximum
+    value can be queried using \gaspifunction{atomic\_max}.}
 \end{TDef}
 
 \begin{TDef}
@@ -927,17 +950,17 @@ A \GASPI{} implementation is free to define constants of the type \gaspitype{sta
 \label{SubSec:ExecPhases}
 
 \GASPI{} allows both SPMD (Single Program, Multiple Data) and MPMD
-(Multiple Program, Multiple Data) style program execution.
-Hence, either a single program or different programs can be
-started on the computational units. How
-a \GASPI{} application is started and initialized is implementation specific.
+(Multiple Program, Multiple Data) style program execution.  Hence,
+either a single program or different programs can be started on the
+computational units. How a \GASPI{} application is started and
+initialized is implementation specific.
 
 A rank is attributed to each created process. Ranks are a
 central aspect as they allow applications to identify processes and
 therefore allow to distribute work among the processes.
 
 Furthermore, \GASPI{} provides segments. Segments are 
-globally accessable memory regions. In general,
+globally accessible memory regions. In general,
 the execution of a \GASPI{} process can be considered as split
 into several consecutive phases:
 
@@ -979,16 +1002,16 @@ Sect.~\ref{sec:envcheck}) to make sure the application can be
 started safely and correctly.
 
 In the \textbf{initialization} phase, the \GASPI{} runtime environment
-is set up in accordance with the parameters of the configuration structure
-by invocation of the initialization procedure.
-The initialization procedure is called before any other functionality, with the
-exception of pre-initialization routines for environment checking and
-declaration and retrieval of configuration parameters.  After the
-initialization routine has been called, an
-optional step to perform is the creation of one or more segments and the creation of
-one or more groups.
-Segments are contiguous blocks of memory that may be accessed
-globally by all processes and where global data should be placed.
+is set up in accordance with the parameters of the configuration
+structure by invocation of the initialization procedure.  The
+initialization procedure is called before any other functionality,
+with the exception of pre-initialization routines for environment
+checking and declaration and retrieval of configuration parameters.
+After the initialization routine has been called, an optional step to
+perform is the creation of one or more segments and the creation of
+one or more groups.  Segments are contiguous blocks of memory that may
+be accessed globally by all processes and where global data should be
+placed.
 
 After the initialization, the application can proceed with its
 \textbf{working} phase and use the functionalities of \GASPI{} (communication,
@@ -1088,18 +1111,20 @@ be built up at startup time. The default value is true.
 \item[user\_defined] some user defined information that is application / implementation dependent.
 \end{description}
 
-The default configuration structure can be retrieved by \gaspifunction{config\_get}.
+The default configuration structure can be retrieved by
+\gaspifunction{config\_get}.
 % All fields of the default configuration structure are optional and do not need
 % to be explicitly initialized.
-Its default values are implementation dependent. If
-some of the parameters are set by the program and assigned with \gaspifunction{config\_set},
-the requested values are just proposals.
-Depending on the underlying hardware capabilities,
-the implementation is allowed to overrule these proposals.
-\gaspifunction{config\_set} has to be used in order to commit modifications
-of the configuration structure before the initialization routine is invoked.
-The actual values of the parameters can be retrieved by the corresponding \GASPI{}
-getter routines (see Sect.~\ref{sec:getterfn}) after the successful program initialization. The values of the configuration
+Its default values are implementation dependent. If some of the
+parameters are set by the program and assigned with
+\gaspifunction{config\_set}, the requested values are just proposals.
+Depending on the underlying hardware capabilities, the implementation
+is allowed to overrule these proposals.  \gaspifunction{config\_set}
+has to be used in order to commit modifications of the configuration
+structure before the initialization routine is invoked.  The actual
+values of the parameters can be retrieved by the corresponding
+\GASPI{} getter routines (see Sect.~\ref{sec:getterfn}) after the
+successful program initialization. The values of the configuration
 structure parameters need to be the same on all \GASPI{} processes.
 
 The user has the possibility to set the values on her own or leave the
@@ -1282,6 +1307,7 @@ yet. A subsequent invocation is required to completely initialize the applicatio
 
 In case of error, the return value is \GASPIGERR{}. The application is not initialized.
 
+%TODO: how to guaranntee this?
 In case of the return value \GASPITIME{} or \GASPIGERR{}, a check of the state vector
 by invocation of \gaspifunction{state\_vec\_get} gives information about
 whether the involved remote \GASPI{} processes are healthy or whether they
@@ -1309,9 +1335,9 @@ to disable the parameter \parameter{build\_infrastructure} in the configuration 
 A successful procedure completion does not mean that any communication or collective
 operation can already be used. Connections might need to be established.
 A segment has to be allocated for passive communication
-capabilities. If one-sided communication is supposed to be used, than the segment has to
-registered in addition. If collective operations are needed,  a group has to be created and
-committed. Only global atomic operations are feasible right from the beginning.
+capabilities. If one-sided communication is supposed to be used, than the segment has to be
+registered in addition. If collective operations are needed, a group has to be created and
+committed. 
 \end{useradvice}
 
 
@@ -1319,10 +1345,9 @@ committed. Only global atomic operations are feasible right from the beginning.
 
 \subsubsection{\gaspifunction{proc\_num}}\label{sec:gaspi_proc_num}
 
-The total number of \GASPI{} processes started,
-can be retrieved by \gaspifunction{proc\_num}.
-This is a \gaspisemantic{local} \gaspisemantic{synchronous}
-\gaspisemantic{blocking} procedure.
+The total number of \GASPI{} processes started, can be retrieved by
+\gaspifunction{proc\_num}.  This is a \gaspisemantic{local}
+\gaspisemantic{synchronous} \gaspisemantic{blocking} procedure.
 
 \begin{FDef}
 \begin{FDefSign}
@@ -1355,8 +1380,8 @@ gaspi_proc_num ( proc_num ) BIND(C)
 \end{FDef}
 
 If successful, the return value is \GASPISUCC{} and
-\gaspifunction{proc\_num} retrieves the total number
-of processes that have been initialized and places this number in
+\gaspifunction{proc\_num} retrieves the total number of processes that
+have been initialized and places this number in
 the \parameter{proc\_num}.
 
 In case of error, the return value is \GASPIGERR{} and the value of
@@ -1472,10 +1497,10 @@ an undefined state.
 
 \subsubsection{\gaspifunction{proc\_kill}}
 
-\gaspifunction{proc\_kill} sends an interrupt signal to a
-given \GASPI{} process.
-It is a \gaspisemantic{synchronous} \gaspisemantic{non-local}
-\gaspisemantic{time-based blocking} procedure.
+\gaspifunction{proc\_kill} sends an interrupt signal to a given
+\GASPI{} process.  It is a \gaspisemantic{synchronous}
+\gaspisemantic{non-local} \gaspisemantic{time-based blocking}
+procedure.
 
 
 \begin{FDef}
@@ -1602,8 +1627,9 @@ gaspi_connect ( rank
 \FStdRetDesc
 \end{FDef}
 
-\gaspifunction{connect} builds up the communication infrastructure, passive as well as
-one-sided, between the local and the remote \GASPI{} process representing rank
+\gaspifunction{connect} builds up the communication infrastructure,
+passive as well as one-sided and atomic operations, between the local
+and the remote \GASPI{} process representing rank
 \parameter{rank}. The connection is bi-directional, i.\,e.\ it is sufficient
 that \gaspifunction{connect} is invoked by only one of the connection partners.
 % The operation is a \gaspisemantic{collective} operation between
@@ -1644,7 +1670,7 @@ call to \gaspifunction{connect} is superfluous in this case.
 The \gaspifunction{disconnect} procedure
 is a \gaspisemantic{synchronous} \gaspisemantic{local}
 \gaspisemantic{blocking} procedure which disconnects a given
-process, identified by its rank, and frees all associated ressources.
+process, identified by its rank, and frees all associated resources.
 
 It is bound to the working phase of the \GASPI{} life cycle.
 
@@ -1684,8 +1710,9 @@ gaspi_disconnect ( rank
 \FStdRetDesc
 \end{FDef}
 
-\gaspifunction{disconnect} disconnects the communication infrastructure, passive as well as
-one-sided, between the local and the remote \GASPI{} process representing rank
+\gaspifunction{disconnect} disconnects the communication
+infrastructure, passive as well as one-sided and atomic operations,
+between the local and the remote \GASPI{} process representing rank
 \parameter{rank}. The connection is bi-directional, i.\,e.\ it is sufficient
 if \gaspifunction{disconnect} is invoked by only one of the connection partners.
 
@@ -1697,12 +1724,14 @@ e.\,g.\ by the connection partner, the return value is \GASPISUCC{}.
 
 In case of error the return value is \GASPIGERR{}.
 
-In case of return value \GASPITIME, the connection between the local \GASPI{} process and
-the remote \GASPI{} process could not be disconnected in the given period of time.
+In case of return value \GASPITIME, the connection between the local
+\GASPI{} process and the remote \GASPI{} process could not be
+disconnected in the given period of time.
 
-In case of the latter two return values local resources are freed and a check of the state vector
-by invocation of \gaspifunction{state\_vec\_get} gives information
-whether the remote \GASPI{} process is still healthy.
+In case of the latter two return values local resources are freed and
+a check of the state vector by invocation of
+\gaspifunction{state\_vec\_get} gives information whether the remote
+\GASPI{} process is still healthy.
 
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{},
 the connection is disconnected and can no longer be used.
@@ -1712,12 +1741,13 @@ the connection is disconnected and can no longer be used.
 
 \subsubsection{Introduction}
 
-A necessary pre-condition for realising a failure tolerant code is a detailed
-know\-ledge about the state of the communication partners of each local
-\GASPI{} process.
+A necessary pre-condition for realising a failure tolerant code is a
+detailed know\-ledge about the state of the communication partners of
+each local \GASPI{} process.
 
-\GASPI{} provides a predefined type to describe the state of a remote \GASPI{} process,
-which is the \gaspitype{state} type. \gaspitype{state} can have one of two values:
+\GASPI{} provides a predefined type to describe the state of a remote
+\GASPI{} process, which is the \gaspitype{state}
+type. \gaspitype{state} can have one of two values:
 
 \begin{description}
  \item[GASPI\_STATE\_HEALTHY] implies that the remote \GASPI{} process is healthy, i.\,e.\
@@ -1778,8 +1808,9 @@ gaspi_state_vec_get ( state_vector ) BIND(C)
 \FStdRetDescNOTimeout
 \end{FDef}
 
-The state vector has one entry for each rank. It is initialized during
-\gaspifunction{proc\_init}. It is updated after each of the following operations
+The state vector has one entry for each rank. It is created and
+initialized during \gaspifunction{proc\_init}. It is updated, case
+required, in each of the following operations:
 
 \begin{itemize}
  \item process management
@@ -1797,6 +1828,18 @@ The state vector has one entry for each rank. It is initialized during
 \item one-sided communication
   \begin{itemize}
     \item \gaspifunction{wait}
+    \item \gaspifunction{write}
+    \item \gaspifunction{read}
+    \item \gaspifunction{write\_list}
+    \item \gaspifunction{read\_list}
+    \item \gaspifunction{notify}
+    \item \gaspifunction{write\_notify}
+    \item \gaspifunction{write\_list\_notify}
+  \end{itemize}
+\item passive communication
+  \begin{itemize}
+    \item \gaspifunction{passive\_send}
+    \item \gaspifunction{passive\_receive}
   \end{itemize}
 \item collective operations
   \begin{itemize}
@@ -1811,12 +1854,12 @@ The state vector has one entry for each rank. It is initialized during
   \end{itemize}
 \end{itemize}
 
-An update is not guaranteed to update all entries in the state vector, but may only update
-the entries of the direct communication partners.
-\gaspifunction{state\_vec\_get} retrieves in case of successful completion, i.\,e.\ return
-value \GASPISUCC, the state vector.
-It contains the states of the \GASPI{} processes with which the local process has been
-communicating. All other entries are unmodified.
+An update is not guaranteed to update all entries in the state vector,
+but may only update the entries of the direct communication partners.
+\gaspifunction{state\_vec\_get} retrieves in case of successful
+completion, i.\,e.\ return value \GASPISUCC, the state vector.  It
+contains the states of the \GASPI{} processes with which the local
+process has been communicating. All other entries are unmodified.
 
 % The internal operation to update the state vector is a logic "or".
 
@@ -1824,8 +1867,9 @@ In case of error, the return value is \GASPIGERR{} and the value of
 the state vector is undefined.
 
 \begin{useradvice}
-For failure tolerant code, the state vector should be checked after each of the above
-procedure calls in case they return with either return value \GASPIGERR{} or \GASPITIME{}.
+  For failure tolerant code, the state vector should be checked after
+  each of the above procedure calls in case they return with either
+  return value \GASPIGERR{} or \GASPITIME{}.
 \end{useradvice}
 
 %\subsubsection{\gaspifunction{state\_vec\_reset}}
@@ -1870,8 +1914,9 @@ This way, MPI takes care of distributing and starting the binary and
 %  needs to be tested
 %\end{todo}
 
-\GASPI{} and MPI communication should not occur at the same time, i.\,e.\
-only the program layout given in Listing~\ref{lst:embedded_gaspi} is supported
+\GASPI{} and MPI communication should not occur at the same time,
+i.\,e.\ only the program layout given in
+Listing~\ref{lst:embedded_gaspi} is supported
 
 \insertlisting{../examples/mpi.interop.c}{Embedded \GASPI{} program\label{lst:embedded_gaspi}}
 
@@ -1907,26 +1952,26 @@ in order to avoid a complete (all processes) collective synchronisation
 point.
 
 A group has to be defined and declared in each of the participating
-\GASPI{} processes. Defining a group is a two step procedure.
-An empty group has to be created first. Then the participating \GASPI{}
+\GASPI{} processes. Defining a group is a three step procedure.  An
+empty group has to be created first. Then the participating \GASPI{}
 processes, represented by their ranks, have to be attached. The group
 definition is a local operation.  In order to activate the group, the
 group has to be committed by each of the participating \GASPI{}
-processes. This is a collective operation for the group. Only after
-successful group commitment the group can be used for collective
+processes. This is a collective operation for the group. Only after a
+successful group commit, can the group be used for collective
 operations.
 
-The maximum number of groups allowed per \GASPI{} process is restricted by the
-implementation. A desired value can be passed to \gaspifunction{proc\_init} by
-the configuration structure.
+The maximum number of groups allowed per \GASPI{} process is
+restricted by the implementation. A user defined value can be set with
+\gaspifunction{config\_set} before initialization
+(\gaspifunction{proc\_init}).
 
-In case one group disappears due to some failure, the group has to be
-reestablished. If there is a new process replacing the failed one, the
-group has to be defined and declared on the newly started \GASPI{}
-process(es).  Reestablishment of the group is then achieved by
+In case one group desintegrates due to some failure, the group has to
+be re-established. If there is a new process replacing the failed one,
+the group has to be defined and declared on the newly started \GASPI{}
+process(es).  Re-establishment of the group is then achieved by
 recommitment of the group by the \GASPI{} processes which were still
-'alive' (functioning) and by the commitment of the group by the newly started \GASPI{}
-process.
+'alive' (functioning) and by the newly started \GASPI{} process.
 
 \subsection{\GASPI{} group generics}
 
@@ -1954,10 +1999,9 @@ by \gaspifunction{group\_commit}.
 
 \subsubsection{\gaspifunction{group\_create}}
 
-The \gaspifunction{group\_create} procedure
-is a \gaspisemantic{synchronous} \gaspisemantic{local}
-\gaspisemantic{blocking} procedure which creates
-an empty group.
+The \gaspifunction{group\_create} procedure is a
+\gaspisemantic{synchronous} \gaspisemantic{local}
+\gaspisemantic{blocking} procedure which creates an empty group.
 
 \begin{FDef}
 \begin{FDefSign}
@@ -1996,10 +2040,10 @@ In case of error, the return value is \GASPIGERR{}.
 
 \subsubsection{\gaspifunction{group\_add}}
 
-The \gaspifunction{group\_add} procedure
-is a \gaspisemantic{synchronous} \gaspisemantic{local}
-\gaspisemantic{blocking} procedure which adds
-a given rank to an existing group.
+The \gaspifunction{group\_add} procedure is a
+\gaspisemantic{synchronous} \gaspisemantic{local}
+\gaspisemantic{blocking} procedure which adds a given rank to an
+existing group.
 
 
 \begin{FDef}
@@ -2353,7 +2397,7 @@ In case of error, the return value is \GASPIGERR{}. The list
 
 \subsection{Introduction and overview}
 
-Modern hardware has an complex memory hierarchy with different
+Modern hardware has a complex memory hierarchy with different
 bandwidth and latencies for read and write accesses. Among them are
 non-uniform memory access (\emph{NUMA}) partitions, solid state
 devices (\emph{SSD}s), graphical processing unit (\emph{GPU}) memory
@@ -2471,14 +2515,16 @@ the total number of segments is restricted by the underlying hardware
 capabilities. The maximum number of supported segments can be
 retrieved by invoking \gaspifunction{segment\_max}. 
 
-Allocation of segments in \GASPI{} allows for various so-called policies.
-The default policy in a cc-numa mode for example might be an allocation 
-of socket-local memory, a different policy might allow to map GPGPU memory
-into the main memory of the host and yet another policy might allow for a direct access
-of external non-volatile RAM.
+Allocation of segments in \GASPI{} allows for various so-called
+policies.  The default policy in a cc-numa mode for example might be
+an allocation of socket-local memory, a different policy might allow
+to map GPU memory into the main memory of the host and yet another
+policy might allow for a direct access of external non-volatile RAM.
 
-The \parameter{alloc\_policy}  is used to pass an allocation policy. The default allocation policy behavior is left to the implementation.
-The default allocation parameter is GASPI\_ALLOC\_DEFAULT.
+The \parameter{alloc\_policy} is used to pass an allocation
+policy. The default allocation policy behavior is left to the
+implementation.  The default allocation parameter is
+GASPI\_ALLOC\_DEFAULT.
 
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{},
 the segment can be accessed locally.
@@ -2490,8 +2536,8 @@ it can also be used for passive communication between the two \GASPI{} processes
 either as a source segment for \gaspifunction{passive\_send} or as a
 destination segment for \gaspifunction{passive\_receive}.
 
-A return value \GASPIGERR{} indicates that the segment allocation failed.
-The segment cannot be used locally or for passive communication.
+A return value \GASPIGERR{} indicates that the segment allocation
+failed and the segment cannot be used.
 
 \begin{useradvice}
   A GASPI implementation may allocate more memory than requested by the
@@ -2499,9 +2545,9 @@ The segment cannot be used locally or for passive communication.
 \end{useradvice}
 
 \begin{implementoradvice}
-In case of non-uniform memory access architectures, the memory should be allocated
-close to the calling process. The allocation policy of the calling process should
-not be modified.
+  In case of non-uniform memory access architectures, the memory
+  should be allocated close to the calling process. The allocation
+  policy of the calling process should not be modified.
 \end{implementoradvice}
 
 \subsubsection{\gaspifunction{segment\_register}}
@@ -2564,7 +2610,10 @@ the \GASPI{} process with the associated \parameter{rank}.
 
 
 \begin{useradvice}
-If the parameter \parameter{build\_infrastructure} is not set, a connection has to be established between the processes before the segment can be registered at the remote process. This is accomplished calling the procedure \gaspifunction{connect}.
+  If the parameter \parameter{build\_infrastructure} is not set, a
+  connection has to be established between the processes before the
+  segment can be registered at the remote process. This is
+  accomplished calling the procedure \gaspifunction{connect}.
 \end{useradvice}
 
 
@@ -2596,21 +2645,23 @@ by invocation of \gaspifunction{state\_vec\_get} gives information as to
 whether or not the remote \GASPI{} process is still healthy.
 
 \begin{useradvice}
-Note that a local return value \GASPISUCC{} does not imply that the remote process
-is informed explicitly that the segment is accessible. This can be achieved through an explicit
-synchronisation, either by one of the collective operations or by an explicit notification.
+  Note that a local return value \GASPISUCC{} does not imply that the
+  remote process is informed explicitly that the segment is
+  accessible. This can be achieved through an explicit
+  synchronisation, either by one of the collective operations or by an
+  explicit notification.
 \end{useradvice}
 
 \subsubsection{\gaspifunction{segment\_create}}
 
-\gaspifunction{segment\_create} is a \gaspisemantic{synchronous} \gaspisemantic{collective}
-\gaspisemantic{time-based blocking} procedure. It is semantically equivalent to a collective
-aggregation of
-\gaspifunction{segment\_alloc}, \gaspifunction{segment\_register} and \gaspifunction{barrier}
-involving all of the members of a
-given group.
-If the communication infrastructure was not established for all group
-members beforehand, \gaspifunction{segment\_create} will accomplish this as well.
+\gaspifunction{segment\_create} is a \gaspisemantic{synchronous}
+\gaspisemantic{collective} \gaspisemantic{time-based blocking}
+procedure. It is semantically equivalent to a collective aggregation
+of \gaspifunction{segment\_alloc}, \gaspifunction{segment\_register}
+and \gaspifunction{barrier} involving all of the members of a given
+group.  If the communication infrastructure was not established for
+all group members beforehand, \gaspifunction{segment\_create} will
+accomplish this as well.
 
 \begin{FDef}
 \begin{FDefSign}
@@ -2679,19 +2730,20 @@ by invoking \gaspifunction{segment\_max}.
 The \parameter{alloc\_policy}
 is used to pass an allocation policy. The default allocation policy behavior is left to the implementation.
 
-After successful procedure completion, i.\,e.\ \GASPISUCC{}, the segment can be accessed locally
-and it can be used as a destination for the passive communication channel. Either as a source
-segment for \gaspifunction{passive\_send} or as a
-destination segment for \gaspifunction{passive\_receive}.
-Furthermore, it can be used for one-sided communication requests, which are
-invoked by the remote processes forming the group \parameter{group}.
-The segment \parameter{segment\_id} is ready to be used.
+After successful procedure completion, i.\,e.\ \GASPISUCC{}, the
+segment can be accessed locally and it can be used as a destination
+for the passive communication channel. Either as a source segment for
+\gaspifunction{passive\_send} or as a destination segment for
+\gaspifunction{passive\_receive}.  Furthermore, it can be used for
+one-sided communication requests, which are invoked by the remote
+processes forming the group \parameter{group} or global atomic
+operations. The segment \parameter{segment\_id} is ready to be used.
 
 For consistency and programs with hard failure tolerance requirements,
 the operation must be performed within \parameter{timeout}
-milliseconds.
-In case of return value \GASPITIME{}, progress has been achieved, however the operation
-could not be completed in the given timeout.
+milliseconds. In case of return value \GASPITIME{}, progress has been
+achieved, however the operation could not be completed in the given
+timeout.
 %
 %Progress is achieved along the following steps
 %\begin{itemize}
@@ -2701,16 +2753,19 @@ could not be completed in the given timeout.
 %\item registration of the segment on all the remote ranks of the group
 %\item synchronisation by a barrier
 %\end{itemize}
-The segment cannot be used locally or for passive communication. Furthermore,
-the segment cannot be used for one-sided
-communication requests which are invoked by the other remote processes forming the group.
-A subsequent call of \gaspifunction{segment\_create} has to be
-invoked in order to complete the segment creation.
+The segment cannot be used locally neither remotely. The segment
+cannot be used for one-sided or passive communication requests which
+are invoked by the other remote processes forming the group. The same
+applies to global atomic operations.  A subsequent call of
+\gaspifunction{segment\_create} has to be invoked in order to complete
+the segment creation.
 
-In case of return value \GASPIGERR{}, the segment creation failed in one of the above progress
-steps on at least one of the involved \GASPI{} processes. The segment cannot be used locally or
-for passive communication. Furthermore, the segment cannot be used for one-sided
-communication requests which are invoked by the other remote processes forming the group.
+In case of return value \GASPIGERR{}, the segment creation failed in
+one of the above progress steps on at least one of the involved
+\GASPI{} processes.  The segment cannot be used locally neither
+remotely. The segment cannot be used for one-sided or passive
+communication requests which are invoked by the other remote processes
+forming the group. The same applies to global atomic operations.
 
 In case of the latter two return values, a check of the state vector
 by invocation of \gaspifunction{state\_vec\_get} gives information
@@ -2776,10 +2831,11 @@ the segment is deleted and the resources are released. It would be an
 application error to use the segment for communication
 between two \GASPI{} processes after \gaspifunction{delete} has been called.
 
-In case of return value \GASPIGERR{}, the segment deletion failed. The segment
-is in an undefined state. It cannot be used locally or
-for passive communication. Furthermore, the segment cannot be used for one-sided
-communication requests which are invoked by other remote processes.
+In case of return value \GASPIGERR{}, the segment deletion failed. The
+segment is in an undefined state and cannot be used locally neither
+remotely. The segment cannot be used for one-sided or passive
+communication requests which are invoked by the other remote processes
+forming the group. The same applies to global atomic operations.
 
 % \subsubsection{\gaspifunction{segment\_deregister}}
 %
@@ -2946,10 +3002,10 @@ gaspi_segment_num ( segment_num
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{},
 \parameter{segment\_num} contains the current number of locally allocated segments provided
 by \GASPI{}. The value of \parameter{segment\_num} is related to the parameter
-\parameter{segment\_max} in the configuration structure which is retrieved by \gaspifunction{proc\_init} at
-startup and cannot exceed that value. The maximum number of
-allocatable segments per process might be implementation
-specific.
+\parameter{segment\_max} in the configuration structure which is
+retrieved by \gaspifunction{config\_get} and cannot exceed that
+value. The maximum number of allocatable segments per process might be
+implementation specific.
 
 In case of error, the return value is \GASPIGERR{}. The parameter
 \parameter{segment\_num} has an undefined value.
@@ -3442,7 +3498,7 @@ for the same queue. A subsequent call of \gaspifunction{read} has to be
 invoked in order to complete the read call.
 
 A communication request posted to a given queue can be considered as completed, if the
-the correspondent \gaspifunction{wait} returns with \GASPISUCC{}. For coompleted  \gaspifunction{read}
+the correspondent \gaspifunction{wait} returns with \GASPISUCC{}. For completed  \gaspifunction{read}
 requests, the data is guaranteed to be locally available.
 
 If the queue to which the communication request is posted is full, i.\,e.\ that the number of
@@ -4613,12 +4669,12 @@ The passive keyword means that the communication calls should avoid
 busy-waiting and consume no CPU cycles, freeing the system for
 computation.
 
-The send request is synchronous, whereas the matching receive is
-\gaspisemantic{time-based blocking}. A valid passive communication
-request requires that the local and the remote segment are allocated
-and that there is a connection between the local and the remote
-\GASPI{} process. Otherwise, the communication request is invalid and
-the procedure returns with \GASPIGERR{}.
+Both the send and the matching receive are \gaspisemantic{time-based
+  blocking}. A valid passive communication request requires that the
+local and the remote segment are allocated and that there is a
+connection between the local and the remote \GASPI{}
+process. Otherwise, the communication request is invalid and the
+procedure returns with \GASPIGERR{}.
 
 \subsection{Passive communication calls}
 
@@ -6014,15 +6070,15 @@ GASPI_ATOMIC_MAX (max_value)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_network_type (gaspi_atomic_value_t *max_value)
+gaspi_atomic_max (gaspi_atomic_value_t *max_value)
 \end{verbatim}
 \end{FDefSign}
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_network_type ( max_value
-                   , ireturn 
-                   ) BIND(C)
+gaspi_atomic_max ( max_value
+                  , ireturn 
+                  ) BIND(C)
     TYPE(gaspi_atomic_value_t), INTENT(OUT) :: max_value
     TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
