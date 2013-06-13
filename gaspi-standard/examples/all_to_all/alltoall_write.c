@@ -74,7 +74,7 @@ main (int argc, char *argv[])
 
   while (notify_cnt > 0)
   {
-    ASSERT (gaspi_notify_waitsome (0, nProc, GASPI_BLOCK));
+    ASSERT (gaspi_notify_waitsome (segment_id_dst, 0, nProc, GASPI_BLOCK));
 
     for ( gaspi_notification_id_t notify_ID = 0
         ; notify_ID < notify_ID_max
