@@ -47,8 +47,8 @@ if( ! defined $ENV{$lsf_pe_var} ) {
 }
 
 generateMachineFile( $ENV{$lsf_pe_var} );
-
-my $exec = "ssh ".sort((keys %host_cpu))[0]." $gaspi_run -m $machine_file ";
+my $master = (sort(keys %host_cpu))[0];
+my $exec = "ssh ".$master." $gaspi_run -m $machine_file ";
 $exec .= join(' ', @ARGV);
 print "<< execution on master node ",(sort(keys %host_cpu))[0]," >>\n";
 exec $exec;
