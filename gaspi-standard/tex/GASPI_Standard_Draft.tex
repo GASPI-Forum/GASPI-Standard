@@ -240,7 +240,7 @@ basicstyle=\ttfamily
   ,GASPI_BLOCK,GASPI_TEST,GASPI_CONFIGURATION_DEFAULT,GASPI_NORANK,GASPI_NOSTRING
   ,gaspi_notify_waitsome,gaspi_notify_size,gaspi_error_message
   ,gaspi_queue_size_max,gaspi_queue_size,gaspi_time_get
-  ,gaspi_network_t, gaspi_bool_t
+  ,gaspi_network_t, gaspi_number_t
   }
 , commentstyle=\color{dkgreen}
 , keywordstyle=\color{colorkeyword}
@@ -873,11 +873,6 @@ optimizations.
 \end{TDef}
 
 \begin{TDef}
-\TDefDef{\gaspitype{bool}}
-\TDefDesc{The \GASPI{} boolean type.}
-\end{TDef}
-
-\begin{TDef}
 \TDefDef{\gaspitype{string}}
 \TDefDesc{The \GASPI{} constant string type.}
 \end{TDef}
@@ -1075,7 +1070,7 @@ typedef struct {
   gaspi_network_t    network;
 
   // communication infrastructure build up notification
-  gaspi_bool_t       build_infrastructure;
+  gaspi_number_t       build_infrastructure;
 
   void *             user_defined;
 } gaspi_config_t;
@@ -1106,7 +1101,7 @@ There is a hardware/implementation dependent maximum.
 \item[allreduce\_buf\_size] the size of the internal buffer of \gaspifunction{allreduce\_user}.
 There is a hardware/implementation dependent maximum.
 \item[network] the network type to be used.
-\item[build\_infrastructure] boolean to set whether the communication infrastructure should
+\item[build\_infrastructure] indicates whether the communication infrastructure should
 be built up at startup time. The default value is true.
 %\item[param\_check] boolean to set whether a parameter check of the \GASPI{} routines is done
 \item[user\_defined] some user defined information that is application / implementation dependent.
@@ -2079,6 +2074,7 @@ gaspi_group_add ( group
 
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{},
 the \GASPI{} process with \parameter{rank} is added to \parameter{group}.
+Whenever you add a rank the list of ranks is sorted in ascendinging order.
 
 In case of error, the return value is \GASPIGERR{}.
 
@@ -6200,7 +6196,7 @@ GASPI_BUILD_INFRASTRUCTURE (build_infrastructure)
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_build_infrastructure (gaspi_bool_t *build_infrastructure)
+gaspi_build_infrastructure (gaspi_number_t *build_infrastructure)
 \end{verbatim}
 \end{FDefSign}
 
@@ -6209,7 +6205,7 @@ gaspi_build_infrastructure (gaspi_bool_t *build_infrastructure)
 gaspi_build_infrastructure ( build_infrastructure
                            , ireturn
                            ) BIND(C)
-    TYPE(gaspi_bool_t), INTENT(OUT) :: build_infrastructure
+    TYPE(gaspi_number_t), INTENT(OUT) :: build_infrastructure
     TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
