@@ -13,7 +13,7 @@ void blocking_waitsome ( const gaspi_notification_id_t id_begin
   gaspi_notification_id_t first_id;
   
   ASSERT ( gaspi_notify_waitsome ( seg_id
-				  , id_begin
+				 , id_begin
                                  , id_end - id_begin
                                  , &first_id
                                  , GASPI_BLOCK

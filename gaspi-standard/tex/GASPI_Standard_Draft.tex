@@ -227,7 +227,7 @@ basicstyle=\ttfamily
 , keepspaces=true
 , columns=fullflexible
 , classoffset=0
-, morekeywords={gaspi_rank_t,gaspi_barrier,gaspi_timeout_t,gaspi_return_t,gaspi_configuration_t,gaspi_proc_init,gaspi_proc_term,gaspi_proc_kill
+, morekeywords={gaspi_rank_t,gaspi_barrier,gaspi_timeout_t,gaspi_return_t,gaspi_config_t,gaspi_proc_init,gaspi_proc_term,gaspi_proc_kill
   ,gaspi_group_commit,gaspi_group_create,gaspi_group_add,gaspi_group_size,gaspi_group_ranks
   ,gaspi_segment_id_t,gaspi_segment_alloc,gaspi_segment_register,gaspi_segment_create
   ,gaspi_segment_ptr,gaspi_queue_id_t,gaspi_offset_t,gaspi_socket_id_t,gaspi_size_t,gaspi_pointer_t
@@ -1078,7 +1078,7 @@ typedef struct {
   gaspi_bool_t       build_infrastructure;
 
   void *             user_defined;
-} gaspi_configuration_t;
+} gaspi_config_t;
 \end{lstlisting}
 
 The definition of each of the configuration structure fields is as follows:
@@ -1154,14 +1154,14 @@ GASPI_CONFIG_GET ( config )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_config_get ( gaspi_configuration_t *config )
+gaspi_config_get ( gaspi_config_t *config )
 \end{verbatim}
 \end{FDefSign}
 
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_config_get ( config ) BIND(C)
-  TYPE(gaspi_configuration_t), INTENT(OUT) :: config
+  TYPE(gaspi_config_t), INTENT(OUT) :: config
   TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
@@ -1197,14 +1197,14 @@ GASPI_CONFIG_SET ( config )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_config_set ( gaspi_configuration_t const *config )
+gaspi_config_set ( gaspi_config_t const *config )
 \end{verbatim}
 \end{FDefSign}
 
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_config_set ( config ) BIND(C)
-  TYPE(gaspi_configuration_t), INTENT(IN) :: config
+  TYPE(gaspi_config_t), INTENT(IN) :: config
   TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
 \end{verbatim}
 \end{FDefSign}
