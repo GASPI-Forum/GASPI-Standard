@@ -2042,7 +2042,8 @@ existing group.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-GASPI_GROUP_ADD ( group )
+GASPI_GROUP_ADD ( group
+                , rank )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2086,24 +2087,6 @@ The \gaspifunction{group\_commit} procedure is a
 \gaspisemantic{time-based blocking} procedure which establishes a
 group.
 
-%\begin{FDef}
-%\begin{FDefSign}
-%\begin{verbatim}
-%gaspi_return_t
-%gaspi_group_commit ( gaspi_group_t group
-%                   , gaspi_timeout_t timeout
-%                   )
-%\end{verbatim}
-%\end{FDefSign}
-%\parameterlistbegin
-%\parameterlistitem{in}{group}{the group to commit}
-%\parameterlistitem{in}{timeout}{the timeout}
-%\parameterlistend
-%\executionphasework
-%\FStdRetDesc
-%\end{FDef}
-
-
 \begin{FDef}
 
 \begin{FDefSign}
@@ -2143,6 +2126,9 @@ gaspi_group_commit ( group
 \executionphasework
 \FStdRetDesc
 \end{FDef}
+
+The group committed by all participating processes must contain all ranks and
+must identical for all processes, otherwise the result is undefined.
 
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{},
 the group given by the parameter \parameter{group} is
