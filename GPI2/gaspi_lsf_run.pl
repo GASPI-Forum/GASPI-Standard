@@ -41,14 +41,9 @@ sub generateMachineFileSLURM($)
   return ( split(/\n/, $nodes) )[0] ;
 }
 
-if( scalar( @ARGV ) == 0 )
+if ((grep /--help/, @ARGV) || (scalar( @ARGV ) == 0) )
 {
-  print "No arguments given !!\n";
-  exit 1;
-}
-
-if (grep /--help/, @ARGV) 
-{
+  print "\nNo arguments given !!\n\n\n";
   print "#############################################################################\n";
   print "#                   Execution of an gaspi application:                      #\n";
   print "#############################################################################\n";
@@ -62,7 +57,6 @@ if (grep /--help/, @ARGV)
   print "#############################################################################\n\n";
   print "         salloc -n 2 /home/user/gaspi_lsf_run.pl -n 2 /home/user/main\n\n";
   print "#############################################################################\n\n";
-  #salloc -n 9 gaspi_lsf_run /home/cherold/gpi2/heat2d-gaspi/bin/heat2d-gaspi 30 30 3 3
   exit 1 ;
 }
 
