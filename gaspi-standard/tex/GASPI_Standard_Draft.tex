@@ -5388,13 +5388,13 @@ and only then a full synchronisation is achieved by calling the
 barrier again with a blocking semantics (if needed).
 
 \begin{listing}{1}
-const gaspi_return_t err = GASPI_barrier (g, GASPI_TEST);
+const gaspi_return_t err = gaspi_barrier (g, GASPI_TEST);
 
 do_local_cleanup();
 
-if (err != GASPI_ERROR)
+if (err != GASPI_ERROR && err != GASPI_SUCCESS)
 {
-    err = GASPI_barrier (g, GASPI_BLOCK);
+    gaspi_barrier (g, GASPI_BLOCK);
 }
 \end{listing}
 
