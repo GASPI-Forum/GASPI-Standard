@@ -1,0 +1,295 @@
+\documentclass[a4paper]{article}
+
+%\usepackage{draftcopy}
+\usepackage{doxygen}
+\usepackage{framed}
+\usepackage{color}
+\usepackage{xcolor}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\definecolor{colorkeyword}{rgb}{0.1,0.1,0.6}
+\definecolor{colorassert}{rgb}{0.5,0.5,0.5}
+
+\usepackage{tikz}\usetikzlibrary{automata,arrows,snakes,shapes}
+\usepackage{amssymb}
+\usepackage{amsmath}
+% \usepackage{microtype}
+\usepackage{fixltx2e}
+\usepackage{numprint}
+\usepackage{booktabs}
+\usepackage{xspace}
+\usepackage{mparhack}
+\usepackage{moreverb}
+\usepackage{listings}
+
+\usepackage{ifthen}
+
+\setlength{\tabcolsep}{5pt}
+\setlength{\arraycolsep}{5pt}
+\setlength{\cmidrulekern}{4pt}
+
+\newcommand{\secref}[1]{section\xspace\ref{#1}}
+\newcommand{\figref}[1]{figure\xspace\ref{#1}}
+\newcommand{\listref}[1]{listing\xspace\ref{#1}}
+
+\newsavebox{\riddlebox}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newlength{\lw}\setlength{\lw}{0.4pt}
+\newlength{\st}\setlength{\st}{0pt}
+
+\tikzstyle{every picture}+=[>=latex']
+\tikzstyle{every picture}+=[bend angle=10]
+\tikzstyle{every picture}+=[auto]
+\tikzstyle{every picture}+=[join=round]
+\tikzstyle{every picture}+=[cap=butt]
+\tikzstyle{every picture}+=[line width=\lw]
+\tikzstyle{every picture}+=[double distance=2\lw]
+\tikzstyle{every picture}+=[shorten >=\st]
+\tikzstyle{every picture}+=[node distance=4em]
+\tikzstyle{every loop}=[->,shorten >=\st]
+\tikzstyle{tight}=[inner sep=0pt,outer sep=0pt]
+\tikzstyle{zero}=[draw=none,coordinate]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\zerowsep}{\hskip 0pt plus 0.1pt minus 0.1pt}
+
+\makeatletter
+\newcommand{\ZSEP}[1]{\ifx#1\@@@EOZ@@@\let\next\relax\else\ifx#1\_#1\zerowsep\else#1\fi\let\next\ZSEP\fi\next}
+\newcommand{\zsep}[1]{\ZSEP{}#1\@@@EOZ@@@}
+\makeatother
+
+\newcommand{\sol}[1]{\emph{\zsep{#1}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\gaspiprefix}{gaspi}
+\newcommand{\GASPI}{{\sc Gaspi}}
+
+\newcommand{\type}[1]{{\tt #1}}
+\newcommand{\function}[1]{{\tt #1}}
+\newcommand{\parameter}[1]{{\it #1}}
+
+\newcommand{\gaspitype}[1]{\type{\protect\zsep{\gaspiprefix\_#1\_t}}}
+\newcommand{\gaspifunction}[1]{\function{\protect\zsep{\gaspiprefix\_#1}}}
+
+\newcommand{\eg}{e.\,g.\ }
+\newcommand{\ie}{i.\,e.\ }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\finalsymb}[1]{\leavevmode\unskip\penalty9999\hbox{}\nobreak\hfill\hskip 1em minus 0.5em\hbox{#1}}
+
+\newenvironment{cbox}[1]
+{\newcommand\colboxcolor{#1}\begin{lrbox}{\riddlebox}\begin{minipage}{\dimexpr\columnwidth-2\fboxsep\relax}}
+{\end{minipage}\end{lrbox}\begin{center}\colorbox[HTML]{\colboxcolor}{\usebox{\riddlebox}}\end{center}}
+
+\newcounter{counttodo}
+\newlength{\savetabcolsep}
+\newlength{\savearrayrulewidth}
+\newenvironment{todo}
+{\stepcounter{counttodo}
+ \typeout{Environment TODO call \thecounttodo}
+ \setlength{\savetabcolsep}{\tabcolsep}
+ \setlength{\savearrayrulewidth}{\arrayrulewidth}
+ \renewcommand{\tabcolsep}{0pt}
+ \renewcommand{\arrayrulewidth}{2pt}
+ \begin{center}
+ \begin{tabular}{c|l@{\hspace*{2em}}|@{\hspace*{2em}}c}
+ &
+ \begin{minipage}{0.66\textwidth}
+ \begin{itemize}
+}
+{\end{itemize}
+ \end{minipage}
+ &  todo \#\thecounttodo
+ \end{tabular} \marginpar{$\Longleftarrow$}
+ \end{center}
+ \renewcommand{\tabcolsep}{\savetabcolsep}
+ \renewcommand{\arrayrulewidth}{\savearrayrulewidth}
+}
+
+\newcommand{\todooverviewtext}
+{***
+ Counted {\thecounttodo} calls to environment TODO.
+ EDIT THIS!
+ ***
+}
+\newcommand{\todooverview}
+{\newpage
+ {\Large\bf \todooverviewtext}
+ \typeout{\todooverviewtext}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%               Function definition                                     %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\shortlistbegin}[1]{\begin{trivlist}\setlength{\itemsep}{0pt}\item[]\emph{#1:}}
+\newcommand{\shortlistitem}[1]{\item[]#1}
+\newcommand{\shortlistend}{\end{trivlist}}
+
+\newenvironment{FDef}{\begin{trivlist}\item[]}{\end{trivlist}}
+\newenvironment{FDefSign}{\begin{cbox}{EEEEEE}}{\end{cbox}}
+
+\newcommand{\parameterlistbegin}{\shortlistbegin{Parameter}}
+\newcommand{\parameterlistend}{\shortlistend}
+\newcommand{\parameterlistitem}[3]{\shortlistitem{\parameter{(#1) #2:} {#3}}}
+
+\newcommand{\fparameterbegin}{\begin{trivlist}\setlength{\itemsep}{0pt}}
+\newcommand{\fparameterend}{\end{trivlist}}
+\newcommand{\fparameteritem}[1]{\item[]{#1}}
+
+
+\newcommand{\executionphase}[1]{\shortlistbegin{Execution phase}\shortlistitem{#1}\shortlistend}
+\newcommand{\executionphasesetup}{\executionphase{Setup}}
+\newcommand{\executionphaseinit}{\executionphase{Initialization}}
+\newcommand{\executionphasework}{\executionphase{Working}}
+\newcommand{\executionphaseshutdown}{\executionphase{Shutdown}}
+\newcommand{\executionphaseany}{\executionphase{Any}}
+
+\newcommand{\returnlistbegin}{\shortlistbegin{Return values}}
+\newcommand{\returnlistend}{\shortlistend}
+\newcommand{\returnlistitem}[2]{\item[]#1: #2}
+
+\newcommand{\fdeffinal}{\finalsymb{$\lrcorner$}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\GASPISUCC}{{\tt\protect\zsep{GASPI\_SUCCESS}}}
+\newcommand{\GASPISUCCTXT}{operation has returned successfully}
+\newcommand{\GASPITIME}{{\tt\protect\zsep{GASPI\_TIMEOUT}}}
+\newcommand{\GASPITIMETXT}{operation has run into a timeout}
+\newcommand{\GASPIGERR}{{\tt\protect\zsep{GASPI\_ERROR}}}
+\newcommand{\GASPIGERRTXT}{operation has finished with an error}
+\newcommand{\GASPIGROUPALL}{{\tt\protect\zsep{GASPI\_GROUP\_ALL}}}
+\newcommand{\GASPIALLOCDEF}{{\tt\protect\zsep{GASPI\_ALLOC\_DEFAULT}}}
+
+
+
+\newcommand{\GASPITEST}{{\tt\protect\zsep{GASPI\_TEST}}}
+\newcommand{\GASPIBLOCK}{{\tt\protect\zsep{GASPI\_BLOCK}}}
+
+\newcommand{\FStdRetDesc}
+{
+  \returnlistbegin
+  \returnlistitem{\GASPISUCC}{\GASPISUCCTXT}
+  \returnlistitem{\GASPITIME}{\GASPITIMETXT}
+  \returnlistitem{\GASPIGERR}{\GASPIGERRTXT}
+  \fdeffinal\returnlistend
+}
+
+\newcommand{\FStdRetDescNOTimeout}
+{
+  \returnlistbegin
+  \returnlistitem{\GASPISUCC}{\GASPISUCCTXT}
+  \returnlistitem{\GASPIGERR}{\GASPIGERRTXT}
+  \fdeffinal\returnlistend
+}
+
+\newcommand{\gaspisemantic}[1]{{\emph{#1}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%                          Type definition                              %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newenvironment{TDef}{\begin{trivlist}\item[]}{\finalsymb{$\lrcorner$}\end{trivlist}}
+\newcommand{\TDefDefn}[2]{\begin{cbox}{EEEEEE}typedef {#1} {#2}\end{cbox}}
+\newcommand{\TDefDef}[1]{\begin{cbox}{EEEEEE}{#1}\end{cbox}}
+\newcommand{\TDefDesc}[1]{\item[]{\itshape{#1}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%          User / Implementor advice                                    %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newenvironment{implementoradvice}{\begin{flushright}\begin{minipage}[t]{0.9\linewidth}\emph{Implementor advice:}}{\finalsymb{$\lrcorner$}\end{minipage}\end{flushright}}
+\newenvironment{useradvice}{\begin{flushright}\begin{minipage}[t]{0.9\linewidth}\emph{User advice:}}{\finalsymb{$\lrcorner$}\end{minipage}\end{flushright}}
+\newenvironment{libadvice}{\begin{flushright}\begin{minipage}[t]{0.9\linewidth}\emph{Library implementor advice:}}{\finalsymb{$\lrcorner$}\end{minipage}\end{flushright}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%                            Enums                                      %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\enum}[1]{ {\it #1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%                          Listings                                     %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\insertlisting}[2]{\lstset{
+basicstyle=\ttfamily
+, caption={#2}
+, frame=single
+, numbers=left
+, numberstyle=\tiny
+, stepnumber=1
+, showstringspaces=true
+, keepspaces=true
+, columns=fullflexible
+, classoffset=0
+, morekeywords={gaspi_rank_t,gaspi_barrier,gaspi_timeout_t,gaspi_return_t,gaspi_config_t,gaspi_proc_init,gaspi_proc_term,gaspi_proc_kill
+  ,gaspi_group_commit,gaspi_group_create,gaspi_group_add,gaspi_group_size,gaspi_group_ranks
+  ,gaspi_segment_id_t,gaspi_segment_alloc,gaspi_segment_register,gaspi_segment_create
+  ,gaspi_segment_ptr,gaspi_queue_id_t,gaspi_offset_t,gaspi_socket_id_t,gaspi_size_t,gaspi_pointer_t
+  ,gaspi_write,gaspi_read,gaspi_wait
+  ,gaspi_notify,gaspi_notify_reset,gaspi_notify_wait ,gaspi_atomic_value_t
+  ,gaspi_proc_num,gaspi_proc_rank
+  ,gaspi_number_t,gaspi_notification_t,gaspi_notification_id_t, gaspi_time_t
+  ,gaspi_atomic_compare_swap,gaspi_atomic_set
+  ,GASPI_SUCCESS,GASPI_TIMEOUT,GASPI_ERROR,GASPI_GROUP_ALL
+  ,GASPI_BLOCK,GASPI_TEST,GASPI_CONFIGURATION_DEFAULT,GASPI_NORANK,GASPI_NOSTRING
+  ,gaspi_notify_waitsome,gaspi_notify_size,gaspi_error_message
+  ,gaspi_queue_size_max,gaspi_queue_size,gaspi_time_get
+  ,gaspi_network_t, gaspi_number_t
+  }
+, commentstyle=\color{dkgreen}
+, keywordstyle=\color{colorkeyword}
+, classoffset=1
+, morekeywords={ASSERT}
+, keywordstyle=\color{colorassert}
+, classoffset=0
+}\lstinputlisting{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%                              Document                                 %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{\GASPI{}-Tutorial MPI Interoperability}
+
+% \author{Jens Breitbart\\
+% jens.breitbart@iwr.uni-heidelberg.de\\
+% Engineering Mathematics and Computing Lab (EMCL)\\
+% University of Heidelberg}
+\date{}
+
+\begin{document}
+
+\begin{titlepage}
+\maketitle
+\end{titlepage}
+
+
+\newpage
+
+ 
+\section{Introduction}
+\label{sec::Intro}
+
+\GASPI{} is designed to be interoperabe with MPI, \ie both MPI and \GASPI{} can be used within the same program. This allows developers to incrementally port existing MPI applications, or to continue to rely on existing well tested code for non-performance critical parts of the application. However, to allow both programming systems to work together a few restrictions apply. We discuss the restrictions in detail in the next section -- the rule of thumb is that the developer must make sure that MPI and \GASPI{} do not communicate at the same time.
+
+\section{Restrictions}
+
+\GASPI{}~1.0 defines a structure on how MPI and \GASPI{} function calls must be interleaved within the same application, as shown below:
+
+\insertlisting{mpi.interop.c}{\GASPI{}-MPI structure.}
+
+Formally speaking, the application runtime is divided into several epochs that start and end with a barrier sychronization of all processes (and threads). Communication within a epoch can only be done with either \GASPI{} or MPI, but not both. This restriction includes possible nonblocking or asynchronous communication calls, so the developer must make sure that all previously started communication requests are completed before the next epoch is started. In practise ending an MPI epoch may include an \verb|MPI_Waitall()| and ending a \GASPI{} epoch may require a \verb|gaspi_wait()| call and to manually complete all timed out communications.
+
+\section{Starting a GASPI-MPI application}
+
+The \GASPI{} specification does not specify how an application using both MPI and \GASPI{} should be started, so starting a hybrid MPI/\GASPI{} program is implementation specific. \GASPI{} implementations may provide an appropriated startscript.
+
+%\todooverview
+
+\end{document}
+
