@@ -1156,9 +1156,12 @@ gaspi_config_get ( gaspi_config_t *config )
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_config_get ( config ) BIND(C)
-  TYPE(gaspi_config_t), INTENT(OUT) :: config
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_config_get(config) &
+&   result( res ) bind(C, name="gaspi_config_get")
+  import
+  type(gaspi_config_t) :: config
+  integer(gaspi_return_t) :: res
+end function gaspi_config_get
 \end{verbatim}
 \end{FDefSign}
 
@@ -1199,9 +1202,12 @@ gaspi_config_set ( gaspi_config_t const *config )
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_config_set ( config ) BIND(C)
-  TYPE(gaspi_config_t), INTENT(IN) :: config
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_config_set(new_config) &
+&   result( res ) bind(C, name="gaspi_config_set")
+  import
+  type(gaspi_config_t), value :: new_config
+  integer(gaspi_return_t) :: res
+end function gaspi_config_set
 \end{verbatim}
 \end{FDefSign}
 
@@ -1245,9 +1251,12 @@ gaspi_proc_init ( gaspi_timeout_t const timeout )
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_proc_init ( timeout ) BIND(C)
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_proc_init(timeout_ms) &
+&         result( res ) bind(C, name="gaspi_proc_init")
+  import
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_proc_init
 \end{verbatim}
 \end{FDefSign}
 
@@ -1366,9 +1375,12 @@ gaspi_proc_num ( gaspi_rank_t *proc_num )
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_proc_num ( proc_num ) BIND(C)
-  TYPE(gaspi_rank_t), INTENT(OUT) :: proc_num
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_proc_num(proc_num) &
+&         result( res ) bind(C, name="gaspi_proc_num")
+  import
+  integer(gaspi_rank_t) :: proc_num
+  integer(gaspi_return_t) :: res
+end function gaspi_proc_num
 \end{verbatim}
 \end{FDefSign}
 
@@ -1414,9 +1426,12 @@ gaspi_proc_rank ( gaspi_rank_t *rank )
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_proc_rank ( rank ) BIND(C)
-  TYPE(gaspi_rank_t), INTENT(OUT) :: rank
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_proc_rank(rank) &
+&         result( res ) bind(C, name="gaspi_proc_rank")
+  import
+  integer(gaspi_rank_t) :: rank
+  integer(gaspi_return_t) :: res
+end function gaspi_proc_rank
 \end{verbatim}
 \end{FDefSign}
 
@@ -1465,9 +1480,12 @@ gaspi_proc_term ( gaspi_timeout_t timeout )
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_proc_term ( timeout ) BIND(C)
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_proc_term(timeout_ms) &
+&         result( res ) bind(C, name="gaspi_proc_term")
+  import
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_proc_term
 \end{verbatim}
 \end{FDefSign}
 
@@ -1523,11 +1541,13 @@ gaspi_proc_kill ( gaspi_rank_t rank
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_proc_kill ( rank
-                , timeout ) BIND(C)
-  TYPE(gaspi_rank_t), INTENT(IN) :: rank
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_proc_kill(rank,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_proc_kill")
+  import
+  integer(gaspi_rank_t), value :: rank
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_proc_kill
 \end{verbatim}
 \end{FDefSign}
 
@@ -1612,11 +1632,12 @@ gaspi_connect ( gaspi_rank_t rank
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_connect ( rank
-              , timeout ) BIND(C)
-  TYPE(gaspi_rank_t), INTENT(IN) :: rank
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_connect(rank,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_connect")
+  import
+  integer(gaspi_rank_t), value :: rank
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
 \end{verbatim}
 \end{FDefSign}
 
@@ -1695,11 +1716,13 @@ gaspi_disconnect ( gaspi_rank_t rank
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_disconnect ( rank
-                , timeout ) BIND(C)
-  TYPE(gaspi_rank_t), INTENT(IN) :: rank
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_disconnect(rank,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_disconnect")
+  import
+  integer(gaspi_rank_t), value :: rank
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_disconnect
 \end{verbatim}
 \end{FDefSign}
 
@@ -1795,9 +1818,12 @@ gaspi_state_vec_get ( gaspi_state_vector_t *state_vector )
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_state_vec_get ( state_vector ) BIND(C)
-  TYPE(gaspi_state_vector_t), INTENT(OUT) :: state_vector
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_state_vec_get(state_vector) &
+&         result( res ) bind(C, name="gaspi_state_vec_get")
+  import
+  type(c_ptr), value :: state_vector
+  integer(gaspi_return_t) :: res
+end function gaspi_state_vec_get
 \end{verbatim}
 \end{FDefSign}
 
@@ -2016,9 +2042,12 @@ gaspi_group_create ( gaspi_group_t *group )
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_group_create ( group ) BIND(C)
-  TYPE(gaspi_group_t), INTENT(OUT) :: group
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_group_create(group) &
+&         result( res ) bind(C, name="gaspi_group_create")
+  import
+  integer(gaspi_group_t) :: group
+  integer(gaspi_return_t) :: res
+end function gaspi_group_create
 \end{verbatim}
 \end{FDefSign}
 
@@ -2062,11 +2091,13 @@ gaspi_group_add ( gaspi_group_t *group
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_group_add ( group
-                , rank ) BIND(C)
-  TYPE(gaspi_group_t), INTENT(OUT) :: group
-  TYPE(gaspi_rank_t), INTENT(IN) :: group
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_group_add(group,rank) &
+&         result( res ) bind(C, name="gaspi_group_add")
+  import
+  integer(gaspi_group_t), value :: group
+  integer(gaspi_rank_t), value :: rank
+  integer(gaspi_return_t) :: res
+end function gaspi_group_add
 \end{verbatim}
 \end{FDefSign}
 
@@ -2112,13 +2143,13 @@ gaspi_group_commit ( gaspi_group_t group
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_group_commit ( group
-                   , timeout
-                   , ireturn
-                   ) BIND(C)
-  TYPE(gaspi_group_t), INTENT(IN) :: group
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_group_commit(group,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_group_commit")
+  import
+  integer(gaspi_group_t), value :: group
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_group_commit
 \end{verbatim}
 \end{FDefSign}
 
@@ -2191,11 +2222,12 @@ gaspi_group_delete ( gaspi_group_t group )
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_group_delete ( group
-                   , ireturn
-                   ) BIND(C)
-  TYPE(gaspi_group_t), INTENT(IN) :: group
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_group_delete(group) &
+&         result( res ) bind(C, name="gaspi_group_delete")
+  import
+  integer(gaspi_group_t), value :: group
+  integer(gaspi_return_t) :: res
+end function gaspi_group_delete
 \end{verbatim}
 \end{FDefSign}
 
@@ -2246,11 +2278,12 @@ gaspi_group_num ( gaspi_number_t *group_num )
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_group_num ( group_num
-                , ireturn
-                ) BIND(C)
-  TYPE(gaspi_number_t), INTENT(OUT) :: group_num
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_group_num(group_num) &
+&         result( res ) bind(C, name="gaspi_group_num")
+  import
+  integer(gaspi_number_t) :: group_num
+  integer(gaspi_return_t) :: res
+end function gaspi_group_num
 \end{verbatim}
 \end{FDefSign}
 
@@ -2297,13 +2330,13 @@ gaspi_group_size ( gaspi_group_t group
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_group_size ( group
-                 , group_size
-                 , ireturn
-                 ) BIND(C)
-  TYPE(gaspi_group_t), INTENT(IN) :: group
-  TYPE(gaspi_number_t), INTENT(OUT) :: group_size
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_group_size(group,group_size) &
+&         result( res ) bind(C, name="gaspi_group_size")
+  import
+  integer(gaspi_group_t), value :: group
+  integer(gaspi_number_t) :: group_size
+  integer(gaspi_return_t) :: res
+end function gaspi_group_size
 \end{verbatim}
 \end{FDefSign}
 
@@ -2348,14 +2381,13 @@ gaspi_group_ranks ( gaspi_group_t group
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_group_ranks ( group
-                  , group_ranks
-                  , ireturn
-                  ) BIND(C)
-  TYPE(gaspi_group_t), INTENT(IN) :: group
-  TYPE(gaspi_number_t), INTENT(IN) :: group_size
-  TYPE(gaspi_rank_t), INTENT(OUT) :: group_ranks(*)
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_group_ranks(group,group_ranks) &
+&         result( res ) bind(C, name="gaspi_group_ranks")
+  import
+  integer(gaspi_group_t), value :: group
+  type(c_ptr), value :: group_ranks
+  integer(gaspi_return_t) :: res
+end function gaspi_group_ranks
 \end{verbatim}
 \end{FDefSign}
 
@@ -2470,15 +2502,14 @@ gaspi_segment_alloc ( gaspi_segment_id_t segment_id
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_segment_alloc ( segment_id
-                    , size
-                    , alloc_policy
-                    , ireturn
-                    ) BIND(C)
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: group
-  TYPE(gaspi_size_t), INTENT(IN) :: size
-  TYPE(gaspi_alloc_t), INTENT(IN) :: alloc_policy
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_segment_alloc(segment_id,size,alloc_policy) &
+&         result( res ) bind(C, name="gaspi_segment_alloc")
+  import
+  integer(gaspi_segment_id_t), value :: segment_id
+  integer(gaspi_size_t), value :: size
+  integer(gaspi_alloc_t), value :: alloc_policy
+  integer(gaspi_return_t) :: res
+end function gaspi_segment_alloc
 \end{verbatim}
 \end{FDefSign}
 
@@ -2567,15 +2598,14 @@ gaspi_segment_register ( gaspi_segment_id_t segment_id
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_segment_register ( segment_id
-                       , rank
-                       , timeout
-                       , ireturn
-                       ) BIND(C)
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
-  TYPE(gaspi_rank_t), INTENT(IN) :: rank
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_segment_register(segment_id,rank,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_segment_register")
+  import
+  integer(gaspi_segment_id_t), value :: segment_id
+  integer(gaspi_rank_t), value :: rank
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_segment_register
 \end{verbatim}
 \end{FDefSign}
 
@@ -2676,19 +2706,17 @@ gaspi_segment_create ( gaspi_segment_id_t segment_id
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_segment_create ( segment_id
-                     , size
-                     , group
-                     , timeout
-                     , alloc_policy
-                     , ireturn
-                     ) BIND(C)
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
-  TYPE(gaspi_size_t), INTENT(IN) :: size
-  TYPE(gaspi_group_t), INTENT(IN) :: group
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-  TYPE(gaspi_alloc_t), INTENT(IN) :: alloc_policy
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_segment_create(segment_id,size,group, &
+&         timeout_ms,alloc_policy) &
+&         result( res ) bind(C, name="gaspi_segment_create")
+  import
+  integer(gaspi_segment_id_t), value :: segment_id
+  integer(gaspi_size_t), value :: size
+  integer(gaspi_group_t), value :: group
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_alloc_t), value :: alloc_policy
+  integer(gaspi_return_t) :: res
+end function gaspi_segment_create
 \end{verbatim}
 \end{FDefSign}
 
@@ -2791,11 +2819,12 @@ gaspi_segment_delete ( gaspi_segment_id_t segment_id )
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_segment_delete ( segment_id
-                     , ireturn
-                     ) BIND(C)
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_segment_delete(segment_id) &
+&         result( res ) bind(C, name="gaspi_segment_delete")
+  import
+  integer(gaspi_segment_id_t), value :: segment_id
+  integer(gaspi_return_t) :: res
+end function gaspi_segment_delete
 \end{verbatim}
 \end{FDefSign}
 
@@ -2967,11 +2996,12 @@ gaspi_segment_num ( gaspi_number_t *segment_num )
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_segment_num ( segment_num 
-                  , ireturn
-                  ) BIND(C)
-  TYPE(gaspi_number_t), INTENT(OUT) :: segment_num
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_segment_num(segment_num) &
+&         result( res ) bind(C, name="gaspi_segment_num")
+  import
+  integer(gaspi_number_t) :: segment_num
+  integer(gaspi_return_t) :: res
+end function gaspi_segment_num
 \end{verbatim}
 \end{FDefSign}
 
@@ -3020,13 +3050,13 @@ gaspi_segment_list ( gaspi_number_t num
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_segment_list ( num
-                   , segment_id_list
-                   , ireturn
-                   ) BIND(C)
-  TYPE(gaspi_number_t), INTENT(IN) :: num
-  TYPE(gaspi_segment_id_t), INTENT(OUT) :: segment_id_list(num)
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_segment_list(num,segment_id_list) &
+&         result( res ) bind(C, name="gaspi_segment_list")
+  import
+  integer(gaspi_number_t), value :: num
+  type(c_ptr), value :: segment_id_list
+  integer(gaspi_return_t) :: res
+end function gaspi_segment_list
 \end{verbatim}
 \end{FDefSign}
 
@@ -3076,13 +3106,13 @@ gaspi_segment_ptr ( gaspi_segment_id_t segment_id
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_segment_ptr ( segment_id
-                  , pointer
-                  , ireturn
-                  ) BIND(C)
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
-  TYPE(gaspi_pointer_t), INTENT(OUT) :: pointer
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_segment_ptr(segment_id,ptr) &
+&         result( res ) bind(C, name="gaspi_segment_ptr")
+  import
+  integer(gaspi_segment_id_t), value :: segment_id
+  type(c_ptr) :: ptr
+  integer(gaspi_return_t) :: res
+end function gaspi_segment_ptr
 \end{verbatim}
 \end{FDefSign}
 
@@ -3260,25 +3290,20 @@ gaspi_write ( gaspi_segment_id_t segment_id_local
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_write ( segment_id_local
-            , offset_local
-            , rank
-            , segment_id_remote
-            , offset_remote
-            , size
-            , queue
-            , timeout
-            , ireturn
-            ) BIND(C)
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local
-  TYPE(gaspi_offset_t), INTENT(IN) :: offset_local
-  TYPE(gaspi_rank_t), INTENT(IN) :: rank
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_remote
-  TYPE(gaspi_offset_t), INTENT(IN) :: offset_remote
-  TYPE(gaspi_size_t), INTENT(IN) :: size
-  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_write(segment_id_local,offset_local,rank, &
+&         segment_id_remote,offset_remote,size,queue,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_write")
+  import
+  integer(gaspi_segment_id_t), value :: segment_id_local
+  integer(gaspi_offset_t), value :: offset_local
+  integer(gaspi_rank_t), value :: rank
+  integer(gaspi_segment_id_t), value :: segment_id_remote
+  integer(gaspi_offset_t), value :: offset_remote
+  integer(gaspi_size_t), value :: size
+  integer(gaspi_queue_id_t), value :: queue
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_write
 \end{verbatim}
 \end{FDefSign}
 
@@ -3408,25 +3433,20 @@ gaspi_read ( gaspi_segment_id_t segment_id_local
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_read ( segment_id_local
-           , offset_local
-           , rank
-           , segment_id_remote
-           , offset_remote
-           , size
-           , queue
-           , timeout
-           , ireturn
-           ) BIND(C)
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local
-  TYPE(gaspi_offset_t), INTENT(IN) :: offset_local
-  TYPE(gaspi_rank_t), INTENT(IN) :: rank
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_remote
-  TYPE(gaspi_offset_t), INTENT(IN) :: offset_remote
-  TYPE(gaspi_size_t), INTENT(IN) :: size
-  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_read(segment_id_local,offset_local,rank, &
+&         segment_id_remote,offset_remote,size,queue,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_read")
+  import
+  integer(gaspi_segment_id_t), value :: segment_id_local
+  integer(gaspi_offset_t), value :: offset_local
+  integer(gaspi_rank_t), value :: rank
+  integer(gaspi_segment_id_t), value :: segment_id_remote
+  integer(gaspi_offset_t), value :: offset_remote
+  integer(gaspi_size_t), value :: size
+  integer(gaspi_queue_id_t), value :: queue
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_read
 \end{verbatim}
 \end{FDefSign}
 
@@ -3540,13 +3560,13 @@ gaspi_wait ( gaspi_queue_id_t queue
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_wait ( queue
-           , timeout
-           , ireturn
-           ) BIND(C)
-  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_wait(queue,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_wait")
+  import
+  integer(gaspi_queue_id_t), value :: queue
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_wait
 \end{verbatim}
 \end{FDefSign}
 
@@ -3702,21 +3722,18 @@ gaspi_notify ( gaspi_segment_id_t segment_id
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_notify ( segment_id
-             , rank
-             , notification_id
-             , notification_value
-             , queue
-             , timeout
-             , ireturn
-             ) BIND(C)
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
-  TYPE(gaspi_rank_t), INTENT(IN) :: rank
-  TYPE(gaspi_notification_id_t), INTENT(IN) :: notification_id
-  TYPE(gaspi_notification_t), INTENT(IN) :: notification_value
-  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_notify(segment_id_remote,rank,notification_id, &
+&         notification_value,queue,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_notify")
+  import
+  integer(gaspi_segment_id_t), value :: segment_id_remote
+  integer(gaspi_rank_t), value :: rank
+  integer(gaspi_notification_id_t), value :: notification_id
+  integer(gaspi_notification_t), value :: notification_value
+  integer(gaspi_queue_id_t), value :: queue
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_notify
 \end{verbatim}
 \end{FDefSign}
 
@@ -3909,19 +3926,17 @@ gaspi_notify_waitsome ( gaspi_segment_id_t segment_id
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_notify_waitsome ( segment_id
-                      , notification_begin
-                      , notification_num
-                      , first_id
-                      , timeout
-                      , ireturn
-                      ) BIND(C)
-  TYPE(gaspi_segment_id_t), INTENT(IN):: segment_id
-  TYPE(gaspi_notification_id_t), INTENT(IN):: notification_begin
-  TYPE(gaspi_number_t), INTENT(IN) :: notification_num
-  TYPE(gaspi_notification_id_t), INTENT(OUT):: first_id
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_notify_waitsome(segment_id_local,notification_begin, &
+&         num,first_id,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_notify_waitsome")
+  import
+  integer(gaspi_segment_id_t), value :: segment_id_local
+  integer(gaspi_notification_id_t), value :: notification_begin
+  integer(gaspi_number_t), value :: num
+  integer(gaspi_notification_id_t) :: first_id
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_notify_waitsome
 \end{verbatim}
 \end{FDefSign}
 
@@ -4032,15 +4047,15 @@ gaspi_notify_reset ( gaspi_segment_id_t segment_id
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_notify_reset ( segment_id
-                   , notification_id
-                   , old_notification_val
-                   , ireturn
-                   ) BIND(C)
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
-  TYPE(gaspi_notification_id_t), INTENT(IN) :: notification_id
-  TYPE(gaspi_notification_t),INTENT(OUT):: old_notification_val
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_notify_reset(segment_id_local, &
+&         notification_id,old_notification_val) &
+&         result( res ) bind(C, name="gaspi_notify_reset")
+  import
+  integer(gaspi_segment_id_t), value :: segment_id_local
+  integer(gaspi_notification_id_t), value :: notification_id
+  integer(gaspi_notification_t) :: old_notification_val
+  integer(gaspi_return_t) :: res
+end function gaspi_notify_reset
 \end{verbatim}
 \end{FDefSign}
 
@@ -4177,29 +4192,23 @@ gaspi_write_notify ( gaspi_segment_id_t segment_id_local
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_write_notify ( segment_id_local
-                   , offset_local
-                   , rank
-                   , segment_id_remote
-                   , offset_remote
-                   , size
-                   , notification_id
-                   , notification_value
-                   , queue
-                   , timeout
-                   , ireturn
-                   ) BIND(C)
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local
-  TYPE(gaspi_offset_t_t), INTENT(IN) :: offset_local
-  TYPE(gaspi_rank_t), INTENT(IN) :: rank
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_remote
-  TYPE(gaspi_offset_t_t), INTENT(IN) :: offset_remote
-  TYPE(gaspi_size_t), INTENT(IN) :: size
-  TYPE(gaspi_notification_id_t), INTENT(IN) :: notification_id
-  TYPE(gaspi_notification_t), INTENT(IN) :: notification_value
-  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_write_notify(segment_id_local,offset_local,rank, &
+&         segment_id_remote,offset_remote, &
+&         size,notification_id,notification_value,queue,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_write_notify")
+  import
+  integer(gaspi_segment_id_t), value :: segment_id_local
+  integer(gaspi_offset_t), value :: offset_local
+  integer(gaspi_rank_t), value :: rank
+  integer(gaspi_segment_id_t), value :: segment_id_remote
+  integer(gaspi_offset_t), value :: offset_remote
+  integer(gaspi_size_t), value :: size
+  integer(gaspi_notification_id_t), value :: notification_id
+  integer(gaspi_notification_t), value :: notification_value
+  integer(gaspi_queue_id_t), value :: queue
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_write_notify
 \end{verbatim}
 \end{FDefSign}
 
@@ -4274,27 +4283,21 @@ gaspi_write_list ( gaspi_number_t num
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_write_list ( num
-                 , segment_id_local
-                 , offset_local
-                 , rank
-                 , segment_id_remote
-                 , offset_remote
-                 , size
-                 , queue
-                 , timeout
-                 , ireturn
-                 ) BIND(C)
-  TYPE(gaspi_number_t), INTENT(IN) :: num
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local(num)
-  TYPE(gaspi_offset_t), INTENT(IN) :: offset_local(num) 
-  TYPE(gaspi_rank_t), INTENT(IN) :: rank
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_remote(num)
-  TYPE(gaspi_offset_t), INTENT(IN) :: offset_remote(num)
-  TYPE(gaspi_size_t), INTENT(IN) :: size(num) 
-  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_write_list(num,segment_id_local,offset_local,rank, &
+&         segment_id_remote,offset_remote,size,queue,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_write_list")
+  import
+  integer(gaspi_number_t), value :: num
+  type(c_ptr), value :: segment_id_local
+  type(c_ptr), value  :: offset_local
+  integer(gaspi_rank_t), value :: rank
+  type(c_ptr), value :: segment_id_remote
+  type(c_ptr), value :: offset_remote
+  type(c_ptr), value :: size
+  integer(gaspi_queue_id_t), value :: queue
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_write_list
 \end{verbatim}
 \end{FDefSign}
 
@@ -4378,32 +4381,25 @@ gaspi_write_list_notify
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_write_list_notify
-                ( num
-                , segment_id_local
-                , offset_local
-                , rank
-                , segment_id_remote
-                , offset_remote
-                , size
-                , notification_id
-                , notification_value
-                , queue
-                , timeout
-                , ireturn
-                ) BIND(C)
-  TYPE(gaspi_number_t), INTENT(IN) :: num
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local(num)
-  TYPE(gaspi_offset__t), INTENT(IN) :: offset_local(num)
-  TYPE(gaspi_rank_t), INTENT(IN) :: rank
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_remote(num)
-  TYPE(gaspi_offset_t), INTENT(IN) :: offset_remote(num)
-  TYPE(gaspi_size_t), INTENT(IN) :: size(num) 
-  TYPE(gaspi_notification_id_t), INTENT(IN) :: notification_id
-  TYPE(gaspi_notification_t), INTENT(IN) :: notification_value  
-  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout 
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_write_list_notify(num,segment_id_local,offset_local, &
+&         rank,segment_id_remote,offset_remote,size,segment_id_notification, &
+&         notification_id,notification_value,queue,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_write_list_notify")
+  import
+  integer(gaspi_number_t), value :: num
+  type(c_ptr), value :: segment_id_local
+  type(c_ptr), value :: offset_local
+  integer(gaspi_rank_t), value :: rank
+  type(c_ptr), value :: segment_id_remote
+  type(c_ptr), value :: offset_remote
+  type(c_ptr), value :: size
+  integer(gaspi_segment_id_t), value :: segment_id_notification
+  integer(gaspi_notification_id_t), value :: notification_id
+  integer(gaspi_notification_t), value :: notification_value
+  integer(gaspi_queue_id_t), value :: queue
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_write_list_notify
 \end{verbatim}
 \end{FDefSign}
 
@@ -4476,28 +4472,21 @@ gaspi_read_list ( gaspi_number_t num
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_read_list ( num
-                , segment_id_local
-                , offset_local
-                , rank
-                , segment_id_remote
-                , offset_remote
-                , size
-                , queue
-                , timeout
-                , ireturn
-                ) BIND(C)
-  TYPE(gaspi_number_t), INTENT(IN) :: num
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local(num)
-  TYPE(gaspi_offset__t), INTENT(IN) :: offset_local(num)
-  TYPE(gaspi_rank_t), INTENT(IN) :: rank
-  TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_remote(num)
-  TYPE(gaspi_offset_t), INTENT(IN) :: offset_remote(num)
-  TYPE(gaspi_size_t), INTENT(IN) :: size(num) 
-  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout 
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
-
+function gaspi_read_list(num,segment_id_local,offset_local,rank, &
+&         segment_id_remote,offset_remote,size,queue,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_read_list")
+  import
+  integer(gaspi_number_t), value :: num
+  type(c_ptr), value :: segment_id_local
+  type(c_ptr), value :: offset_local
+  integer(gaspi_rank_t), value :: rank
+  type(c_ptr), value :: segment_id_remote 
+  type(c_ptr), value :: offset_remote
+  type(c_ptr), value :: size
+  integer(gaspi_queue_id_t), value :: queue
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_read_list
 \end{verbatim}
 \end{FDefSign}
 
@@ -4540,13 +4529,13 @@ gaspi_queue_size ( gaspi_queue_id_t queue
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_queue_size ( queue
-                 , queue_size
-                 , ireturn 
-                 ) BIND(C)
-  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
-  TYPE(gaspi_number_t), INTENT(OUT) :: queue_size
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_queue_size(queue,queue_size) &
+&         result( res ) bind(C, name="gaspi_queue_size")
+  import
+  integer(gaspi_queue_id_t), value :: queue
+  integer(gaspi_number_t) :: queue_size
+  integer(gaspi_return_t) :: res
+end function gaspi_queue_size
 \end{verbatim}
 \end{FDefSign}
 
@@ -4594,13 +4583,13 @@ gaspi_queue_purge ( gaspi_queue_id_t queue
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_queue_purge ( queue
-                  , timeout
-                  , ireturn
-                  ) BIND(C)
-  TYPE(gaspi_queue_id_t), INTENT(IN) :: queue
-  TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-  TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_queue_purge(queue,timeout) &
+&         result( res ) bind(C, name="gaspi_queue_purge")
+  import
+  integer(gaspi_queue_id_t), value :: queue
+  integer(gaspi_timeout_t), value :: timeout
+  integer(gaspi_return_t) :: res
+end function gaspi_queue_purge
 \end{verbatim}
 \end{FDefSign}
 
@@ -4697,20 +4686,17 @@ gaspi_passive_send ( gaspi_segment_id_t segment_id_local
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_passive_send ( segment_id_local
-                   , offset_local
-                   , rank
-                   , size
-                   , timeout
-                   , ireturn
-                   ) BIND(C)
-    TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local
-    TYPE(gaspi_offset_t), INTENT(IN) :: offset_local
-    TYPE(gaspi_rank_t), INTENT(IN) :: rank
-    TYPE(gaspi_size_t), INTENT(IN) :: size
-    TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
-
+function gaspi_passive_send(segment_id_local,offset_local, &
+&         rank,size,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_passive_send")
+  import
+  integer(gaspi_segment_id_t), value :: segment_id_local
+  integer(gaspi_offset_t), value :: offset_local
+  integer(gaspi_rank_t), value :: rank
+  integer(gaspi_size_t), value :: size
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_passive_send
 \end{verbatim}
 \end{FDefSign}
 \executionphasework
@@ -4830,20 +4816,17 @@ gaspi_passive_receive ( gaspi_segment_id_t segment_id_local
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_passive_receive ( segment_id_local
-                      , offset_local
-                      , rank
-                      , size
-                      , timeout
-                      , ireturn
-                      ) BIND(C)
-    TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id_local
-    TYPE(gaspi_offset_t), INTENT(IN) :: offset_local
-    TYPE(gaspi_rank_t), INTENT(OUT) :: rank
-    TYPE(gaspi_size_t), INTENT(IN) :: size
-    TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
-
+function gaspi_passive_receive(segment_id_local,offset_local, &
+&         rem_rank,size,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_passive_receive")
+  import
+  integer(gaspi_segment_id_t), value :: segment_id_local
+  integer(gaspi_offset_t), value :: offset_local
+  integer(gaspi_rank_t) :: rem_rank
+  integer(gaspi_size_t), value :: size
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_passive_receive
 \end{verbatim}
 \end{FDefSign}
 \executionphasework
@@ -4941,11 +4924,12 @@ gaspi_passive_queue_purge (gaspi_timeout_t timeout)
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_passive_queue_purge ( timeout
-                          , ireturn
-                          ) BIND(C)
-    TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_passive_queue_purge(timeout) &
+&         result( res ) bind(C, name="gaspi_passive_queue_purge")
+  import
+  integer(gaspi_timeout_t), value :: timeout
+  integer(gaspi_return_t) :: res
+end function gaspi_passive_queue_purge
 \end{verbatim}
 \end{FDefSign}
 
@@ -5030,21 +5014,18 @@ gaspi_atomic_fetch_add ( gaspi_segment_id_t segment_id
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_atomic_fetch_add ( segment_id
-                       , offset
-                       , rank
-                       , value_add
-                       , value_old
-                       , timeout
-                       , ireturn
-                       ) BIND(C)
-    TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
-    TYPE(gaspi_offset_t), INTENT(IN) :: offset
-    TYPE(gaspi_rank_t), INTENT(OUT) :: rank
-    TYPE(gaspi_atomic_value_t), INTENT(IN) :: value_add
-    TYPE(gaspi_atomic_value_t), INTENT(OUT) :: value_old
-    TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_atomic_fetch_add(segment_id,offset,rank, &
+&         val_add,val_old,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_atomic_fetch_add")
+  import
+  integer(gaspi_segment_id_t), value :: segment_id
+  integer(gaspi_offset_t), value :: offset
+  integer(gaspi_rank_t), value :: rank
+  integer(gaspi_atomic_value_t), value :: val_add
+  integer(gaspi_atomic_value_t) :: val_old
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_atomic_fetch_add
 \end{verbatim}
 \end{FDefSign}
 
@@ -5134,24 +5115,19 @@ gaspi_atomic_compare_swap ( gaspi_segment_id_t segment_id
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_atomic_compare_swap ( segment_id
-                          , offset
-                          , rank
-                          , comparator
-                          , value_new
-                          , value_old
-                          , timeout
-                          , ireturn
-                          ) BIND(C)
-    TYPE(gaspi_segment_id_t), INTENT(IN) :: segment_id
-    TYPE(gaspi_offset_t), INTENT(IN) :: offset
-    TYPE(gaspi_rank_t), INTENT(OUT) :: rank
-    TYPE(gaspi_atomic_value_t), INTENT(IN) :: comparator
-    TYPE(gaspi_atomic_value_t), INTENT(IN) :: value_new
-    TYPE(gaspi_atomic_value_t), INTENT(OUT) :: value_old
-    TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
-
+function gaspi_atomic_compare_swap(segment_id,offset,rank,&
+&         comparator,val_new,val_old,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_atomic_compare_swap")
+  import
+  integer(gaspi_segment_id_t), value :: segment_id
+  integer(gaspi_offset_t), value :: offset
+  integer(gaspi_rank_t), value :: rank
+  integer(gaspi_atomic_value_t), value :: comparator
+  integer(gaspi_atomic_value_t), value :: val_new
+  integer(gaspi_atomic_value_t) :: val_old
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_atomic_compare_swap
 \end{verbatim}
 \end{FDefSign}
 
@@ -5323,14 +5299,13 @@ gaspi_barrier ( gaspi_group_t group
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_barrier ( group
-              , timeout
-              , ireturn
-              ) BIND(C)
-    TYPE(gaspi_group_t), INTENT(IN) :: group
-    TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
-
+function gaspi_barrier(group,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_barrier")
+  import
+  integer(gaspi_group_t), value :: group
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_barrier
 \end{verbatim}
 \end{FDefSign}
 
@@ -5445,23 +5420,19 @@ gaspi_allreduce ( gaspi_const_pointer_t buffer_send
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_allreduce ( buffer_send
-                , buffer_receive
-                , num
-                , operation
-                , datatype
-                , group
-                , timeout
-                ) BIND(C)
-    TYPE(gaspi_pointer_t), INTENT(IN) :: buffer_send
-    TYPE(gaspi_pointer_t), INTENT(IN) :: buffer_receive
-    TYPE(gaspi_number_t), INTENT(IN) :: num
-    TYPE(gaspi_operation_t), INTENT(IN) :: operation
-    TYPE(gaspi_datatype_t), INTENT(IN) :: datatype
-    TYPE(gaspi_group_t), INTENT(IN) :: group
-    TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
-
+function gaspi_allreduce(buffer_send,buffer_receive,num, &
+&         operation,datatyp,group,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_allreduce")
+  import
+  type(c_ptr), value :: buffer_send
+  type(c_ptr), value :: buffer_receive
+  integer(gaspi_number_t), value :: num
+  integer(gaspi_int), value :: operation
+  integer(gaspi_int), value :: datatyp
+  integer(gaspi_group_t), value :: group
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_allreduce
 \end{verbatim}
 \end{FDefSign}
 
@@ -5612,26 +5583,20 @@ gaspi_allreduce_user ( gaspi_const_pointer_t buffer_send
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_allreduce_user ( buffer_send
-                     , buffer_receive
-                     , num
-                     , size_element
-                     , reduce_operation
-                     , reduce_state
-                     , group
-                     , timeout
-                     , ireturn
-                     ) BIND(C)
-    TYPE(gaspi_pointer_t), INTENT(IN) :: buffer_send
-    TYPE(gaspi_pointer_t), INTENT(IN) :: buffer_receive
-    TYPE(gaspi_number_t), INTENT(IN) :: num
-    TYPE(gaspi_size_t), INTENT(IN) :: size_element
-    TYPE(gaspi_reduce_operation_t),INTENT(IN):: reduce_operation
-    TYPE(gaspi_reduce_state_t), INTENT(IN) :: reduce_state
-    TYPE(gaspi_group_t), INTENT(IN) :: group
-    TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
-
+function gaspi_allreduce_user(buffer_send,buffer_receive, &
+&         num,element_size,reduce_operation,reduce_state,group,timeout_ms) &
+&         result( res ) bind(C, name="gaspi_allreduce_user")
+  import
+  type(c_ptr), value :: buffer_send
+  type(c_ptr), value :: buffer_receive
+  integer(gaspi_number_t), value :: num        
+  integer(gaspi_size_t), value :: element_size
+  type(c_funptr), value :: reduce_operation
+  type(c_ptr), value :: reduce_state
+  integer(gaspi_group_t), value :: group
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_allreduce_user
 \end{verbatim}
 \end{FDefSign}
 
@@ -5694,19 +5659,31 @@ gaspi_reduce_operation ( gaspi_const_pointer_t operand_one
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_reduce_operation ( operand_one
-                       , operand_two
-                       , result
-                       , state
-                       , timeout
-                       , ireturn
-                       ) BIND(C)
-    TYPE(gaspi_pointer_t), INTENT(IN) :: operand_one
-    TYPE(gaspi_pointer_t), INTENT(IN) :: operand_two
-    TYPE(gaspi_pointer_t), INTENT(IN) :: result
-    TYPE(gaspi_reduce_state_t), INTENT(IN) :: state
-    TYPE(gaspi_timeout_t), INTENT(IN) :: timeout
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function my_reduce_operation(op_one,op_two,op_res, &
+&   op_state,num,element_size,timeout) &
+&   result ( res ) bind(C,name="my_reduce_operation")
+  implicit none
+  integer(gaspi_number_t), intent(in), value :: num        
+!
+! the fortran user defined callback function requires an explicit
+! type. in this case integer(c_int)
+!
+  integer(c_int), intent(out) :: op_one(num)
+  integer(c_int), intent(out) :: op_two(num)
+  integer(c_int), intent(out) :: op_res(num)
+  integer(c_int), intent(out) :: op_state(num)
+  integer(gaspi_size_t), value :: element_size
+  integer(gaspi_timeout_t), value :: timeout
+  integer(gaspi_return_t) :: res
+  integer i
+!
+! replace with your user defined operation       
+!
+! do i = 1, num
+!    op_res(i) = max(op_one(i),op_two(i))
+! enddo
+  res = GASPI_SUCCESS
+end function my_reduce_operation
 \end{verbatim}
 \end{FDefSign}
 
@@ -5714,6 +5691,7 @@ gaspi_reduce_operation ( operand_one
 \FStdRetDesc
 
 \end{FDef}
+We note that 
 
 A pointer to the first operand and a pointer to the second operand
 are passed. The result is stored in the memory represented by the
@@ -5799,11 +5777,12 @@ gaspi_group_max (gaspi_number_t *group_max)
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_group_max ( group_max
-                , ireturn
-                ) BIND(C)
-    TYPE(gaspi_number_t), INTENT(OUT) :: group_max
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_group_max(group_max) &
+&         result( res ) bind(C, name="gaspi_group_max")
+  import
+  integer(gaspi_number_t) :: group_max
+  integer(gaspi_return_t) :: res
+end function gaspi_group_max
 \end{verbatim}
 \end{FDefSign}
 
@@ -5834,11 +5813,12 @@ gaspi_segment_max (gaspi_number_t *segment_max)
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_segment_max ( segment_max
-                  , ireturn
-                  ) BIND(C)
-    TYPE(gaspi_number_t), INTENT(OUT) :: segment_max
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_segment_max(segment_max) &
+&         result( res ) bind(C, name="gaspi_segment_max")
+  import
+  integer(gaspi_number_t) :: segment_max
+  integer(gaspi_return_t) :: res
+end function gaspi_segment_max
 \end{verbatim}
 \end{FDefSign}
 \executionphasework
@@ -5869,11 +5849,12 @@ gaspi_queue_num (gaspi_number_t *queue_num)
 \end{FDefSign}
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_queue_num ( queue_num
-                , ireturn
-                ) BIND(C)
-    TYPE(gaspi_number_t), INTENT(OUT) :: queue_num
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_queue_num(queue_num) &
+&         result( res ) bind(C, name="gaspi_queue_num")
+  import
+  integer(gaspi_number_t) :: queue_num
+  integer(gaspi_return_t) :: res
+end function gaspi_queue_num
 \end{verbatim}
 \end{FDefSign}
 
@@ -5902,11 +5883,12 @@ gaspi_queue_size_max ( gaspi_number_t* queue_size_max )
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_queue_size_max ( queue_size_max 
-                     , ireturn
-                     ) BIND(C)
-    TYPE(gaspi_number_t), INTENT(OUT) :: queue_size_max
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_queue_size_max(queue_size_max) &
+&         result( res ) bind(C, name="gaspi_queue_size_max")
+  import
+  integer(gaspi_number_t) :: queue_size_max
+  integer(gaspi_return_t) :: res
+end function gaspi_queue_size_max
 \end{verbatim}
 \end{FDefSign}
 
@@ -5935,11 +5917,12 @@ gaspi_transfer_size_max (gaspi_size_t *transfer_size_max)
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_transfer_size_max ( transfer_size_max)
-                        , ireturn
-                        ) BIND(C)
-    TYPE(gaspi_number_t), INTENT(OUT) :: transfer_size_max
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_transfer_size_max(transfer_size_max) &
+&         result( res ) bind(C, name="gaspi_transfer_size_max")
+  import
+  integer(gaspi_size_t) :: transfer_size_max
+  integer(gaspi_return_t) :: res
+end function gaspi_transfer_size_max
 \end{verbatim}
 \end{FDefSign}
 
@@ -5968,11 +5951,12 @@ gaspi_notification_num (gaspi_number_t *notification_num)
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_notification_num ( notification_num
-                       , ireturn
-                       ) BIND(C)
-    TYPE(gaspi_number_t), INTENT(OUT) :: notification_num
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_notification_num(notification_num) &
+&         result( res ) bind(C, name="gaspi_notification_num")
+  import
+  integer(gaspi_number_t) :: notification_num
+  integer(gaspi_return_t) :: res
+end function gaspi_notification_num
 \end{verbatim}
 \end{FDefSign}
 
@@ -6021,11 +6005,12 @@ gaspi_passive_transfer_size_max (gaspi_size_t *transfer_size_max)
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_passive_transfer_size_max ( transfer_size_max
-                                , ireturn
-                                ) BIND(C)
-    TYPE(gaspi_size_t), INTENT(OUT) :: transfer_size_max
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_passive_transfer_size_max(transfer_size_max) &
+&         result( res ) bind(C, name="gaspi_passive_transfer_size_max")
+  import
+  integer(gaspi_size_t) :: transfer_size_max
+  integer(gaspi_return_t) :: res
+end function gaspi_passive_transfer_size_max
 \end{verbatim}
 \end{FDefSign}
 
@@ -6056,11 +6041,12 @@ gaspi_atomic_max (gaspi_atomic_value_t *max_value)
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_atomic_max ( max_value
-                  , ireturn 
-                  ) BIND(C)
-    TYPE(gaspi_atomic_value_t), INTENT(OUT) :: max_value
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_atomic_max(max_value) &
+&         result( res ) bind(C, name="gaspi_atomic_max")
+  import
+  integer(gaspi_atomic_value_t) :: max_value
+  integer(gaspi_return_t) :: res
+end function gaspi_atomic_max
 \end{verbatim}
 \end{FDefSign}
 \executionphasework
@@ -6090,11 +6076,12 @@ gaspi_allreduce_buf_size (gaspi_size_t *buf_size)
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_allreduce_buf_size ( buf_size
-                         , ireturn
-                         ) BIND(C)
-    TYPE(gaspi_size_t), INTENT(OUT) :: buf_size
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_allreduce_buf_size(buf_size) &
+&         result( res ) bind(C, name="gaspi_allreduce_buf_size")
+  import
+  integer(gaspi_size_t) :: buf_size
+  integer(gaspi_return_t) :: res
+end function gaspi_allreduce_buf_size
 \end{verbatim}
 \end{FDefSign}
 \executionphasework
@@ -6122,11 +6109,12 @@ gaspi_allreduce_elem_max (gaspi_number_t *elem_max)
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_allreduce_elem_max ( elem_max
-                         , ireturn
-                         ) BIND(C)
-    TYPE(gaspi_number_t), INTENT(OUT) :: elem_max
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_allreduce_elem_max(elem_max) &
+&         result( res ) bind(C, name="gaspi_allreduce_elem_max")
+  import
+  integer(gaspi_number_t) :: elem_max
+  integer(gaspi_return_t) :: res
+end function gaspi_allreduce_elem_max
 \end{verbatim}
 \end{FDefSign}
 
@@ -6157,11 +6145,12 @@ gaspi_network_type (gaspi_network_t *network_type)
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_network_type ( network_type
-                   , ireturn 
-                   ) BIND(C)
-    TYPE(gaspi_network_t), INTENT(OUT) :: network_type
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_network_type(network_type) &
+&         result( res ) bind(C, name="gaspi_network_type")
+  import
+  integer (gaspi_int) :: network_type
+  integer(gaspi_return_t) :: res
+end function gaspi_network_type
 \end{verbatim}
 \end{FDefSign}
 \executionphasework
@@ -6189,11 +6178,12 @@ gaspi_build_infrastructure (gaspi_number_t *build_infrastructure)
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_build_infrastructure ( build_infrastructure
-                           , ireturn
-                           ) BIND(C)
-    TYPE(gaspi_number_t), INTENT(OUT) :: build_infrastructure
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_build_infrastructure(build_infrastructure) &
+&         result( res ) bind(C, name="gaspi_build_infrastructure")
+  import
+  integer (gaspi_number_t) :: build_infrastructure
+  integer(gaspi_return_t) :: res
+end function gaspi_build_infrastructure
 \end{verbatim}
 \end{FDefSign}
 
@@ -6231,11 +6221,12 @@ gaspi_version (float *version)
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_version ( version
-              , ireturn 
-              ) BIND(C)
-    REAL(kind=c_float), INTENT(OUT) :: version
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_version(version) &
+&         result( res ) bind(C, name="gaspi_version")
+  import
+  real(gaspi_float) :: version
+  integer(gaspi_return_t) :: res
+end function gaspi_version
 \end{verbatim}
 \end{FDefSign}
 
@@ -6277,11 +6268,12 @@ gaspi_time_get (gaspi_time_t *wtime)
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_time_get ( wtime
-               , ireturn
-               ) BIND(C)
-    TYPE(gaspi_time_t), INTENT(OUT) :: wtime
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_time_get(wtime) &
+&         result( res ) bind(C, name="gaspi_time_get")
+  import
+  integer(gaspi_time_t) :: wtime
+  integer(gaspi_return_t) :: res
+end function gaspi_time_get
 \end{verbatim}
 \end{FDefSign}
 \executionphasework
@@ -6321,11 +6313,12 @@ gaspi_time_ticks (gaspi_time_t *resolution)
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_time_ticks ( resolution
-                 , ireturn
-                 ) BIND(C)
-    TYPE(gaspi_time_t), INTENT(OUT) :: resolution
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_time_ticks(resolution) &
+&         result( res ) bind(C, name="gaspi_time_ticks")
+  import
+  integer(gaspi_time_t) :: resolution
+  integer(gaspi_return_t) :: res
+end function gaspi_time_ticks
 \end{verbatim}
 \end{FDefSign}
 
@@ -6347,17 +6340,17 @@ In principle all return values less than zero represent an error.
 Every implementation is free to define specific error
 codes.
 
-\subsubsection{\gaspifunction{error\_message}}
+\subsubsection{\gaspifunction{print\_error}}
 
-The \gaspifunction{error\_message} procedure is a \gaspisemantic{synchronous}
+The \gaspifunction{print\_error} procedure is a \gaspisemantic{synchronous}
 \gaspisemantic{local} \gaspisemantic{blocking}
 procedure which translates an error code to a text message.
 
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-GASPI_ERROR_MESSAGE ( error_code
-                    , error_message )
+GASPI_PRINT_ERROR( error_code
+                 , error_message )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
@@ -6368,20 +6361,20 @@ GASPI_ERROR_MESSAGE ( error_code
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_error_message ( gaspi_return_t error_code
-                    , gaspi_string_t *error_message )
+gaspi_print_error( gaspi_return_t error_code
+                 , gaspi_string_t *error_message )
 \end{verbatim}
 \end{FDefSign}
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_error_message ( error_code
-                    , error_message
-                    , ireturn
-                    ) BIND(C)
-    TYPE(gaspi_return_t), INTENT(IN) :: error_code
-    TYPE(gaspi_string_t), INTENT(OUT) :: error_message
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_print_error(error_code,error_message) &
+&         result( res ) bind(C, name="gaspi_print_error")
+  import
+  integer(gaspi_return_t), value :: error_code
+  character(c_char), dimension(*) :: error_message
+  integer(gaspi_return_t) :: res
+end function gaspi_print_error
 \end{verbatim}
 \end{FDefSign}
 
@@ -6435,11 +6428,12 @@ gaspi_statistic_counter_max ( gaspi_number_t *counter_max )
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_statistic_counter_max ( counter_max
-                            , ireturn
-                            ) BIND(C)
-    TYPE(gaspi_number_t), INTENT(OUT) :: counter_max
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_statistic_counter_max(counter_max) &
+&         result( res ) bind(C, name="gaspi_statistic_counter_max")
+  import
+  integer(gaspi_statistic_counter_t) :: counter_max
+  integer(gaspi_return_t) :: res
+end function gaspi_statistic_counter_max
 \end{verbatim}
 \end{FDefSign}
 
@@ -6506,19 +6500,17 @@ gaspi_statistic_counter_info ( gaspi_statistic_counter_t counter
 
 \begin{FDefSign}
 \begin{verbatim}
-GASPI_STATISTIC_COUNTER_INFO ( counter
-                             , argument
-                             , counter_name
-                             , counter_description
-                             , verbosity_level
-                             , ireturn
-                             ) BIND(C)
-    TYPE(gaspi_statistic_counter_t), INTENT(IN) ::  counter
-    TYPE(gaspi_statistic_argument_t), INTENT(OUT) ::  argument
-    TYPE(gaspi_string_t), INTENT(OUT) ::  counter_name
-    TYPE(gaspi_string_t), INTENT(OUT) ::  counter_description
-    TYPE(gaspi_number_t), INTENT(OUT) ::  verbosity_level
-    TYPE(gaspi_return_t), INTENT(OUT) ::  ireturn
+function gaspi_statistic_counter_info(counter,counter_argument, &
+&         counter_name,counter_description,verbosity_level) &
+&         result( res ) bind(C, name="gaspi_statistic_counter_info")
+  import
+  integer(gaspi_statistic_counter_t), value :: counter
+  integer(gaspi_int) :: counter_argument
+  character(c_char), dimension(*) :: counter_name
+  character(c_char), dimension(*) :: counter_description
+  integer(gaspi_number_t) :: verbosity_level
+  integer(gaspi_return_t) :: res
+end function gaspi_statistic_counter_info
 \end{verbatim}
 \end{FDefSign}
 
@@ -6564,11 +6556,12 @@ gaspi_statistic_verbosity_level ( gaspi_number_t verbosity_level)
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_statistic_verbosity_level ( verbosity_level
-                                , ireturn
-                                ) BIND(C)
-    TYPE(gaspi_number_t), INTENT(IN) ::  verbosity_level 
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_statistic_verbosity_level(verbosity_level_) &
+&         result( res ) bind(C, name="gaspi_statistic_verbosity_level")
+  import
+  integer(gaspi_number_t), value :: verbosity_level_
+  integer(gaspi_return_t) :: res
+end function gaspi_statistic_verbosity_level
 \end{verbatim}
 \end{FDefSign}
 
@@ -6611,15 +6604,14 @@ gaspi_statistic_counter_get ( gaspi_statistic_counter_t counter
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_statistic_counter_get ( counter
-                            , argument
-                            , value
-                            , ireturn
-                            ) BIND(C)
-    TYPE(gaspi_statistic_counter_t), INTENT(IN) ::  counter
-    TYPE(gaspi_statistic_argument_t), INTENT(IN) ::  argument
-    TYPE(gaspi_number_t), INTENT(OUT) ::  value
-    TYPE(gaspi_return_t), INTENT(OUT) ::  ireturn
+function gaspi_statistic_counter_get(counter,argument,value_arg) &
+&         result( res ) bind(C, name="gaspi_statistic_counter_get")
+  import
+  integer(gaspi_statistic_counter_t), value :: counter
+  integer(gaspi_number_t), value :: argument
+  integer(gaspi_number_t) :: value_arg
+  integer(gaspi_return_t) :: res
+end function gaspi_statistic_counter_get
 \end{verbatim}
 \end{FDefSign}
 
@@ -6665,11 +6657,12 @@ gaspi_statistic_counter_reset (gaspi_statistic_counter_t counter)
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_statistic_counter_reset ( counter
-                              , ireturn
-                              ) BIND(C)
-    TYPE(gaspi_statistic_counter_t), INTENT(IN) :: counter
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_statistic_counter_reset(counter) &
+&         result( res ) bind(C, name="gaspi_statistic_counter_reset")
+  import
+  integer(gaspi_statistic_counter_t), value :: counter
+  integer(gaspi_return_t) :: res
+end function gaspi_statistic_counter_reset
 \end{verbatim}
 \end{FDefSign}
 
@@ -6758,11 +6751,12 @@ gaspi_pcontrol ( gaspi_pointer_t argument )
 
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_pcontrol ( argument
-               , ireturn
-               ) BIND(C)
-    TYPE(gaspi_pointer_t), INTENT(INOUT) ::  argument
-    TYPE(gaspi_return_t), INTENT(OUT) :: ireturn
+function gaspi_pcontrol(argument) &
+&         result( res ) bind(C, name="gaspi_pcontrol")
+  import
+  type(c_ptr), value :: argument
+  integer(gaspi_return_t) :: res
+end function gaspi_pcontrol
 \end{verbatim}
 \end{FDefSign}
 
