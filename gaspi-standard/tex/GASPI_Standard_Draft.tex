@@ -1195,7 +1195,7 @@ GASPI_CONFIG_SET ( config )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_config_set ( gaspi_config_t const *config )
+gaspi_config_set ( gaspi_config_t const config )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2073,7 +2073,7 @@ GASPI_GROUP_ADD ( group
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_group_add ( gaspi_group_t *group
+gaspi_group_add ( gaspi_group_t group
                 , gaspi_rank_t rank )
 \end{verbatim}
 \end{FDefSign}
@@ -6093,7 +6093,7 @@ gaspi_network_type (gaspi_network_t *network_type)
 \begin{verbatim}
 function gaspi_network_type(network_type) &
 &         result( res ) bind(C, name="gaspi_network_type")
-  integer (gaspi_int) :: network_type
+  integer(gaspi_network_t) :: network_type
   integer(gaspi_return_t) :: res
 end function gaspi_network_type
 \end{verbatim}
@@ -6443,7 +6443,7 @@ function gaspi_statistic_counter_info(counter,counter_argument, &
 &         counter_name,counter_description,verbosity_level) &
 &         result( res ) bind(C, name="gaspi_statistic_counter_info")
   integer(gaspi_statistic_counter_t), value :: counter
-  integer(gaspi_int) :: counter_argument
+  integer(gaspi_statistic_argument_t) :: counter_argument
   character(c_char), dimension(*) :: counter_name
   character(c_char), dimension(*) :: counter_description
   integer(gaspi_number_t) :: verbosity_level
@@ -6544,7 +6544,7 @@ gaspi_statistic_counter_get ( gaspi_statistic_counter_t counter
 function gaspi_statistic_counter_get(counter,argument,value_arg) &
 &         result( res ) bind(C, name="gaspi_statistic_counter_get")
   integer(gaspi_statistic_counter_t), value :: counter
-  integer(gaspi_number_t), value :: argument
+  integer(gaspi_statistic_argument_t), value :: argument
   integer(gaspi_number_t) :: value_arg
   integer(gaspi_return_t) :: res
 end function gaspi_statistic_counter_get
