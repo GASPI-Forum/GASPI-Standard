@@ -1158,7 +1158,6 @@ gaspi_config_get ( gaspi_config_t *config )
 \begin{verbatim}
 function gaspi_config_get(config) &
 &   result( res ) bind(C, name="gaspi_config_get")
-  import
   type(gaspi_config_t) :: config
   integer(gaspi_return_t) :: res
 end function gaspi_config_get
@@ -1204,7 +1203,6 @@ gaspi_config_set ( gaspi_config_t const *config )
 \begin{verbatim}
 function gaspi_config_set(new_config) &
 &   result( res ) bind(C, name="gaspi_config_set")
-  import
   type(gaspi_config_t), value :: new_config
   integer(gaspi_return_t) :: res
 end function gaspi_config_set
@@ -1253,7 +1251,6 @@ gaspi_proc_init ( gaspi_timeout_t const timeout )
 \begin{verbatim}
 function gaspi_proc_init(timeout_ms) &
 &         result( res ) bind(C, name="gaspi_proc_init")
-  import
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_proc_init
@@ -1377,7 +1374,6 @@ gaspi_proc_num ( gaspi_rank_t *proc_num )
 \begin{verbatim}
 function gaspi_proc_num(proc_num) &
 &         result( res ) bind(C, name="gaspi_proc_num")
-  import
   integer(gaspi_rank_t) :: proc_num
   integer(gaspi_return_t) :: res
 end function gaspi_proc_num
@@ -1428,7 +1424,6 @@ gaspi_proc_rank ( gaspi_rank_t *rank )
 \begin{verbatim}
 function gaspi_proc_rank(rank) &
 &         result( res ) bind(C, name="gaspi_proc_rank")
-  import
   integer(gaspi_rank_t) :: rank
   integer(gaspi_return_t) :: res
 end function gaspi_proc_rank
@@ -1482,7 +1477,6 @@ gaspi_proc_term ( gaspi_timeout_t timeout )
 \begin{verbatim}
 function gaspi_proc_term(timeout_ms) &
 &         result( res ) bind(C, name="gaspi_proc_term")
-  import
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_proc_term
@@ -1543,7 +1537,6 @@ gaspi_proc_kill ( gaspi_rank_t rank
 \begin{verbatim}
 function gaspi_proc_kill(rank,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_proc_kill")
-  import
   integer(gaspi_rank_t), value :: rank
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
@@ -1634,7 +1627,6 @@ gaspi_connect ( gaspi_rank_t rank
 \begin{verbatim}
 function gaspi_connect(rank,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_connect")
-  import
   integer(gaspi_rank_t), value :: rank
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
@@ -1718,7 +1710,6 @@ gaspi_disconnect ( gaspi_rank_t rank
 \begin{verbatim}
 function gaspi_disconnect(rank,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_disconnect")
-  import
   integer(gaspi_rank_t), value :: rank
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
@@ -1820,7 +1811,6 @@ gaspi_state_vec_get ( gaspi_state_vector_t *state_vector )
 \begin{verbatim}
 function gaspi_state_vec_get(state_vector) &
 &         result( res ) bind(C, name="gaspi_state_vec_get")
-  import
   type(c_ptr), value :: state_vector
   integer(gaspi_return_t) :: res
 end function gaspi_state_vec_get
@@ -2044,7 +2034,6 @@ gaspi_group_create ( gaspi_group_t *group )
 \begin{verbatim}
 function gaspi_group_create(group) &
 &         result( res ) bind(C, name="gaspi_group_create")
-  import
   integer(gaspi_group_t) :: group
   integer(gaspi_return_t) :: res
 end function gaspi_group_create
@@ -2093,7 +2082,6 @@ gaspi_group_add ( gaspi_group_t *group
 \begin{verbatim}
 function gaspi_group_add(group,rank) &
 &         result( res ) bind(C, name="gaspi_group_add")
-  import
   integer(gaspi_group_t), value :: group
   integer(gaspi_rank_t), value :: rank
   integer(gaspi_return_t) :: res
@@ -2145,7 +2133,6 @@ gaspi_group_commit ( gaspi_group_t group
 \begin{verbatim}
 function gaspi_group_commit(group,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_group_commit")
-  import
   integer(gaspi_group_t), value :: group
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
@@ -2224,7 +2211,6 @@ gaspi_group_delete ( gaspi_group_t group )
 \begin{verbatim}
 function gaspi_group_delete(group) &
 &         result( res ) bind(C, name="gaspi_group_delete")
-  import
   integer(gaspi_group_t), value :: group
   integer(gaspi_return_t) :: res
 end function gaspi_group_delete
@@ -2280,7 +2266,6 @@ gaspi_group_num ( gaspi_number_t *group_num )
 \begin{verbatim}
 function gaspi_group_num(group_num) &
 &         result( res ) bind(C, name="gaspi_group_num")
-  import
   integer(gaspi_number_t) :: group_num
   integer(gaspi_return_t) :: res
 end function gaspi_group_num
@@ -2332,7 +2317,6 @@ gaspi_group_size ( gaspi_group_t group
 \begin{verbatim}
 function gaspi_group_size(group,group_size) &
 &         result( res ) bind(C, name="gaspi_group_size")
-  import
   integer(gaspi_group_t), value :: group
   integer(gaspi_number_t) :: group_size
   integer(gaspi_return_t) :: res
@@ -2383,7 +2367,6 @@ gaspi_group_ranks ( gaspi_group_t group
 \begin{verbatim}
 function gaspi_group_ranks(group,group_ranks) &
 &         result( res ) bind(C, name="gaspi_group_ranks")
-  import
   integer(gaspi_group_t), value :: group
   type(c_ptr), value :: group_ranks
   integer(gaspi_return_t) :: res
@@ -2504,7 +2487,6 @@ gaspi_segment_alloc ( gaspi_segment_id_t segment_id
 \begin{verbatim}
 function gaspi_segment_alloc(segment_id,size,alloc_policy) &
 &         result( res ) bind(C, name="gaspi_segment_alloc")
-  import
   integer(gaspi_segment_id_t), value :: segment_id
   integer(gaspi_size_t), value :: size
   integer(gaspi_alloc_t), value :: alloc_policy
@@ -2600,7 +2582,6 @@ gaspi_segment_register ( gaspi_segment_id_t segment_id
 \begin{verbatim}
 function gaspi_segment_register(segment_id,rank,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_segment_register")
-  import
   integer(gaspi_segment_id_t), value :: segment_id
   integer(gaspi_rank_t), value :: rank
   integer(gaspi_timeout_t), value :: timeout_ms
@@ -2709,7 +2690,6 @@ gaspi_segment_create ( gaspi_segment_id_t segment_id
 function gaspi_segment_create(segment_id,size,group, &
 &         timeout_ms,alloc_policy) &
 &         result( res ) bind(C, name="gaspi_segment_create")
-  import
   integer(gaspi_segment_id_t), value :: segment_id
   integer(gaspi_size_t), value :: size
   integer(gaspi_group_t), value :: group
@@ -2821,7 +2801,6 @@ gaspi_segment_delete ( gaspi_segment_id_t segment_id )
 \begin{verbatim}
 function gaspi_segment_delete(segment_id) &
 &         result( res ) bind(C, name="gaspi_segment_delete")
-  import
   integer(gaspi_segment_id_t), value :: segment_id
   integer(gaspi_return_t) :: res
 end function gaspi_segment_delete
@@ -2998,7 +2977,6 @@ gaspi_segment_num ( gaspi_number_t *segment_num )
 \begin{verbatim}
 function gaspi_segment_num(segment_num) &
 &         result( res ) bind(C, name="gaspi_segment_num")
-  import
   integer(gaspi_number_t) :: segment_num
   integer(gaspi_return_t) :: res
 end function gaspi_segment_num
@@ -3052,7 +3030,6 @@ gaspi_segment_list ( gaspi_number_t num
 \begin{verbatim}
 function gaspi_segment_list(num,segment_id_list) &
 &         result( res ) bind(C, name="gaspi_segment_list")
-  import
   integer(gaspi_number_t), value :: num
   type(c_ptr), value :: segment_id_list
   integer(gaspi_return_t) :: res
@@ -3108,7 +3085,6 @@ gaspi_segment_ptr ( gaspi_segment_id_t segment_id
 \begin{verbatim}
 function gaspi_segment_ptr(segment_id,ptr) &
 &         result( res ) bind(C, name="gaspi_segment_ptr")
-  import
   integer(gaspi_segment_id_t), value :: segment_id
   type(c_ptr) :: ptr
   integer(gaspi_return_t) :: res
@@ -3293,7 +3269,6 @@ gaspi_write ( gaspi_segment_id_t segment_id_local
 function gaspi_write(segment_id_local,offset_local,rank, &
 &         segment_id_remote,offset_remote,size,queue,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_write")
-  import
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_offset_t), value :: offset_local
   integer(gaspi_rank_t), value :: rank
@@ -3436,7 +3411,6 @@ gaspi_read ( gaspi_segment_id_t segment_id_local
 function gaspi_read(segment_id_local,offset_local,rank, &
 &         segment_id_remote,offset_remote,size,queue,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_read")
-  import
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_offset_t), value :: offset_local
   integer(gaspi_rank_t), value :: rank
@@ -3562,7 +3536,6 @@ gaspi_wait ( gaspi_queue_id_t queue
 \begin{verbatim}
 function gaspi_wait(queue,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_wait")
-  import
   integer(gaspi_queue_id_t), value :: queue
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
@@ -3725,7 +3698,6 @@ gaspi_notify ( gaspi_segment_id_t segment_id
 function gaspi_notify(segment_id_remote,rank,notification_id, &
 &         notification_value,queue,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_notify")
-  import
   integer(gaspi_segment_id_t), value :: segment_id_remote
   integer(gaspi_rank_t), value :: rank
   integer(gaspi_notification_id_t), value :: notification_id
@@ -3929,7 +3901,6 @@ gaspi_notify_waitsome ( gaspi_segment_id_t segment_id
 function gaspi_notify_waitsome(segment_id_local,notification_begin, &
 &         num,first_id,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_notify_waitsome")
-  import
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_notification_id_t), value :: notification_begin
   integer(gaspi_number_t), value :: num
@@ -4050,7 +4021,6 @@ gaspi_notify_reset ( gaspi_segment_id_t segment_id
 function gaspi_notify_reset(segment_id_local, &
 &         notification_id,old_notification_val) &
 &         result( res ) bind(C, name="gaspi_notify_reset")
-  import
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_notification_id_t), value :: notification_id
   integer(gaspi_notification_t) :: old_notification_val
@@ -4196,7 +4166,6 @@ function gaspi_write_notify(segment_id_local,offset_local,rank, &
 &         segment_id_remote,offset_remote, &
 &         size,notification_id,notification_value,queue,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_write_notify")
-  import
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_offset_t), value :: offset_local
   integer(gaspi_rank_t), value :: rank
@@ -4286,7 +4255,6 @@ gaspi_write_list ( gaspi_number_t num
 function gaspi_write_list(num,segment_id_local,offset_local,rank, &
 &         segment_id_remote,offset_remote,size,queue,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_write_list")
-  import
   integer(gaspi_number_t), value :: num
   type(c_ptr), value :: segment_id_local
   type(c_ptr), value  :: offset_local
@@ -4385,7 +4353,6 @@ function gaspi_write_list_notify(num,segment_id_local,offset_local, &
 &         rank,segment_id_remote,offset_remote,size,segment_id_notification, &
 &         notification_id,notification_value,queue,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_write_list_notify")
-  import
   integer(gaspi_number_t), value :: num
   type(c_ptr), value :: segment_id_local
   type(c_ptr), value :: offset_local
@@ -4475,7 +4442,6 @@ gaspi_read_list ( gaspi_number_t num
 function gaspi_read_list(num,segment_id_local,offset_local,rank, &
 &         segment_id_remote,offset_remote,size,queue,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_read_list")
-  import
   integer(gaspi_number_t), value :: num
   type(c_ptr), value :: segment_id_local
   type(c_ptr), value :: offset_local
@@ -4531,7 +4497,6 @@ gaspi_queue_size ( gaspi_queue_id_t queue
 \begin{verbatim}
 function gaspi_queue_size(queue,queue_size) &
 &         result( res ) bind(C, name="gaspi_queue_size")
-  import
   integer(gaspi_queue_id_t), value :: queue
   integer(gaspi_number_t) :: queue_size
   integer(gaspi_return_t) :: res
@@ -4585,7 +4550,6 @@ gaspi_queue_purge ( gaspi_queue_id_t queue
 \begin{verbatim}
 function gaspi_queue_purge(queue,timeout) &
 &         result( res ) bind(C, name="gaspi_queue_purge")
-  import
   integer(gaspi_queue_id_t), value :: queue
   integer(gaspi_timeout_t), value :: timeout
   integer(gaspi_return_t) :: res
@@ -4689,7 +4653,6 @@ gaspi_passive_send ( gaspi_segment_id_t segment_id_local
 function gaspi_passive_send(segment_id_local,offset_local, &
 &         rank,size,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_passive_send")
-  import
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_offset_t), value :: offset_local
   integer(gaspi_rank_t), value :: rank
@@ -4819,7 +4782,6 @@ gaspi_passive_receive ( gaspi_segment_id_t segment_id_local
 function gaspi_passive_receive(segment_id_local,offset_local, &
 &         rem_rank,size,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_passive_receive")
-  import
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_offset_t), value :: offset_local
   integer(gaspi_rank_t) :: rem_rank
@@ -4926,7 +4888,6 @@ gaspi_passive_queue_purge (gaspi_timeout_t timeout)
 \begin{verbatim}
 function gaspi_passive_queue_purge(timeout) &
 &         result( res ) bind(C, name="gaspi_passive_queue_purge")
-  import
   integer(gaspi_timeout_t), value :: timeout
   integer(gaspi_return_t) :: res
 end function gaspi_passive_queue_purge
@@ -5017,7 +4978,6 @@ gaspi_atomic_fetch_add ( gaspi_segment_id_t segment_id
 function gaspi_atomic_fetch_add(segment_id,offset,rank, &
 &         val_add,val_old,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_atomic_fetch_add")
-  import
   integer(gaspi_segment_id_t), value :: segment_id
   integer(gaspi_offset_t), value :: offset
   integer(gaspi_rank_t), value :: rank
@@ -5118,7 +5078,6 @@ gaspi_atomic_compare_swap ( gaspi_segment_id_t segment_id
 function gaspi_atomic_compare_swap(segment_id,offset,rank,&
 &         comparator,val_new,val_old,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_atomic_compare_swap")
-  import
   integer(gaspi_segment_id_t), value :: segment_id
   integer(gaspi_offset_t), value :: offset
   integer(gaspi_rank_t), value :: rank
@@ -5301,7 +5260,6 @@ gaspi_barrier ( gaspi_group_t group
 \begin{verbatim}
 function gaspi_barrier(group,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_barrier")
-  import
   integer(gaspi_group_t), value :: group
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
@@ -5423,7 +5381,6 @@ gaspi_allreduce ( gaspi_const_pointer_t buffer_send
 function gaspi_allreduce(buffer_send,buffer_receive,num, &
 &         operation,datatyp,group,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_allreduce")
-  import
   type(c_ptr), value :: buffer_send
   type(c_ptr), value :: buffer_receive
   integer(gaspi_number_t), value :: num
@@ -5586,7 +5543,6 @@ gaspi_allreduce_user ( gaspi_const_pointer_t buffer_send
 function gaspi_allreduce_user(buffer_send,buffer_receive, &
 &         num,element_size,reduce_operation,reduce_state,group,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_allreduce_user")
-  import
   type(c_ptr), value :: buffer_send
   type(c_ptr), value :: buffer_receive
   integer(gaspi_number_t), value :: num        
@@ -5779,7 +5735,6 @@ gaspi_group_max (gaspi_number_t *group_max)
 \begin{verbatim}
 function gaspi_group_max(group_max) &
 &         result( res ) bind(C, name="gaspi_group_max")
-  import
   integer(gaspi_number_t) :: group_max
   integer(gaspi_return_t) :: res
 end function gaspi_group_max
@@ -5815,7 +5770,6 @@ gaspi_segment_max (gaspi_number_t *segment_max)
 \begin{verbatim}
 function gaspi_segment_max(segment_max) &
 &         result( res ) bind(C, name="gaspi_segment_max")
-  import
   integer(gaspi_number_t) :: segment_max
   integer(gaspi_return_t) :: res
 end function gaspi_segment_max
@@ -5851,7 +5805,6 @@ gaspi_queue_num (gaspi_number_t *queue_num)
 \begin{verbatim}
 function gaspi_queue_num(queue_num) &
 &         result( res ) bind(C, name="gaspi_queue_num")
-  import
   integer(gaspi_number_t) :: queue_num
   integer(gaspi_return_t) :: res
 end function gaspi_queue_num
@@ -5885,7 +5838,6 @@ gaspi_queue_size_max ( gaspi_number_t* queue_size_max )
 \begin{verbatim}
 function gaspi_queue_size_max(queue_size_max) &
 &         result( res ) bind(C, name="gaspi_queue_size_max")
-  import
   integer(gaspi_number_t) :: queue_size_max
   integer(gaspi_return_t) :: res
 end function gaspi_queue_size_max
@@ -5919,7 +5871,6 @@ gaspi_transfer_size_max (gaspi_size_t *transfer_size_max)
 \begin{verbatim}
 function gaspi_transfer_size_max(transfer_size_max) &
 &         result( res ) bind(C, name="gaspi_transfer_size_max")
-  import
   integer(gaspi_size_t) :: transfer_size_max
   integer(gaspi_return_t) :: res
 end function gaspi_transfer_size_max
@@ -5953,7 +5904,6 @@ gaspi_notification_num (gaspi_number_t *notification_num)
 \begin{verbatim}
 function gaspi_notification_num(notification_num) &
 &         result( res ) bind(C, name="gaspi_notification_num")
-  import
   integer(gaspi_number_t) :: notification_num
   integer(gaspi_return_t) :: res
 end function gaspi_notification_num
@@ -6007,7 +5957,6 @@ gaspi_passive_transfer_size_max (gaspi_size_t *transfer_size_max)
 \begin{verbatim}
 function gaspi_passive_transfer_size_max(transfer_size_max) &
 &         result( res ) bind(C, name="gaspi_passive_transfer_size_max")
-  import
   integer(gaspi_size_t) :: transfer_size_max
   integer(gaspi_return_t) :: res
 end function gaspi_passive_transfer_size_max
@@ -6043,7 +5992,6 @@ gaspi_atomic_max (gaspi_atomic_value_t *max_value)
 \begin{verbatim}
 function gaspi_atomic_max(max_value) &
 &         result( res ) bind(C, name="gaspi_atomic_max")
-  import
   integer(gaspi_atomic_value_t) :: max_value
   integer(gaspi_return_t) :: res
 end function gaspi_atomic_max
@@ -6078,7 +6026,6 @@ gaspi_allreduce_buf_size (gaspi_size_t *buf_size)
 \begin{verbatim}
 function gaspi_allreduce_buf_size(buf_size) &
 &         result( res ) bind(C, name="gaspi_allreduce_buf_size")
-  import
   integer(gaspi_size_t) :: buf_size
   integer(gaspi_return_t) :: res
 end function gaspi_allreduce_buf_size
@@ -6111,7 +6058,6 @@ gaspi_allreduce_elem_max (gaspi_number_t *elem_max)
 \begin{verbatim}
 function gaspi_allreduce_elem_max(elem_max) &
 &         result( res ) bind(C, name="gaspi_allreduce_elem_max")
-  import
   integer(gaspi_number_t) :: elem_max
   integer(gaspi_return_t) :: res
 end function gaspi_allreduce_elem_max
@@ -6147,7 +6093,6 @@ gaspi_network_type (gaspi_network_t *network_type)
 \begin{verbatim}
 function gaspi_network_type(network_type) &
 &         result( res ) bind(C, name="gaspi_network_type")
-  import
   integer (gaspi_int) :: network_type
   integer(gaspi_return_t) :: res
 end function gaspi_network_type
@@ -6180,7 +6125,6 @@ gaspi_build_infrastructure (gaspi_number_t *build_infrastructure)
 \begin{verbatim}
 function gaspi_build_infrastructure(build_infrastructure) &
 &         result( res ) bind(C, name="gaspi_build_infrastructure")
-  import
   integer (gaspi_number_t) :: build_infrastructure
   integer(gaspi_return_t) :: res
 end function gaspi_build_infrastructure
@@ -6223,7 +6167,6 @@ gaspi_version (float *version)
 \begin{verbatim}
 function gaspi_version(version) &
 &         result( res ) bind(C, name="gaspi_version")
-  import
   real(gaspi_float) :: version
   integer(gaspi_return_t) :: res
 end function gaspi_version
@@ -6270,7 +6213,6 @@ gaspi_time_get (gaspi_time_t *wtime)
 \begin{verbatim}
 function gaspi_time_get(wtime) &
 &         result( res ) bind(C, name="gaspi_time_get")
-  import
   integer(gaspi_time_t) :: wtime
   integer(gaspi_return_t) :: res
 end function gaspi_time_get
@@ -6315,7 +6257,6 @@ gaspi_time_ticks (gaspi_time_t *resolution)
 \begin{verbatim}
 function gaspi_time_ticks(resolution) &
 &         result( res ) bind(C, name="gaspi_time_ticks")
-  import
   integer(gaspi_time_t) :: resolution
   integer(gaspi_return_t) :: res
 end function gaspi_time_ticks
@@ -6370,7 +6311,6 @@ gaspi_print_error( gaspi_return_t error_code
 \begin{verbatim}
 function gaspi_print_error(error_code,error_message) &
 &         result( res ) bind(C, name="gaspi_print_error")
-  import
   integer(gaspi_return_t), value :: error_code
   character(c_char), dimension(*) :: error_message
   integer(gaspi_return_t) :: res
@@ -6430,7 +6370,6 @@ gaspi_statistic_counter_max ( gaspi_number_t *counter_max )
 \begin{verbatim}
 function gaspi_statistic_counter_max(counter_max) &
 &         result( res ) bind(C, name="gaspi_statistic_counter_max")
-  import
   integer(gaspi_statistic_counter_t) :: counter_max
   integer(gaspi_return_t) :: res
 end function gaspi_statistic_counter_max
@@ -6503,7 +6442,6 @@ gaspi_statistic_counter_info ( gaspi_statistic_counter_t counter
 function gaspi_statistic_counter_info(counter,counter_argument, &
 &         counter_name,counter_description,verbosity_level) &
 &         result( res ) bind(C, name="gaspi_statistic_counter_info")
-  import
   integer(gaspi_statistic_counter_t), value :: counter
   integer(gaspi_int) :: counter_argument
   character(c_char), dimension(*) :: counter_name
@@ -6558,7 +6496,6 @@ gaspi_statistic_verbosity_level ( gaspi_number_t verbosity_level)
 \begin{verbatim}
 function gaspi_statistic_verbosity_level(verbosity_level_) &
 &         result( res ) bind(C, name="gaspi_statistic_verbosity_level")
-  import
   integer(gaspi_number_t), value :: verbosity_level_
   integer(gaspi_return_t) :: res
 end function gaspi_statistic_verbosity_level
@@ -6606,7 +6543,6 @@ gaspi_statistic_counter_get ( gaspi_statistic_counter_t counter
 \begin{verbatim}
 function gaspi_statistic_counter_get(counter,argument,value_arg) &
 &         result( res ) bind(C, name="gaspi_statistic_counter_get")
-  import
   integer(gaspi_statistic_counter_t), value :: counter
   integer(gaspi_number_t), value :: argument
   integer(gaspi_number_t) :: value_arg
@@ -6659,7 +6595,6 @@ gaspi_statistic_counter_reset (gaspi_statistic_counter_t counter)
 \begin{verbatim}
 function gaspi_statistic_counter_reset(counter) &
 &         result( res ) bind(C, name="gaspi_statistic_counter_reset")
-  import
   integer(gaspi_statistic_counter_t), value :: counter
   integer(gaspi_return_t) :: res
 end function gaspi_statistic_counter_reset
@@ -6753,7 +6688,6 @@ gaspi_pcontrol ( gaspi_pointer_t argument )
 \begin{verbatim}
 function gaspi_pcontrol(argument) &
 &         result( res ) bind(C, name="gaspi_pcontrol")
-  import
   type(c_ptr), value :: argument
   integer(gaspi_return_t) :: res
 end function gaspi_pcontrol
