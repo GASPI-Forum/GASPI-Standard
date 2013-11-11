@@ -409,7 +409,6 @@ types have to be include via
 
 \begin{FDefSign}
 \begin{verbatim}
-use, intrinisic :: ISO_C_BINDING
 use GASPI_C_BINDING
 \end{verbatim}
 \end{FDefSign}
@@ -1580,6 +1579,8 @@ The \listref{lst:hello_world} shows a \GASPI{} "Hello world"
 example. Please note that this example does not deal with failures.
 
 \insertlisting{../examples/hello_world.c}{\GASPI{} hello world example. \label{lst:hello_world}}
+Correspondingly the fortran version of  \GASPI{}  "Hello world" assumes the form  \listref{lst:hello_world_f90}
+\insertlisting{../examples/hello_world.f90}{\GASPI{} hello world example in f90. \label{lst:hello_world_f90}}
 
 The \listref{lst:signal} shows the registration of a user defined signal handler
 function which ensures the controlled shut down of an entire \GASPI{} application
@@ -3266,8 +3267,9 @@ gaspi_write ( gaspi_segment_id_t segment_id_local
 
 \begin{FDefSign}
 \begin{verbatim}
-function gaspi_write(segment_id_local,offset_local,rank, &
-&         segment_id_remote,offset_remote,size,queue,timeout_ms) &
+function gaspi_write(segment_id_local,offset_local,&
+&         rank, segment_id_remote,offset_remote,size,&
+&         queue,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_write")
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_offset_t), value :: offset_local
@@ -3408,8 +3410,9 @@ gaspi_read ( gaspi_segment_id_t segment_id_local
 
 \begin{FDefSign}
 \begin{verbatim}
-function gaspi_read(segment_id_local,offset_local,rank, &
-&         segment_id_remote,offset_remote,size,queue,timeout_ms) &
+function gaspi_read(segment_id_local,offset_local,&
+&         rank,segment_id_remote,offset_remote,size,&
+&         queue,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_read")
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_offset_t), value :: offset_local
@@ -3888,7 +3891,7 @@ GASPI_NOTIFY_WAITSOME ( segment_id
 \begin{verbatim}
 gaspi_return_t
 gaspi_notify_waitsome ( gaspi_segment_id_t segment_id
-                      , gaspi_notification_id_t notification_begin
+                      , gaspi_notification_id_t notific_begin
                       , gaspi_number_t notification_num
                       , gaspi_notification_id_t *first_id
                       , gaspi_timeout_t timeout )
@@ -3898,8 +3901,8 @@ gaspi_notify_waitsome ( gaspi_segment_id_t segment_id
 
 \begin{FDefSign}
 \begin{verbatim}
-function gaspi_notify_waitsome(segment_id_local,notification_begin, &
-&         num,first_id,timeout_ms) &
+function gaspi_notify_waitsome(segment_id_local,&
+&         notification_begin,num,first_id,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_notify_waitsome")
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_notification_id_t), value :: notification_begin
@@ -4162,9 +4165,10 @@ gaspi_write_notify ( gaspi_segment_id_t segment_id_local
 
 \begin{FDefSign}
 \begin{verbatim}
-function gaspi_write_notify(segment_id_local,offset_local,rank, &
-&         segment_id_remote,offset_remote, &
-&         size,notification_id,notification_value,queue,timeout_ms) &
+function gaspi_write_notify(segment_id_local,offset_local,&
+&         rank,segment_id_remote,offset_remote,size,&
+&         notification_id,notification_value,queue,&
+&         timeout_ms) &
 &         result( res ) bind(C, name="gaspi_write_notify")
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_offset_t), value :: offset_local
@@ -4252,8 +4256,9 @@ gaspi_write_list ( gaspi_number_t num
 
 \begin{FDefSign}
 \begin{verbatim}
-function gaspi_write_list(num,segment_id_local,offset_local,rank, &
-&         segment_id_remote,offset_remote,size,queue,timeout_ms) &
+function gaspi_write_list(num,segment_id_local,offset_local,&
+&         rank,segment_id_remote,offset_remote,size,queue,&
+&         timeout_ms) &
 &         result( res ) bind(C, name="gaspi_write_list")
   integer(gaspi_number_t), value :: num
   type(c_ptr), value :: segment_id_local
@@ -4349,8 +4354,9 @@ gaspi_write_list_notify
 
 \begin{FDefSign}
 \begin{verbatim}
-function gaspi_write_list_notify(num,segment_id_local,offset_local, &
-&         rank,segment_id_remote,offset_remote,size,segment_id_notification, &
+function gaspi_write_list_notify(num,segment_id_local,&
+&         offset_local,rank,segment_id_remote,&
+&         offset_remote,size,segment_id_notification, &
 &         notification_id,notification_value,queue,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_write_list_notify")
   integer(gaspi_number_t), value :: num
@@ -4439,8 +4445,9 @@ gaspi_read_list ( gaspi_number_t num
 
 \begin{FDefSign}
 \begin{verbatim}
-function gaspi_read_list(num,segment_id_local,offset_local,rank, &
-&         segment_id_remote,offset_remote,size,queue,timeout_ms) &
+function gaspi_read_list(num,segment_id_local,offset_local,&
+&         rank,segment_id_remote,offset_remote,size,queue,&
+&         timeout_ms) &
 &         result( res ) bind(C, name="gaspi_read_list")
   integer(gaspi_number_t), value :: num
   type(c_ptr), value :: segment_id_local
@@ -5541,7 +5548,8 @@ gaspi_allreduce_user ( gaspi_const_pointer_t buffer_send
 \begin{FDefSign}
 \begin{verbatim}
 function gaspi_allreduce_user(buffer_send,buffer_receive, &
-&         num,element_size,reduce_operation,reduce_state,group,timeout_ms) &
+&         num,element_size,reduce_operation,reduce_state,&
+&         group,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_allreduce_user")
   type(c_ptr), value :: buffer_send
   type(c_ptr), value :: buffer_receive
@@ -5621,23 +5629,20 @@ function my_reduce_operation(op_one,op_two,op_res, &
   implicit none
   integer(gaspi_number_t), intent(in), value :: num        
 !
-! the fortran user defined callback function requires an explicit
-! type. in this case integer(c_int)
+! the fortran user defined callback function requires an 
+! explicit type from the iso_c_binding module. in this 
+! example integer(c_int) (op_one,op_two,op_res,op_state)
 !
-  integer(c_int), intent(out) :: op_one(num)
-  integer(c_int), intent(out) :: op_two(num)
+  integer(c_int), intent(in)  :: op_one(num)
+  integer(c_int), intent(in)  :: op_two(num)
   integer(c_int), intent(out) :: op_res(num)
   integer(c_int), intent(out) :: op_state(num)
   integer(gaspi_size_t), value :: element_size
   integer(gaspi_timeout_t), value :: timeout
   integer(gaspi_return_t) :: res
-  integer i
 !
-! replace with your user defined operation       
-!
-! do i = 1, num
-!    op_res(i) = max(op_one(i),op_two(i))
-! enddo
+! your user defined operation       
+! ...
   res = GASPI_SUCCESS
 end function my_reduce_operation
 \end{verbatim}
@@ -5647,7 +5652,7 @@ end function my_reduce_operation
 \FStdRetDesc
 
 \end{FDef}
-We note that 
+
 
 A pointer to the first operand and a pointer to the second operand
 are passed. The result is stored in the memory represented by the
@@ -5683,6 +5688,12 @@ The allreduce state type
 is a pointer to a state which may be passed to the user defined reduction
 operation. A state may contain additional information  beside the actual
 data to be reduced needed to perform the reduction operation.
+
+
+\subsubsection{Example}
+
+A fortran version of the user defined allreduce hence might assume the form  \listref{lst:allreduce_user_f90}
+\insertlisting{../examples/allreduce_user.f90}{\GASPI{} User defined allreduce, fortran example. \label{lst:allreduce_user_f90}}
 
 
 %\subsubsection{Example}
@@ -5870,7 +5881,8 @@ gaspi_transfer_size_max (gaspi_size_t *transfer_size_max)
 \begin{FDefSign}
 \begin{verbatim}
 function gaspi_transfer_size_max(transfer_size_max) &
-&         result( res ) bind(C, name="gaspi_transfer_size_max")
+&         result( res ) &
+&         bind(C, name="gaspi_transfer_size_max")
   integer(gaspi_size_t) :: transfer_size_max
   integer(gaspi_return_t) :: res
 end function gaspi_transfer_size_max
@@ -5956,7 +5968,8 @@ gaspi_passive_transfer_size_max (gaspi_size_t *transfer_size_max)
 \begin{FDefSign}
 \begin{verbatim}
 function gaspi_passive_transfer_size_max(transfer_size_max) &
-&         result( res ) bind(C, name="gaspi_passive_transfer_size_max")
+&         result( res ) &
+&         bind(C, name="gaspi_passive_transfer_size_max")
   integer(gaspi_size_t) :: transfer_size_max
   integer(gaspi_return_t) :: res
 end function gaspi_passive_transfer_size_max
@@ -6124,7 +6137,8 @@ gaspi_build_infrastructure (gaspi_number_t *build_infrastructure)
 \begin{FDefSign}
 \begin{verbatim}
 function gaspi_build_infrastructure(build_infrastructure) &
-&         result( res ) bind(C, name="gaspi_build_infrastructure")
+&         result( res ) &
+&         bind(C, name="gaspi_build_infrastructure")
   integer (gaspi_number_t) :: build_infrastructure
   integer(gaspi_return_t) :: res
 end function gaspi_build_infrastructure
@@ -6369,7 +6383,8 @@ gaspi_statistic_counter_max ( gaspi_number_t *counter_max )
 \begin{FDefSign}
 \begin{verbatim}
 function gaspi_statistic_counter_max(counter_max) &
-&         result( res ) bind(C, name="gaspi_statistic_counter_max")
+&         result( res ) &
+&         bind(C, name="gaspi_statistic_counter_max")
   integer(gaspi_statistic_counter_t) :: counter_max
   integer(gaspi_return_t) :: res
 end function gaspi_statistic_counter_max
@@ -6441,7 +6456,8 @@ gaspi_statistic_counter_info ( gaspi_statistic_counter_t counter
 \begin{verbatim}
 function gaspi_statistic_counter_info(counter,counter_argument, &
 &         counter_name,counter_description,verbosity_level) &
-&         result( res ) bind(C, name="gaspi_statistic_counter_info")
+&         result( res ) &
+&         bind(C, name="gaspi_statistic_counter_info")
   integer(gaspi_statistic_counter_t), value :: counter
   integer(gaspi_statistic_argument_t) :: counter_argument
   character(c_char), dimension(*) :: counter_name
@@ -6495,7 +6511,8 @@ gaspi_statistic_verbosity_level ( gaspi_number_t verbosity_level)
 \begin{FDefSign}
 \begin{verbatim}
 function gaspi_statistic_verbosity_level(verbosity_level_) &
-&         result( res ) bind(C, name="gaspi_statistic_verbosity_level")
+&         result( res ) &
+&         bind(C, name="gaspi_statistic_verbosity_level")
   integer(gaspi_number_t), value :: verbosity_level_
   integer(gaspi_return_t) :: res
 end function gaspi_statistic_verbosity_level
@@ -6541,8 +6558,10 @@ gaspi_statistic_counter_get ( gaspi_statistic_counter_t counter
 
 \begin{FDefSign}
 \begin{verbatim}
-function gaspi_statistic_counter_get(counter,argument,value_arg) &
-&         result( res ) bind(C, name="gaspi_statistic_counter_get")
+function gaspi_statistic_counter_get(counter,argument,&
+&         value_arg) &
+&         result( res ) &
+&         bind(C, name="gaspi_statistic_counter_get")
   integer(gaspi_statistic_counter_t), value :: counter
   integer(gaspi_statistic_argument_t), value :: argument
   integer(gaspi_number_t) :: value_arg
@@ -6594,7 +6613,8 @@ gaspi_statistic_counter_reset (gaspi_statistic_counter_t counter)
 \begin{FDefSign}
 \begin{verbatim}
 function gaspi_statistic_counter_reset(counter) &
-&         result( res ) bind(C, name="gaspi_statistic_counter_reset")
+&         result( res ) &
+&         bind(C, name="gaspi_statistic_counter_reset")
   integer(gaspi_statistic_counter_t), value :: counter
   integer(gaspi_return_t) :: res
 end function gaspi_statistic_counter_reset
