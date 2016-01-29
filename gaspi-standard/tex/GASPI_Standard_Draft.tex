@@ -863,6 +863,20 @@ optimizations.
 \end{TDef}
 
 \begin{TDef}
+\begin{FDefSign}
+  \gaspitype{memory\_description}
+\end{FDefSign}
+\TDefDesc{The \GASPI{} memory description type used to describe
+  properties of user provided memory.}
+\end{TDef}
+\begin{implementoradvice}
+  The intention of \gaspitype{memory\_description} is to describe
+  properties of memory that is provided by the application,
+  e.g. {\tt MEMORY\_GPU} or {\tt MEMORY\_HOST} might be relevant to an
+  implementation.
+\end{implementoradvice}
+
+\begin{TDef}
 \TDefDef{\gaspitype{alloc}}
 \TDefDesc{The \GASPI{} allocation policy type.}
 \end{TDef}
@@ -2769,6 +2783,221 @@ whether the involved remote \GASPI{} processes are still healthy.
 In case of non-uniform memory access architectures, the memory should be allocated
 close to the calling process. The allocation policy of the calling process should
 not be modified.
+\end{implementoradvice}
+
+\subsubsection{\gaspifunction{segment\_bind}}
+The \gaspisemantic{synchronous} \gaspisemantic{local}
+\gaspisemantic{blocking} procedure \gaspifunction{segment\_bind} binds
+a segment id to user provided memory.
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+GASPI_SEGMENT_BIND ( segment_id
+                   , pointer
+                   , size
+                   , memory_description
+                   )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{in}{segment\_id}{Unique segment ID to bind.}
+\parameterlistitem{in}{pointer}{The begin of the memory provided by
+  the user.}
+\parameterlistitem{in}{size}{The size of the memory provided by
+  \parameter{pointer} in bytes.}
+\parameterlistitem{in}{memory\_description}{The description of the
+  memory provided.}
+\parameterlistend
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t gaspi_segment_bind
+  ( gaspi_segment_id_t const segment_id
+  , gaspi_pointer_t const pointer
+  , gaspi_size_t const size
+  , gaspi_memory_description_t const memory_description
+  )
+\end{verbatim}
+\end{FDefSign}
+\end{FDef}
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+function gaspi_segment_bind ( segment_id                  &
+&                           , pointer                     &
+&                           , size                        &
+&                           , memory_description          &
+&                           )                             &
+&        result (res) bind (C, name="gaspi_segment_bind")
+  integer (gaspi_segment_id_t), value :: segment_id
+  type (c_ptr), value :: pointer
+  integer (gaspi_size_t), value :: size
+  integer (gaspi_memory_description_t), value :: memory_description
+  integer (gaspi_return_t) :: res
+end function gaspi_segment_bind
+\end{verbatim}
+\end{FDefSign}
+\end{FDef}
+\executionphasework
+\FStdRetDescNOTimeout
+\end{FDef}
+
+\gaspifunction{segment\_bind} binds the segment identified by the
+identifier \parameter{segment\_id} to the user provided memory of size
+\parameter{size} located at the address \parameter{pointer}. To
+provide less than \parameter{size} bytes results in undefined
+behavior. The identifier \parameter{segment\_id} must be unique in the
+local \GASPI{} process. Bind to a segment with an existing segment ID
+(regardless of bind or allocated) results in undefined behavior. Note
+that the total number of segments is restricted by the underlying
+hardware capabilities. The maximum number of supported segments can
+be retrieved by invoking \gaspifunction{segment\_max}.
+
+To bind successfully the user provided memory must satisfy
+implementation specific constraints, e.\,g.\ alignment constraints.
+
+After successful procedure completion, i.\,e.\ return value
+\GASPISUCC{}, the segment can be accessed locally and has the same
+capabilities like a segment that was allocated by a successful call to
+\gaspifunction{segment\_alloc}.
+
+If the procedure returns with \GASPIGERR{}, the bind has failed and
+the segment can not be used.
+
+\begin{useradvice}
+  A \GASPI{} implementation may allocate additional memory for
+  internal management. Depending on the implementation it might be
+  required that the management memory must reside on the same device
+  as the provided memory.
+\end{useradvice}
+\specend{addition}
+
+\specbegin{addition}
+\subsubsection{\gaspifunction{segment\_use}}
+The \gaspisemantic{synchronous} \gaspisemantic{collective}
+\gaspisemantic{time-based} \gaspisemantic{blocking} procedure
+\gaspifunction{segment\_use} is semantically equivalent to a
+collective aggregation of \gaspifunction{segment\_bind},
+\gaspifunction{segment\_register} and \gaspifunction{barrier}
+involving all members of a given group. If the communication
+infrastructure was not established for all group members beforehand,
+\gaspifunction{segment\_use} will accomplish this as well.
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+GASPI_SEGMENT_USE ( segment_id
+                  , pointer
+                  , size
+                  , group
+                  , timeout
+                  , memory_description
+                  )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{in}{segment\_id}{Unique segment ID to bind.}
+\parameterlistitem{in}{pointer}{The begin of the memory provided by
+  the user.}
+\parameterlistitem{in}{size}{The size of the memory provided by
+  \parameter{pointer} in bytes.}
+\parameterlistitem{in}{group}{The group which should create the segment.}
+\parameterlistitem{in}{timeout}{The timeout for the operation.}
+\parameterlistitem{in}{memory\_description}{The description of the
+  memory provided.}
+\parameterlistend
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t gaspi_segment_use
+  ( gaspi_segment_id_t const segment_id
+  , gaspi_pointer_t const pointer
+  , gaspi_size_t const size
+  , gaspi_group_t const group
+  , gaspi_timeout_t const timeout
+  , gaspi_memory_description_t const memory_description
+  )
+\end{verbatim}
+\end{FDefSign}
+\end{FDef}
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+function gaspi_segment_use ( segment_id                  &
+&                          , pointer                     &
+&                          , size                        &
+&                          , group                       &
+&                          , timeout                     &
+&                          , memory_description          &
+&                          )                             &
+&        result (res) bind (C, name="gaspi_segment_use")
+  integer (gaspi_segment_id_t), value :: segment_id
+  type (c_ptr), value :: pointer
+  integer (gaspi_size_t), value :: size
+  integer (gaspi_group_t), value :: group
+  integer (gaspi_timeout_t), value :: timeout
+  integer (gaspi_memory_description_t), value :: memory_description
+  integer (gaspi_return_t) :: res
+end function gaspi_segment_bind
+\end{verbatim}
+\end{FDefSign}
+\end{FDef}
+\executionphasework
+\FStdRetDesc
+\end{FDef}
+
+\gaspifunction{segment\_use} binds the segment identified by the
+identifier \parameter{segment\_id} to the user provided memory of size
+\parameter{size} located at the address \parameter{pointer}. To
+provide a \parameter{size} larger than the actual buffer size pointed
+by \parameter{pointer} results in undefined
+behavior. \gaspifunction{segment\_use} makes the segment referenced by
+the
+\parameter{segment\_id} identifier visible and accessible to all of the
+\GASPI{} processes forming the group \parameter{group}.  The
+identifier \parameter{segment\_id} must be unique in the local
+\GASPI{} process. Attempting to use an existing segment ID (regardless
+of bind or allocated) results in undefined behavior. Note that the
+total number of segments is restricted by the underlying hardware
+capabilities. The maximum number of supported segments can be
+retrieved by invoking \gaspifunction{segment\_max}.
+
+To use successfully the user provided memory must satisfy
+implementation specific constraints, e.\,g.\ alignment constraints.
+
+After successful procedure completion, i.\,e.\ return value
+\GASPISUCC{}, the segment can be accessed globally and has the same
+capabilities like a segment that was created by a successful call to
+\gaspifunction{segment\_create}.
+
+In case of return value \GASPITIME{} the operation could not be
+completed in the given timeout. The segment cannot be used locally
+neither remotely. A subsequent call of \gaspifunction{segment\_use}
+has to be invoked in order to complete the request.
+
+If the procedure returns with \GASPIGERR{}, the procedure has failed
+and the segment can not be used.
+
+\begin{implementoradvice}
+\gaspifunction{segment\_use} can be formulated in pseudo code as
+
+\begin{verbatim}
+GASPI_SEGMENT_USE (id, pointer, size, group, timeout, memory)
+{
+  GASPI_SEGMENT_BIND (id, pointer, size, memory);
+
+  foreach (rank : group)
+  {
+    timeout -= GASPI_CONNECT (id, rank, timeout);
+    timeout -= GASPI_SEGMENT_REGISTER (id, rank, timeout);
+  }
+
+  GASPI_BARRIER (group, timeout);
+}
+\end{verbatim}
+where the call gets executed on all members of \parameter{group}.
+
 \end{implementoradvice}
 
 \subsection{Segment deletion}
