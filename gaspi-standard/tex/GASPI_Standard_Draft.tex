@@ -4473,6 +4473,136 @@ end function gaspi_read_list
 
 \subsection{Communication utilities}
 
+\subsubsection{\gaspifunction{queue\_create}}
+The \gaspifunction{queue\_create} procedure is a
+\gaspisemantic{synchronous} \gaspisemantic{non-local}
+\gaspisemantic{time-based blocking} procedure which creates a new
+queue for communication.
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+GASPI_QUEUE_CREATE ( queue
+                   , timeout
+                   )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{out}{queue}{the created queue}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+\end{FDef}
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_queue_create ( gaspi_queue_id_t queue
+                   , gaspi_timeout_t timeout
+                   )
+\end{verbatim}
+\end{FDefSign}
+\end{FDef}
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+function gaspi_queue_create (queue, timeout) &
+&        result(res) bind (C, name="gaspi_queue_create" )
+  integer(gaspi_queue_id_t) :: queue
+  integer(gaspi_timeout_t), value :: timeout
+  integer(gaspi_return_t) :: res
+end function gaspi_queue_create
+\end{verbatim}
+\end{FDefSign}
+\executionphasework
+\FStdRetDesc
+\end{FDef}
+
+After successful procedure completion, \ie return value \GASPISUCC{},
+the communication
+\parameter{queue} is created and available for communication requests
+on it.
+
+If the procedure returns with \GASPITIME{}, the creation request could
+not be completed during the given timeout. A subsequent call to
+\gaspifunction{queue\_create} has to be performed in order to complete
+the queue creation request.
+
+If the procedure returns with \GASPIGERR{}, the queue creation
+failed. Attempts to post requests in the queue result in undefined
+behaviour.
+
+\begin{useradvice}
+  The lifetime of a created queue should be kept as long as possible,
+  avoiding repeated cycles of creation/deletion of a queue.
+\end{useradvice}
+
+\begin{implementoradvice}
+  The maximum number of allowed queues may be limited in order to keep
+  resources requirements low.
+\end{implementoradvice}
+
+\begin{implementoradvice}
+  The communication infrastructure must be respected \ie previously
+  established connections (\eg invoking \gaspifunction{connect}) must
+  be able to use the newly created queue.
+\end{implementoradvice}
+
+\subsubsection{\gaspifunction{queue\_delete}}
+The \gaspifunction{queue\_delete} procedure is a
+\gaspisemantic{synchronous} \gaspisemantic{non-local}
+\gaspisemantic{time-based blocking} procedure which deletes a given
+queue.
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+GASPI_QUEUE_DELETE ( queue )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{in}{queue}{the queue to delete}
+\parameterlistend
+\end{FDef}
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_queue_delete ( gaspi_queue_id_t queue )
+\end{verbatim}
+\end{FDefSign}
+\end{FDef}
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+function gaspi_queue_delete ( queue ) &
+&        result(res) bind (C, name="gaspi_queue_delete" )
+  integer(gaspi_queue_id_t), value :: queue
+  integer(gaspi_return_t) :: res
+end function gaspi_queue_delete
+\end{verbatim}
+\end{FDefSign}
+\executionphasework
+\FStdRetDescNOTimeout
+\end{FDef}
+
+After successful procedure completion, \ie return value \GASPISUCC{},
+the communication
+\parameter{queue} is deleted and no longer available for
+communication. It is an application error to use the queue after
+\gaspifunction{queue\_delete} has been invoked.
+
+If the procedure returns with \GASPIGERR{}, the delete request failed.
+
+\begin{useradvice}
+  The procedure \gaspifunction{wait} should be invoked before deleting
+  a queue in order to ensure that all posted requests (if any) are
+  completed.
+\end{useradvice}
+
 \subsubsection{\gaspifunction{queue\_size}}
 
 The \gaspifunction{queue\_size} procedure
@@ -5855,6 +5985,42 @@ end function gaspi_queue_size_max
 \end{verbatim}
 \end{FDefSign}
 
+\executionphasework
+\FStdRetDescNOTimeout
+\end{FDef}
+
+\subsubsection{\gaspifunction{queue\_max}}
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+GASPI_QUEUE_MAX ( queue_max )
+\end{verbatim}
+\end{FDefSign}
+\parameterlistbegin
+\parameterlistitem{out}{queue\_max}{the maximum number of allowed queues}
+\parameterlistend
+\end{FDef}
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_queue_max ( gaspi_number_t queue_max )
+\end{verbatim}
+\end{FDefSign}
+\end{FDef}
+
+\begin{FDef}
+\begin{FDefSign}
+\begin{verbatim}
+function gaspi_queue_max ( queue_max ) &
+&        result(res) bind (C, name="gaspi_queue_max" )
+  integer(gaspi_number_t), value :: queue_max
+  integer(gaspi_return_t) :: res
+end function gaspi_queue_max
+\end{verbatim}
+\end{FDefSign}
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
