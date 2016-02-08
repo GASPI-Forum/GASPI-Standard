@@ -1,0 +1,139 @@
+\documentclass[plainarticle,german,final,hyperref,utf8]{article}
+\usepackage{setspace}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{color}
+
+\author{Olaf Krzikalla}
+\title{Implementing a statistical counter with pGaspi - a Tutorial}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\definecolor{colorkeyword}{rgb}{0.1,0.1,0.6}
+\definecolor{colorassert}{rgb}{0.5,0.5,0.5}
+
+
+\lstset{
+basicstyle=\ttfamily
+, frame=single
+, numbers=left
+, language=C
+, numberstyle=\tiny
+, stepnumber=1
+, showstringspaces=true
+, keepspaces=true
+, columns=fullflexible
+, classoffset=0
+, morekeywords={gaspi_rank_t,gaspi_barrier,gaspi_timeout_t,gaspi_return_t,gaspi_config_t,gaspi_proc_init,gaspi_proc_term,gaspi_proc_kill
+  ,gaspi_group_commit,gaspi_group_create,gaspi_group_add,gaspi_group_size,gaspi_group_ranks
+  ,gaspi_segment_id_t,gaspi_segment_alloc,gaspi_segment_register,gaspi_segment_create
+  ,gaspi_segment_ptr,gaspi_queue_id_t,gaspi_offset_t,gaspi_socket_id_t,gaspi_size_t,gaspi_pointer_t
+  ,gaspi_write,gaspi_read,gaspi_wait
+  ,gaspi_notify,gaspi_notify_reset,gaspi_notify_wait ,gaspi_atomic_value_t
+  ,gaspi_proc_num,gaspi_proc_rank
+  ,gaspi_number_t,gaspi_notification_t,gaspi_notification_id_t, gaspi_time_t
+  ,gaspi_atomic_compare_swap,gaspi_atomic_set
+  ,GASPI_SUCCESS,GASPI_TIMEOUT,GASPI_ERROR,GASPI_GROUP_ALL
+  ,GASPI_BLOCK,GASPI_TEST,GASPI_CONFIGURATION_DEFAULT,GASPI_NORANK,GASPI_NOSTRING,GASPI_ALLOC_DEFAULT,
+  ,gaspi_notify_waitsome,gaspi_notify_size,gaspi_error_message
+  ,gaspi_queue_size_max,gaspi_queue_size,gaspi_time_get
+  ,gaspi_network_t, gaspi_number_t
+  }
+, commentstyle=\color{dkgreen}
+, keywordstyle=\color{colorkeyword}
+, classoffset=1
+, morekeywords={ASSERT}
+, keywordstyle=\color{colorassert}
+, classoffset=0
+}
+
+\newcommand{\insertlisting}[2]{\lstset{
+basicstyle=\ttfamily
+, caption={#2}
+, frame=single
+, numbers=left
+, numberstyle=\tiny
+, stepnumber=1
+, showstringspaces=true
+, keepspaces=true
+, columns=fullflexible
+, classoffset=0
+, morekeywords={gaspi_rank_t,gaspi_barrier,gaspi_timeout_t,gaspi_return_t,gaspi_config_t,gaspi_proc_init,gaspi_proc_term,gaspi_proc_kill
+  ,gaspi_group_commit,gaspi_group_create,gaspi_group_add,gaspi_group_size,gaspi_group_ranks
+  ,gaspi_segment_id_t,gaspi_segment_alloc,gaspi_segment_register,gaspi_segment_create
+  ,gaspi_segment_ptr,gaspi_queue_id_t,gaspi_offset_t,gaspi_socket_id_t,gaspi_size_t,gaspi_pointer_t
+  ,gaspi_write,gaspi_read,gaspi_wait
+  ,gaspi_notify,gaspi_notify_reset,gaspi_notify_wait ,gaspi_atomic_value_t
+  ,gaspi_proc_num,gaspi_proc_rank
+  ,gaspi_number_t,gaspi_notification_t,gaspi_notification_id_t, gaspi_time_t
+  ,gaspi_atomic_compare_swap,gaspi_atomic_set
+  ,GASPI_SUCCESS,GASPI_TIMEOUT,GASPI_ERROR,GASPI_GROUP_ALL
+  ,GASPI_BLOCK,GASPI_TEST,GASPI_CONFIGURATION_DEFAULT,GASPI_NORANK,GASPI_NOSTRING
+  ,gaspi_notify_waitsome,gaspi_notify_size,gaspi_error_message
+  ,gaspi_queue_size_max,gaspi_queue_size,gaspi_time_get
+  ,gaspi_network_t, gaspi_number_t
+  }
+, commentstyle=\color{dkgreen}
+, keywordstyle=\color{colorkeyword}
+, classoffset=1
+, morekeywords={ASSERT}
+, keywordstyle=\color{colorassert}
+, classoffset=0
+}\lstinputlisting{#1}}
+
+
+\newcommand{\GASPI}{{\sc Gaspi}}
+\newcommand{\PGASPI}{{\tt pgaspi}}
+
+\begin{document}
+
+\section*{Implementing a statistical counter in \GASPI{}}
+
+This tutorial shows you how statistical counters can be incorporated in a \GASPI{} application using the \PGASPI{} interface.
+It is based on the file {\tt tutorial\_profiler.c}, which comes along with this document. 
+There are a lot of comments in {\tt tutorial\_profiler.c} explaining the actual implementation of the profiler step by step.   
+  
+The \PGASPI{} interface enables you to implement hooks for gaspi functions by exploiting the dynamic linking capabilites of the operating system.
+Thus in a first step you have to ensure that your \GASPI{} application is dynamically linked against your \GASPI{} library.
+If you use GPI-2, you can build a shared object of the non-debug version by using the following all-clause in GPI-2/src/Makefile:   
+
+\begin{lstlisting} 
+all:
+  gcc -O2 -fPIC -I$(OFED_PATH)/include -D_GNU_SOURCE -c GPI2.c
+  gcc -shared -Wl,-soname,libGPI2.so GPI2.o -o libGPI2.so
+  cp libGPI2.so ../lib64
+  cp GASPI.h ../include
+\end{lstlisting} 
+
+You can check whether your \GASPI{} application uses a shared library using {\tt ldd}.
+The actual profiler wrapper is also build as a shared library.
+
+\begin{lstlisting} 
+gcc tutorial_profiler.c -fPIC -shared -Idir/to/GASPI/include 
+    -o tutorial_profiler.so  
+\end{lstlisting} 
+
+Before you can run and profile your application, you have to tell your operating system, that {\tt tutorial\_profiler.so} wraps your native \GASPI{} library. 
+In Linux you do this by setting the {\tt LD\_PRELOAD} environment variable.
+  
+\begin{lstlisting} 
+export LD_PRELOAD=/dir/to/profiler/tutorial_profiler.so
+\end{lstlisting} 
+
+You have to ensure that this environment variable is visible on every node. 
+One simple way to ensure this is to add this line to your {\tt .bashrc}.
+
+Finally you can run your \GASPI{} application. 
+If you use the profiler code of this tutorial, it should tell you the total numbers of bytes read and written:
+
+\begin{lstlisting} 
+Number of bytes written by this rank (rank 0): 0
+Number of bytes read by this rank (rank 0): 13088
+\end{lstlisting} 
+
+%\pagebreak
+%\appendix
+%\insertlisting{tutorial_profiler.c}{}
+
+
+\end{document}
