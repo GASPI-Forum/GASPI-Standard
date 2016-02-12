@@ -2987,7 +2987,7 @@ GASPI_SEGMENT_USE (id, pointer, size, group, timeout, memory)
 
   foreach (rank : group)
   {
-    timeout -= GASPI_CONNECT (id, rank, timeout);
+    timeout -= GASPI_CONNECT (rank, timeout);
     timeout -= GASPI_SEGMENT_REGISTER (id, rank, timeout);
   }
 
