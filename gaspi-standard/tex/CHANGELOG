@@ -1,0 +1,16 @@
+CHANGELOG of GASPI Standard
+created 2016.08.30 by Vanessa End
+	
+######
+Changes from version 16.1 to 16.2
+######
+
+In GASPI specification v16.1 and lower, the semantic of
+gaspi_write_notify was equivalent to gaspi_write followed by
+gaspi_notify. Equivalently, the semantic of
+gaspi_write_list_notify was equivalent to gaspi_write_list followed by
+gaspi_notify. Due to the change in the semantic in this version,
+applications relying on the old semantic of gaspi_write_notify and
+gaspi_write_list_notify will have to replace their fencing
+gaspi_write_notify and gaspi_write_list_notify call with a gaspi_write,
+respectively a gaspi_write_list followed by a gaspi_notify.
