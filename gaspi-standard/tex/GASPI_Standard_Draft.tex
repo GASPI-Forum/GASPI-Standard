@@ -388,15 +388,16 @@ followed by the operation name.
 
 \subsection{Procedure specification}
 
-GASPI has adopted the procedure specifiaction of MPI. Similar to the
+GASPI has adopted the procedure specification of MPI. Similar to the
 MPI standard, procedures in GASPI hence are first specified using a
 language independent notation.  Immediately below this, the arguments
-of the procedure are given and marked as IN or OUT. The meanings of
+of the procedure are given and marked as \textit{in} or
+\textit{out}. The meanings of 
 these are:
 
 \begin{itemize}
-\item the call uses but does not update an argument marked IN. For the C procedures these arguments are const-correct.
-\item the call may update an argument marked OUT.
+\item the call uses but does not update an argument marked \textit{in}. For the C procedures these arguments are const-correct.
+\item the call may update an argument marked \textit{out}.
 \end{itemize}
 
 Similar to MPI, in GASPI the passing of aliased procedure parameters
@@ -487,7 +488,7 @@ The following semantic terms are used throughout the document:
   maximum time (in milliseconds) a called procedure will wait for
   outstanding communication from other processes. The special value
   \numprint{0} (defined as \GASPITEST{}) indicates that the procedure
-  will complete all local operations. The procedure subsequently
+  will complete a portion of its work, if possible. The procedure subsequently
   returns the current status without waiting for data from other
   processes (non-blocking). On the other hand the special value
   \numprint{-1} (defined as \GASPIBLOCK{}) instructs the procedure to
@@ -683,7 +684,7 @@ for an indefinitely amount of time in case of an error.
 
 \GASPITEST{} is another predefined timeout value which
 blocks the procedure for the shortest time possible, \ie the time
-in which the procedure call processes an atomic portion of its work.
+in which the procedure call processes a portion of its work, if possible.
 
 Examples:
 \begin{lstlisting}[numbers=none,caption=Blocks until the communication queue is empty and may block indefinitely in case of a failure.]
@@ -730,8 +731,8 @@ allreduce operation and a barrier can run at the same time.
 \GASPI{} supports the following collective operations: barriers, reductions with predefined operations,
 reductions with user defined operations.
 
-Collective operations have their own queue and hence typically will be synchronised
-independently from the operations on other queues (separation of concerns).
+Collective operations are/will be synchronized independently from the
+operations on the communication queues.
 
 \subsection{\GASPI{} return values}
 
@@ -2110,7 +2111,7 @@ end function gaspi_group_add
 
 After successful procedure completion, i.\,e.\ return value \GASPISUCC{},
 the \GASPI{} process with \parameter{rank} is added to \parameter{group}.
-Whenever you add a rank the list of ranks is sorted in ascendinging order.
+Whenever you add a rank the list of ranks is sorted in ascending order.
 
 In case of error, the return value is \GASPIGERR{}.
 
@@ -3781,8 +3782,8 @@ After successful procedure completion, i.\,e.\ return value
 \GASPISUCC{}, the hitherto posted communication requests have been
 processed by the network infrastructure and the queue is cleaned up.
 After that, any communication request which has been posted to the
-given queue can be considered as completed on the local and remote
-side. For completed requests the transmitted data is available for the application.
+given queue can be considered as completed on the local
+side. 
 
 \gaspifunction{wait} procedure calls may be posted from every thread
 of the local \GASPI{} process.  However, the wait operation is a
@@ -3814,7 +3815,7 @@ the queue.
 
 \begin{useradvice}\label{useradvice:gaspi_wait}
   Return value \GASPISUCC{} means, that the data of all posted write
-  requests has been transferred to the remote side. It does not mean,
+  requests inn this queue is in transfer to the remote side. It does not mean,
   that the data has arrived at the remote side. However, write
   accesses to the local source location will not affect the data that is
   placed in the remote target location.
@@ -4082,9 +4083,12 @@ request fails.
 \subsubsection{\gaspifunction{notify\_waitsome}}
 
 For the procedures with notification, \gaspifunction{notify} and the
-extendend function \gaspifunction{write\_notify},
+extendend functions \gaspifunction{write\_notify} and
+\gaspifunction{read\_notify}, 
 \gaspifunction{notify\_waitsome} is the correspondent wait procedure
-for the receiver (notified) side.
+for the notified receiver side (which is remote for the functions
+\gaspifunction{notify} and \gaspifunction{write\_notify} and local for
+the function \gaspifunction{read\_notify}).
 % Sometimes an applications needs to be notified about the change of one
 % out of a number of notifications. This could be achieved by busy iterating
 % over the list of notifications and call \gaspifunction{notify\_wait} with the
@@ -4184,6 +4188,15 @@ undefined.
   destination rank. \GASPI{} guarantees, that if the notification has arrived
   on the remote process, the previously posted request carrying
   the work load has arrived as well.
+\end{useradvice}
+
+\begin{useradvice}
+One scenario for the usage of \gaspifunction{notify\_waitsome}
+inspecting only one notification is the following: The 
+local side posts a \gaspifunction{read\_notify} call. \GASPI{} guarantees, that
+if the notification has arrived on the local process, the posted read
+request carrying the work load of the function gaspi read notify
+has arrived as well.
 \end{useradvice}
 
 \begin{useradvice}
@@ -4420,9 +4433,9 @@ end function gaspi_write_notify
 %Two new entries are inserted into the given queue.
 
 \begin{implementoradvice}
-The procedure is semantically equivalent to a call to \gaspifunction{write}
-and a subsequent call of \gaspifunction{notify}. However, it should be implemented
-more efficiently, if supported by the network infrastructure.
+The procedure is not semantically equivalent to a call to \gaspifunction{write}
+and a subsequent call of \gaspifunction{notify}. This call does not
+enforce an ordering relative to preceding write operations.
 \end{implementoradvice}
 
 %%%%%%%%% gaspi write list
@@ -4611,10 +4624,124 @@ end function gaspi_write_list_notify
 %\parameter{num+1} new entries are inserted into the given queue.
 
 \begin{implementoradvice}
-The procedure is semantically equivalent to a call to \gaspifunction{write\_list}
-and a subsequent call of \gaspifunction{notify}. However, it should be implemented
-more efficiently, if supported by the network infrastructure.
+The procedure is not semantically equivalent to a call to \gaspifunction{write\_list}
+and a subsequent call of \gaspifunction{notify}. This call does not
+enforce an ordering relative to preceding write operations.
 \end{implementoradvice}
+
+%%%%%%%%gaspi_read_notify
+
+\subsubsection{\gaspifunction{read\_notify}}
+
+The \gaspifunction{read\_notify} variant extends the simple
+\gaspifunction{read} with a notification on the local
+side. This applies to communication patterns that require tighter
+synchronisation on data movement. The local receiver of the data is
+notified when the read is finished and can verify this through the
+procedure \gaspifunction{notify\_waitsome}. It is an
+\gaspisemantic{asynchronous} 
+\gaspisemantic{non-local} \gaspisemantic{time-based blocking}
+procedure.
+
+\begin{FDef}
+
+\begin{FDefSign}
+\begin{verbatim}
+GASPI_READ_NOTIFY ( segment_id_local
+                   , offset_local
+                   , rank
+                   , segment_id_remote
+                   , offset_remote
+                   , size
+                   , notification_id
+                   , queue
+                   , timeout )
+\end{verbatim}
+\end{FDefSign}
+
+\parameterlistbegin
+\parameterlistitem{in}{segment\_id\_local}{the local segment ID to
+  write to}
+\parameterlistitem{in}{offset\_local}{the local offset in bytes to
+  write to}
+\parameterlistitem{in}{rank}{the remote rank to read from}
+\parameterlistitem{in}{segment\_id\_remote}{the remote segment to read
+from} 
+\parameterlistitem{in}{offset\_remote}{the remote offset to read from}
+\parameterlistitem{in}{size}{the size of the data to read}
+\parameterlistitem{in}{notification\_id}{the local notification ID}
+\parameterlistitem{in}{queue}{the queue to use}
+\parameterlistitem{in}{timeout}{the timeout}
+\parameterlistend
+
+
+\begin{FDefSign}
+\begin{verbatim}
+gaspi_return_t
+gaspi_write_notify ( gaspi_segment_id_t segment_id_local
+                   , gaspi_offset_t offset_local
+                   , gaspi_rank_t rank
+                   , gaspi_segment_id_t segment_id_remote
+                   , gaspi_offset_t offset_remote
+                   , gaspi_size_t size
+                   , gaspi_notification_id_t notification_id
+                   , gaspi_queue_id_t queue
+                   , gaspi_timeout_t timeout )
+\end{verbatim}
+\end{FDefSign}
+
+
+\begin{FDefSign}
+\begin{verbatim}
+function gaspi_write_notify(segment_id_local,offset_local,&
+&         rank,segment_id_remote,offset_remote,size,&
+&         notification_id,queue,&
+&         timeout_ms) &
+&         result( res ) bind(C, name="gaspi_write_notify")
+  integer(gaspi_segment_id_t), value :: segment_id_local
+  integer(gaspi_offset_t), value :: offset_local
+  integer(gaspi_rank_t), value :: rank
+  integer(gaspi_segment_id_t), value :: segment_id_remote
+  integer(gaspi_offset_t), value :: offset_remote
+  integer(gaspi_size_t), value :: size
+  integer(gaspi_notification_id_t), value :: notification_id
+  integer(gaspi_queue_id_t), value :: queue
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_write_notify
+\end{verbatim}
+\end{FDefSign}
+
+
+\executionphasework
+\FStdRetDesc
+\end{FDef}
+
+%Two new entries are inserted into the given queue.
+\begin{useradvice}
+In contrast to the procedure \gaspifunction{write\_notify}, the
+notification of the procedure \gaspifunction{read\_notify} carries the
+(fixed) notification value of 1. Similar to the procedure
+\gaspifunction{write\_notify}, a call 
+to \gaspifunction{read\_notify} only guarantees ordering with respect
+to the data 
+bundled in this communication and the given notification. Specifically
+there are no ordering guarantees to preceding read operations. For this
+latter functionality a call to the gaspi wait procedure is required.
+\end{useradvice}
+
+
+\begin{implementoradvice}
+The procedure is not semantically equivalent to a call to \gaspifunction{read}
+and a subsequent call of \gaspifunction{notify}, since the latter aims
+at remote completion rather than local completion. Also this call does not
+enforce an ordering relative to preceding read operations. We note
+that the procedure \gaspifunction{read\_notify} aims at massive
+concurrency rather than minimal read latency, hence it should be
+implemented accordingly.
+\end{implementoradvice}
+
+
 
 %%%%%%%%% gaspi read list
 
@@ -4977,7 +5104,7 @@ procedure returns with \GASPIGERR{}.
 
 \subsubsection{\gaspifunction{passive\_send}}
 
-The blocking \gaspifunction{passive\_send} is the routine called by
+\gaspifunction{passive\_send} is the routine called by
 the sender side to engage in passive communication. It is an
 \gaspisemantic{synchronous} \gaspisemantic{non-local}
 \gaspisemantic{time-based blocking} procedure.
@@ -5538,7 +5665,7 @@ an allreduce and a barrier operation can run at the same time.
 The timeout is a necessary condition in order to be able to write
 failure tolerant code. Timeout $=0$ makes an atomic portion of
 progress in the operation if possible. If progress is possible, the
-procedure returns as soon as the atomic portion of progress is
+procedure returns as soon as some progress is
 achieved. Otherwise, the procedure returns immediately. Here, an
 atomic portion of progress is defined as the smallest set of
 non-dividable instructions in the current state of the collective
@@ -5560,18 +5687,21 @@ functions.
   code fragment in this case would assume the form:
 
 \begin{listing}{1}
-while (GASPI_allreduce_user ( buffer_send
+while ( (ret = gaspi_allreduce_user(buffer_send
                             , buffer_receive
                             , char num
                             , size_element
                             , reduce_operation
                             , reduce_state
                             , group
-                            , GASPI_TEST
-                            ) != GASPI_SUCCESS
-     )
+                            , GASPI_TEST)) == GASPI_TIMEOUT)
 {
-     work();
+work_on_something_else();
+}
+
+if( ret != GASPI_SUCCESS)
+{
+     handle_error(ret);
 }
 \end{listing}
 \end{useradvice}
@@ -5643,8 +5773,8 @@ value \GASPISUCC{}, all group members have invoked the procedure. In
 case of \GASPITIME{} it is unknown whether or not all \GASPI{}
 processes forming the given group have invoked the call.
 
-Progress towards successful \gaspifunction{barrier} completion is achieved even if the procedure
-exits due to timeout. The barrier is then continued in the next call of the procedure. This implies that a
+Progress towards successful \gaspifunction{barrier} completion may be achieved even if the procedure
+exits due to timeout. The barrier is continued in the next call of the procedure. This implies that a
 barrier operation may involve several \gaspifunction{barrier} calls until
 completion.
 
@@ -5775,8 +5905,8 @@ reduction operation on every \GASPI{} process of \parameter{group}.
 In case of \GASPITIME{} not all data is available that is needed to
 calculate the result.
 
-Progress towards successful \gaspifunction{allreduce} completion is achieved even if the procedure
-exits due to timeout. The reduction operation is then continued in the next call of the procedure. This implies that a
+Progress towards successful \gaspifunction{allreduce} completion may be achieved even if the procedure
+exits due to timeout. The reduction operation is continued in the next call of the procedure. This implies that a
 reduction operation may involve several \gaspifunction{allreduce} calls until
 completion.
 
