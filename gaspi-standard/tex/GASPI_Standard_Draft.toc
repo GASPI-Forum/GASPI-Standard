@@ -1,0 +1,172 @@
+\contentsline {section}{\numberline {1}Introduction to {\sc Gaspi}{}}{7}
+\contentsline {subsection}{\numberline {1.1}Overview and Goals}{7}
+\contentsline {subsection}{\numberline {1.2}History}{7}
+\contentsline {subsection}{\numberline {1.3}Design goals}{7}
+\contentsline {section}{\numberline {2}{\sc Gaspi}{} terms and conventions}{8}
+\contentsline {subsection}{\numberline {2.1}Naming Conventions}{8}
+\contentsline {subsection}{\numberline {2.2}Procedure specification}{8}
+\contentsline {subsection}{\numberline {2.3}Semantic terms}{9}
+\contentsline {subsection}{\numberline {2.4}Examples}{10}
+\contentsline {section}{\numberline {3}{\sc Gaspi}{} concepts}{10}
+\contentsline {subsection}{\numberline {3.1}Introduction and overview}{10}
+\contentsline {subsection}{\numberline {3.2}{\sc Gaspi}{} processes}{11}
+\contentsline {subsection}{\numberline {3.3}{\sc Gaspi}{} groups}{11}
+\contentsline {subsection}{\numberline {3.4}{\sc Gaspi}{} segments}{11}
+\contentsline {subsection}{\numberline {3.5}{\sc Gaspi}{} one-sided communication}{11}
+\contentsline {subsection}{\numberline {3.6}{\sc Gaspi}{} queues}{11}
+\contentsline {subsection}{\numberline {3.7}{\sc Gaspi}{} passive communication}{12}
+\contentsline {subsection}{\numberline {3.8}{\sc Gaspi}{} global atomics}{12}
+\contentsline {subsection}{\numberline {3.9}{\sc Gaspi}{} timeouts}{13}
+\contentsline {subsection}{\numberline {3.10}{\sc Gaspi}{} collective communication}{13}
+\contentsline {subsection}{\numberline {3.11}{\sc Gaspi}{} return values}{14}
+\contentsline {section}{\numberline {4}{\sc Gaspi}{} definitions}{14}
+\contentsline {subsection}{\numberline {4.1}Types}{14}
+\contentsline {subsection}{\numberline {4.2}Constants}{17}
+\contentsline {subsubsection}{\numberline {4.2.1}Timeout values}{17}
+\contentsline {subsubsection}{\numberline {4.2.2}Function return values}{17}
+\contentsline {subsubsection}{\numberline {4.2.3}State vector states}{17}
+\contentsline {subsubsection}{\numberline {4.2.4}Allocation policies}{17}
+\contentsline {subsubsection}{\numberline {4.2.5}Statistics interface}{18}
+\contentsline {section}{\numberline {5}Execution model}{18}
+\contentsline {subsection}{\numberline {5.1}Introduction and overview}{18}
+\contentsline {subsection}{\numberline {5.2}Process configuration}{19}
+\contentsline {subsubsection}{\numberline {5.2.1}{\sc Gaspi}{} configuration structure}{19}
+\contentsline {subsubsection}{\numberline {5.2.2}{\tt \zsep {gaspi\_config\_get}}}{21}
+\contentsline {subsubsection}{\numberline {5.2.3}{\tt \zsep {gaspi\_config\_set}}}{22}
+\contentsline {subsection}{\numberline {5.3}Process management calls}{22}
+\contentsline {subsubsection}{\numberline {5.3.1}{\tt \zsep {gaspi\_proc\_init}}}{22}
+\contentsline {subsubsection}{\numberline {5.3.2}{\tt \zsep {gaspi\_proc\_num}}}{24}
+\contentsline {subsubsection}{\numberline {5.3.3}{\tt \zsep {gaspi\_proc\_rank}}}{25}
+\contentsline {subsubsection}{\numberline {5.3.4}{\tt \zsep {gaspi\_proc\_term}}}{26}
+\contentsline {subsubsection}{\numberline {5.3.5}{\tt \zsep {gaspi\_proc\_kill}}}{27}
+\contentsline {subsubsection}{\numberline {5.3.6}Example}{28}
+\contentsline {subsection}{\numberline {5.4}Connection management utilities}{30}
+\contentsline {subsubsection}{\numberline {5.4.1}{\tt \zsep {gaspi\_connect}}}{30}
+\contentsline {subsubsection}{\numberline {5.4.2}{\tt \zsep {gaspi\_disconnect}}}{31}
+\contentsline {subsection}{\numberline {5.5}State vector for individual processes}{33}
+\contentsline {subsubsection}{\numberline {5.5.1}Introduction}{33}
+\contentsline {subsubsection}{\numberline {5.5.2}{\tt \zsep {gaspi\_state\_vec\_get}}}{33}
+\contentsline {subsection}{\numberline {5.6}MPI Interoperability}{35}
+\contentsline {subsection}{\numberline {5.7}Argument checks and performance}{36}
+\contentsline {section}{\numberline {6}Groups}{36}
+\contentsline {subsection}{\numberline {6.1}Introduction}{36}
+\contentsline {subsection}{\numberline {6.2}{\sc Gaspi}{} group generics}{37}
+\contentsline {subsubsection}{\numberline {6.2.1}{\sc Gaspi}{} group type}{37}
+\contentsline {subsubsection}{\numberline {6.2.2}{\tt \zsep {GASPI\_GROUP\_ALL}}{}}{37}
+\contentsline {subsection}{\numberline {6.3}Group creation}{37}
+\contentsline {subsubsection}{\numberline {6.3.1}{\tt \zsep {gaspi\_group\_create}}}{37}
+\contentsline {subsubsection}{\numberline {6.3.2}{\tt \zsep {gaspi\_group\_add}}}{38}
+\contentsline {subsubsection}{\numberline {6.3.3}{\tt \zsep {gaspi\_group\_commit}}}{39}
+\contentsline {subsection}{\numberline {6.4}Group deletion}{40}
+\contentsline {subsubsection}{\numberline {6.4.1}{\tt \zsep {gaspi\_group\_delete}}}{40}
+\contentsline {subsection}{\numberline {6.5}Group utilities}{41}
+\contentsline {subsubsection}{\numberline {6.5.1}{\tt \zsep {gaspi\_group\_num}}}{41}
+\contentsline {subsubsection}{\numberline {6.5.2}{\tt \zsep {gaspi\_group\_size}}}{41}
+\contentsline {subsubsection}{\numberline {6.5.3}{\tt \zsep {gaspi\_group\_ranks}}}{42}
+\contentsline {section}{\numberline {7}{\sc Gaspi}{} segments}{43}
+\contentsline {subsection}{\numberline {7.1}Introduction and overview}{43}
+\contentsline {subsection}{\numberline {7.2}Segment creation}{44}
+\contentsline {subsubsection}{\numberline {7.2.1}{\tt \zsep {gaspi\_segment\_alloc}}}{44}
+\contentsline {subsubsection}{\numberline {7.2.2}{\tt \zsep {gaspi\_segment\_register}}}{46}
+\contentsline {subsubsection}{\numberline {7.2.3}{\tt \zsep {gaspi\_segment\_create}}}{47}
+\contentsline {subsubsection}{\numberline {7.2.4}{\tt \zsep {gaspi\_segment\_bind}}}{49}
+\contentsline {subsubsection}{\numberline {7.2.5}{\tt \zsep {gaspi\_segment\_use}}}{51}
+\contentsline {subsection}{\numberline {7.3}Segment deletion}{53}
+\contentsline {subsubsection}{\numberline {7.3.1}{\tt \zsep {gaspi\_segment\_delete}}}{53}
+\contentsline {subsection}{\numberline {7.4}Segment utilities}{54}
+\contentsline {subsubsection}{\numberline {7.4.1}{\tt \zsep {gaspi\_segment\_num}}}{54}
+\contentsline {subsubsection}{\numberline {7.4.2}{\tt \zsep {gaspi\_segment\_list}}}{55}
+\contentsline {subsubsection}{\numberline {7.4.3}{\tt \zsep {gaspi\_segment\_ptr}}}{56}
+\contentsline {subsection}{\numberline {7.5}Segment memory management}{56}
+\contentsline {section}{\numberline {8}One-sided communication}{57}
+\contentsline {subsection}{\numberline {8.1}Introduction and overview}{57}
+\contentsline {subsection}{\numberline {8.2}Basic communication calls}{58}
+\contentsline {subsubsection}{\numberline {8.2.1}{\tt \zsep {gaspi\_write}}}{58}
+\contentsline {subsubsection}{\numberline {8.2.2}{\tt \zsep {gaspi\_read}}}{61}
+\contentsline {subsubsection}{\numberline {8.2.3}{\tt \zsep {gaspi\_wait}}}{63}
+\contentsline {subsubsection}{\numberline {8.2.4}Examples}{65}
+\contentsline {subsection}{\numberline {8.3}Weak synchronisation primitives}{69}
+\contentsline {subsubsection}{\numberline {8.3.1}Introduction}{69}
+\contentsline {subsubsection}{\numberline {8.3.2}{\tt \zsep {gaspi\_notify}}}{69}
+\contentsline {subsubsection}{\numberline {8.3.3}{\tt \zsep {gaspi\_notify\_waitsome}}}{71}
+\contentsline {subsubsection}{\numberline {8.3.4}{\tt \zsep {gaspi\_notify\_reset}}}{74}
+\contentsline {subsection}{\numberline {8.4}Extended communication calls}{75}
+\contentsline {subsubsection}{\numberline {8.4.1}{\tt \zsep {gaspi\_write\_notify}}}{75}
+\contentsline {subsubsection}{\numberline {8.4.2}{\tt \zsep {gaspi\_write\_list}}}{77}
+\contentsline {subsubsection}{\numberline {8.4.3}{\tt \zsep {gaspi\_write\_list\_notify}}}{78}
+\contentsline {subsubsection}{\numberline {8.4.4}{\tt \zsep {gaspi\_read\_notify}}}{80}
+\contentsline {subsubsection}{\numberline {8.4.5}{\tt \zsep {gaspi\_read\_list}}}{85}
+\contentsline {subsection}{\numberline {8.5}Communication utilities}{87}
+\contentsline {subsubsection}{\numberline {8.5.1}{\tt \zsep {gaspi\_queue\_create}}}{87}
+\contentsline {subsubsection}{\numberline {8.5.2}{\tt \zsep {gaspi\_queue\_delete}}}{88}
+\contentsline {subsubsection}{\numberline {8.5.3}{\tt \zsep {gaspi\_queue\_size}}}{89}
+\contentsline {subsubsection}{\numberline {8.5.4}{\tt \zsep {gaspi\_queue\_purge}}}{89}
+\contentsline {section}{\numberline {9}Passive communication}{91}
+\contentsline {subsection}{\numberline {9.1}Introduction and overview}{91}
+\contentsline {subsection}{\numberline {9.2}Passive communication calls}{91}
+\contentsline {subsubsection}{\numberline {9.2.1}{\tt \zsep {gaspi\_passive\_send}}}{91}
+\contentsline {subsubsection}{\numberline {9.2.2}{\tt \zsep {gaspi\_passive\_receive}}}{93}
+\contentsline {subsection}{\numberline {9.3}Passive communication utilities}{95}
+\contentsline {subsubsection}{\numberline {9.3.1}{\tt \zsep {gaspi\_passive\_queue\_purge}}}{95}
+\contentsline {section}{\numberline {10}Global atomics}{96}
+\contentsline {subsection}{\numberline {10.1}Introduction and Overview}{96}
+\contentsline {subsection}{\numberline {10.2}Atomic operation calls}{96}
+\contentsline {subsubsection}{\numberline {10.2.1}{\tt \zsep {gaspi\_atomic\_fetch\_add}}}{96}
+\contentsline {subsubsection}{\numberline {10.2.2}{\tt \zsep {gaspi\_atomic\_compare\_swap}}}{98}
+\contentsline {subsubsection}{\numberline {10.2.3}Examples}{100}
+\contentsline {section}{\numberline {11}Collective communication}{102}
+\contentsline {subsection}{\numberline {11.1}Introduction and overview}{102}
+\contentsline {subsection}{\numberline {11.2}Barrier synchronisation}{103}
+\contentsline {subsubsection}{\numberline {11.2.1}{\tt \zsep {gaspi\_barrier}}}{103}
+\contentsline {subsubsection}{\numberline {11.2.2}Examples}{104}
+\contentsline {subsection}{\numberline {11.3}Predefined global reduction operations}{105}
+\contentsline {subsubsection}{\numberline {11.3.1}{\tt \zsep {gaspi\_allreduce}}}{105}
+\contentsline {subsubsection}{\numberline {11.3.2}Predefined reduction operations}{107}
+\contentsline {subsubsection}{\numberline {11.3.3}Predefined types}{107}
+\contentsline {subsection}{\numberline {11.4}User-defined global reduction operations}{108}
+\contentsline {subsubsection}{\numberline {11.4.1}{\tt \zsep {gaspi\_allreduce\_user}}}{108}
+\contentsline {subsubsection}{\numberline {11.4.2}User defined reduction operations}{109}
+\contentsline {subsubsection}{\numberline {11.4.3}allreduce state}{111}
+\contentsline {subsubsection}{\numberline {11.4.4}Example}{111}
+\contentsline {section}{\numberline {12}{\sc Gaspi}{} getter functions}{113}
+\contentsline {subsection}{\numberline {12.1}Getter functions for group management}{113}
+\contentsline {subsubsection}{\numberline {12.1.1}{\tt \zsep {gaspi\_group\_max}}}{113}
+\contentsline {subsection}{\numberline {12.2}Getter functions for segment management}{114}
+\contentsline {subsubsection}{\numberline {12.2.1}{\tt \zsep {gaspi\_segment\_max}}}{114}
+\contentsline {subsection}{\numberline {12.3}Getter functions for communication management}{114}
+\contentsline {subsubsection}{\numberline {12.3.1}{\tt \zsep {gaspi\_queue\_num}}}{114}
+\contentsline {subsubsection}{\numberline {12.3.2}{\tt \zsep {gaspi\_queue\_size\_max}}}{115}
+\contentsline {subsubsection}{\numberline {12.3.3}{\tt \zsep {gaspi\_queue\_max}}}{115}
+\contentsline {subsubsection}{\numberline {12.3.4}{\tt \zsep {gaspi\_transfer\_size\_max}}}{116}
+\contentsline {subsubsection}{\numberline {12.3.5}{\tt \zsep {gaspi\_notification\_num}}}{116}
+\contentsline {subsection}{\numberline {12.4}Getter functions for passive communication}{117}
+\contentsline {subsubsection}{\numberline {12.4.1}{\tt \zsep {gaspi\_passive\_transfer\_size\_max}}}{117}
+\contentsline {subsection}{\numberline {12.5}Getter functions related to atomic operations}{117}
+\contentsline {subsubsection}{\numberline {12.5.1}{\tt \zsep {gaspi\_atomic\_max}}}{117}
+\contentsline {subsection}{\numberline {12.6}Getter functions for collective communication}{118}
+\contentsline {subsubsection}{\numberline {12.6.1}{\tt \zsep {gaspi\_allreduce\_buf\_size}}}{118}
+\contentsline {subsubsection}{\numberline {12.6.2}{\tt \zsep {gaspi\_allreduce\_elem\_max}}}{119}
+\contentsline {subsection}{\numberline {12.7}Getter functions related to infrastructure}{119}
+\contentsline {subsubsection}{\numberline {12.7.1}{\tt \zsep {gaspi\_network\_type}}}{119}
+\contentsline {subsubsection}{\numberline {12.7.2}{\tt \zsep {gaspi\_build\_infrastructure}}}{120}
+\contentsline {section}{\numberline {13}{\sc Gaspi}{} Environmental Management}{120}
+\contentsline {subsection}{\numberline {13.1}Implementation Information}{120}
+\contentsline {subsubsection}{\numberline {13.1.1}{\tt \zsep {gaspi\_version}}}{120}
+\contentsline {subsection}{\numberline {13.2}Timing information}{121}
+\contentsline {subsubsection}{\numberline {13.2.1}{\tt \zsep {gaspi\_time\_get}}}{121}
+\contentsline {subsubsection}{\numberline {13.2.2}{\tt \zsep {gaspi\_time\_ticks}}}{122}
+\contentsline {subsection}{\numberline {13.3}Error Codes and Classes}{123}
+\contentsline {subsubsection}{\numberline {13.3.1}{\sc Gaspi}{} error codes}{123}
+\contentsline {subsubsection}{\numberline {13.3.2}{\tt \zsep {gaspi\_print\_error}}}{123}
+\contentsline {section}{\numberline {14}Profiling Interface}{124}
+\contentsline {subsection}{\numberline {14.1}Statistics}{124}
+\contentsline {subsubsection}{\numberline {14.1.1}{\tt \zsep {gaspi\_statistic\_counter\_max}}}{124}
+\contentsline {subsubsection}{\numberline {14.1.2}{\tt \zsep {gaspi\_statistic\_counter\_info}}}{125}
+\contentsline {subsubsection}{\numberline {14.1.3}{\tt \zsep {gaspi\_statistic\_verbosity\_level}}}{126}
+\contentsline {subsubsection}{\numberline {14.1.4}{\tt \zsep {gaspi\_statistic\_counter\_get}}}{127}
+\contentsline {subsubsection}{\numberline {14.1.5}{\tt \zsep {gaspi\_statistic\_counter\_reset}}}{128}
+\contentsline {subsection}{\numberline {14.2}Event Tracing}{129}
+\contentsline {subsubsection}{\numberline {14.2.1}{\tt \zsep {gaspi\_pcontrol}}}{129}
+\contentsline {section}{\numberline {A}Listings}{130}
+\contentsline {subsection}{\numberline {A.1}success\_or\_die}{130}
+\contentsline {subsection}{\numberline {A.2}wait\_if\_queue\_full}{131}

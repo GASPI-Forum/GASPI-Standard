@@ -4638,36 +4638,31 @@ The \gaspifunction{read\_notify} variant extends the simple
 side. This applies to communication patterns that require tighter
 synchronisation on data movement. The local receiver of the data is
 notified when the read is finished and can verify this through the
-procedure \gaspifunction{notify\_waitsome}. It is an
-\gaspisemantic{asynchronous} 
+procedure \gaspifunction{waitsome}. It is an \gaspisemantic{asynchronous}
 \gaspisemantic{non-local} \gaspisemantic{time-based blocking}
 procedure.
 
 \begin{FDef}
 
 \begin{FDefSign}
-\begin{verbatim}
-GASPI_READ_NOTIFY ( segment_id_local
-                   , offset_local
-                   , rank
-                   , segment_id_remote
-                   , offset_remote
+\begin{verbatim}                                                                                                                                               
+GASPI_READ_NOTIFY (  segment_id_local                                                                                                                          
+                   , offset_local                                                                                                                              
+                   , rank                                                                                                                                      
+                   , segment_id_remote                                                                       
+                   , offset_remote        
                    , size
-                   , notification_id
-                   , queue
-                   , timeout )
+                   , notification_id_local
+                   , queue                                                                                                                                     
+                   , timeout )                                                                                                                                 
 \end{verbatim}
 \end{FDefSign}
-
 \parameterlistbegin
-\parameterlistitem{in}{segment\_id\_local}{the local segment ID to
-  write to}
-\parameterlistitem{in}{offset\_local}{the local offset in bytes to
-  write to}
+\parameterlistitem{in}{segment\_id\_local}{the local segment to write to}
+\parameterlistitem{in}{offset\_local}{the local offset to write to}
 \parameterlistitem{in}{rank}{the remote rank to read from}
-\parameterlistitem{in}{segment\_id\_remote}{the remote segment to read
-from} 
-\parameterlistitem{in}{offset\_remote}{the remote offset to read from}
+\parameterlistitem{in}{segment\_id\_remote}{the remote segment ID to read from}
+\parameterlistitem{in}{offset\_remote}{the remote offset in bytes to read from}
 \parameterlistitem{in}{size}{the size of the data to read}
 \parameterlistitem{in}{notification\_id}{the local notification ID}
 \parameterlistitem{in}{queue}{the queue to use}
@@ -4676,39 +4671,37 @@ from}
 
 
 \begin{FDefSign}
-\begin{verbatim}
-gaspi_return_t
-gaspi_write_notify ( gaspi_segment_id_t segment_id_local
-                   , gaspi_offset_t offset_local
+\begin{verbatim}                                                                                                                                               
+gaspi_return_t                                                                                                                                                 
+gaspi_read_notify (  gaspi_segment_id_t segment_id_local                                                                                                       
+                   , gaspi_offset_t offset_local                                                                                                               
                    , gaspi_rank_t rank
-                   , gaspi_segment_id_t segment_id_remote
-                   , gaspi_offset_t offset_remote
-                   , gaspi_size_t size
-                   , gaspi_notification_id_t notification_id
-                   , gaspi_queue_id_t queue
-                   , gaspi_timeout_t timeout )
+                   , gaspi_segment_id_t segment_id_remote    
+                   , gaspi_offset_t offset_remote                                                                                                              
+                   , gaspi_size_t size                                                                                                                         
+                   , gaspi_notification_id_t notification_id                                                                                                   
+                   , gaspi_queue_id_t queue 
+                   , gaspi_timeout_t timeout )                                                                                                                 
 \end{verbatim}
 \end{FDefSign}
-
-
 \begin{FDefSign}
-\begin{verbatim}
-function gaspi_write_notify(segment_id_local,offset_local,&
-&         rank,segment_id_remote,offset_remote,size,&
-&         notification_id,queue,&
-&         timeout_ms) &
-&         result( res ) bind(C, name="gaspi_write_notify")
-  integer(gaspi_segment_id_t), value :: segment_id_local
-  integer(gaspi_offset_t), value :: offset_local
+\begin{verbatim}                                                                                                                                               
+function gaspi_read_notify(segment_id_local,offset_local,rank,&
+&         segment_id_remote, offset_remote,&                       
+&         size,notification_id,queue,&     
+&         timeout_ms) &                                                                                                                          
+&         result( res ) bind(C, name="gaspi_read_notify")                                                                                                      
+  integer(gaspi_segment_id_t), value :: segment_id_local                                                                                                       
+  integer(gaspi_offset_t), value :: offset_local                                                                                                               
   integer(gaspi_rank_t), value :: rank
-  integer(gaspi_segment_id_t), value :: segment_id_remote
-  integer(gaspi_offset_t), value :: offset_remote
-  integer(gaspi_size_t), value :: size
+  integer(gaspi_segment_id_t), value :: segment_id_remote                                                                                                      
+  integer(gaspi_offset_t), value :: offset_remote                                                                                                              
+  integer(gaspi_size_t), value :: size                                                                                                                         
   integer(gaspi_notification_id_t), value :: notification_id
-  integer(gaspi_queue_id_t), value :: queue
-  integer(gaspi_timeout_t), value :: timeout_ms
-  integer(gaspi_return_t) :: res
-end function gaspi_write_notify
+  integer(gaspi_queue_id_t), value :: queue                                                                                                                    
+  integer(gaspi_timeout_t), value :: timeout_ms                                                                                                                
+  integer(gaspi_return_t) :: res                                                                                                                               
+end function gaspi_read_notify                                                                                                                                 
 \end{verbatim}
 \end{FDefSign}
 
@@ -4717,32 +4710,42 @@ end function gaspi_write_notify
 \FStdRetDesc
 \end{FDef}
 
-%Two new entries are inserted into the given queue.
 \begin{useradvice}
-In contrast to the procedure \gaspifunction{write\_notify}, the
-notification of the procedure \gaspifunction{read\_notify} carries the
-(fixed) notification value of 1. Similar to the procedure
-\gaspifunction{write\_notify}, a call 
-to \gaspifunction{read\_notify} only guarantees ordering with respect
-to the data 
-bundled in this communication and the given notification. Specifically
-there are no ordering guarantees to preceding read operations. For this
-latter functionality a call to the gaspi wait procedure is required.
+In contrast to the procedure \gaspifunction{write\_notify}, the notification 
+in the procedure \gaspifunction{read\_notify} carries the (fixed) notification value of 1.
+Similar to the procedure \gaspifunction{write\_notify} a call to \gaspifunction{read\_notify}
+only guarantees ordering with respect to the data bundled in this communication and the given notification. 
+Specifically there are no ordering guarantees to other read operations. For this latter functionality
+a call to the \gaspifunction{wait} procedure is required.
 \end{useradvice}
 
+\begin{useradvice}
+The two GASPI functions \gaspifunction{read\_notify} and  \gaspifunction{waitsome} establish a logical and thread safe happens-before relation between them.
+\end{useradvice}
+
+\begin{useradvice}
+The notifcation driven \gaspifunction{read\_notify} complements the \gaspifunction{write\_notify} functionality.
+
+While a \gaspifunction{read\_notify} features a variety of use cases (e.g. in distributed memory management)
+one of the more remarkable goals of the function \gaspifunction{read\_notify} is to establish latency-tolerant multithreading in distributed memory systems.
+To that end we first note that GASPI is able to sustain an extremely high concurrency: the number of messages GASPI can keep in flight at any point in time is 
+(in first order) given by the product of the number of available queues and the queue depth ($queue\_num * queue\_size\_max$).
+
+Following ideas which go back to the first of Cray's MTA machines, we hence can leverage Little's law ($bandwidth = concurrency/latency$)
+and use the high concurrency available in GASPI to effectively hide away latency for remote read access in distributed memory systems.
+In doing so we gain e.g. the ability to perform overhead-free graph traversal for non-partitionable (but distributed) large-scale graphs. We note that the same general principle holds true for all applications, which allow for a high concurrency: whenever we can sustain high concurrency in fetching and evaluating remote data, Little's law will allow us to tolerate the corresponding read latency. This applies to all forms of parallel graph-problems, parallel table lookups, parallel searches in a data-base and many other use cases.   
+
+\end{useradvice}
+
+\insertlisting{readnotifylisting}{\gaspifunction{read\_notify} Example usage}
 
 \begin{implementoradvice}
 The procedure is not semantically equivalent to a call to \gaspifunction{read}
-and a subsequent call of \gaspifunction{notify}, since the latter aims
-at remote completion rather than local completion. Also this call does not
-enforce an ordering relative to preceding read operations. We note
-that the procedure \gaspifunction{read\_notify} aims at massive
-concurrency rather than minimal read latency, hence it should be
-implemented accordingly.
+and a subsequent call of \gaspifunction{notify}, since the latter aims at remote completion
+rather than local completion. Also this call does not enforce an ordering relative to preceding 
+read operations. We note that the procedure \gaspifunction{read\_notify} 
+aims at massive concurrency rather than minimal read latency, hence it should be implemented accordingly. 
 \end{implementoradvice}
-
-
-
 %%%%%%%%% gaspi read list
 
 \subsubsection{\gaspifunction{read\_list}}
