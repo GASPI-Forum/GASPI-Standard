@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2016.8.11)  14 SEP 2016 15:36
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2016.8.11)  15 SEP 2016 11:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -965,7 +965,7 @@ me/platon/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1728.600pk> </home/platon/
 fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
 ublic/amsfonts/symbols/msam10.pfb>
-Output written on GASPI_Standard_Draft.pdf (132 pages, 430508 bytes).
+Output written on GASPI_Standard_Draft.pdf (132 pages, 430497 bytes).
 PDF statistics:
  964 PDF objects out of 1000 (max. 8388607)
  363 compressed objects within 4 object streams
