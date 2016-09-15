@@ -3815,7 +3815,7 @@ the queue.
 
 \begin{useradvice}\label{useradvice:gaspi_wait}
   Return value \GASPISUCC{} means, that the data of all posted write
-  requests inn this queue is in transfer to the remote side. It does not mean,
+  requests in this queue is in transfer to the remote side. It does not mean,
   that the data has arrived at the remote side. However, write
   accesses to the local source location will not affect the data that is
   placed in the remote target location.
@@ -5915,7 +5915,7 @@ completion.
 
 Reduction operations are exclusive per group, i.\,e.\ only one reduction
 operation on a given group can run at a time. Starting a
-reduction operation for the same group in a separate thread before previously innvoked operation
+reduction operation for the same group in a separate thread before previously invoked operation
 is finished on all processes of the group
 is not allowed and yields undefined behavior.
 
