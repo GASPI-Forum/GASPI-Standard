@@ -4435,7 +4435,7 @@ end function gaspi_write_notify
 \begin{implementoradvice}
 The procedure is not semantically equivalent to a call to \gaspifunction{write}
 and a subsequent call of \gaspifunction{notify}. This call does not
-enforce an ordering relative to preceding write operations.
+enforce an ordering relative to other write operations.
 \end{implementoradvice}
 
 %%%%%%%%% gaspi write list
@@ -4626,7 +4626,7 @@ end function gaspi_write_list_notify
 \begin{implementoradvice}
 The procedure is not semantically equivalent to a call to \gaspifunction{write\_list}
 and a subsequent call of \gaspifunction{notify}. This call does not
-enforce an ordering relative to preceding write operations.
+enforce an ordering relative to other write operations.
 \end{implementoradvice}
 
 %%%%%%%%gaspi_read_notify
@@ -4742,7 +4742,7 @@ In doing so we gain e.g. the ability to perform overhead-free graph traversal fo
 \begin{implementoradvice}
 The procedure is not semantically equivalent to a call to \gaspifunction{read}
 and a subsequent call of \gaspifunction{notify}, since the latter aims at remote completion
-rather than local completion. Also this call does not enforce an ordering relative to preceding 
+rather than local completion. Also this call does not enforce an ordering relative to other 
 read operations. We note that the procedure \gaspifunction{read\_notify} 
 aims at massive concurrency rather than minimal read latency, hence it should be implemented accordingly. 
 \end{implementoradvice}
