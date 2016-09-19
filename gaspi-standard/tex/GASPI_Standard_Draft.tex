@@ -4638,8 +4638,7 @@ The \gaspifunction{read\_notify} variant extends the simple
 side. This applies to communication patterns that require tighter
 synchronisation on data movement. The local receiver of the data is
 notified when the read is finished and can verify this through the
-procedure \gaspifunction{notify\_waitsome}. It is an
-\gaspisemantic{asynchronous} 
+procedure \gaspifunction{waitsome}. It is an \gaspisemantic{asynchronous}
 \gaspisemantic{non-local} \gaspisemantic{time-based blocking}
 procedure.
 
@@ -4653,6 +4652,7 @@ GASPI_READ_NOTIFY (  segment_id_local
                    , segment_id_remote                                                                       
                    , offset_remote        
                    , size
+
                    , notification_id
                    , queue                                                                                                                                     
                    , timeout )                                                                                                                                 
