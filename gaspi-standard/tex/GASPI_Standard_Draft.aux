@@ -1,0 +1,355 @@
+\relax 
+\providecommand\mph@setcol[2]{}
+\mph@setcol{ii:1}{\mph@nr}
+\mph@setcol{ii:1}{\mph@nr}
+\mph@setcol{ii:2}{\mph@nr}
+\mph@setcol{ii:3}{\mph@nr}
+\mph@setcol{ii:4}{\mph@nr}
+\mph@setcol{ii:5}{\mph@nr}
+\mph@setcol{ii:6}{\mph@nr}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction to {\sc  Gaspi}{}}{7}}
+\newlabel{sec::Intro}{{1}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}Overview and Goals}{7}}
+\newlabel{subsec::Overview}{{1.1}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.2}History}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.3}Design goals}{7}}
+\mph@setcol{ii:7}{\mph@nr}
+\@writefile{toc}{\contentsline {section}{\numberline {2}{\sc  Gaspi}{} terms and conventions}{8}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Naming Conventions}{8}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Procedure specification}{8}}
+\mph@setcol{ii:8}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Semantic terms}{9}}
+\mph@setcol{ii:9}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Examples}{10}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}{\sc  Gaspi}{} concepts}{10}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Introduction and overview}{10}}
+\mph@setcol{ii:10}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}{\sc  Gaspi}{} processes}{11}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}{\sc  Gaspi}{} groups}{11}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}{\sc  Gaspi}{} segments}{11}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}{\sc  Gaspi}{} one-sided communication}{11}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}{\sc  Gaspi}{} queues}{11}}
+\mph@setcol{ii:11}{\mph@nr}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {1}Allgather with one-sided writes.}{12}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}{\sc  Gaspi}{} passive communication}{12}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.8}{\sc  Gaspi}{} global atomics}{12}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2}Dynamic work distribution: Clients atomically fetch a packet id and increment the value.}{12}}
+\mph@setcol{ii:12}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.9}{\sc  Gaspi}{} timeouts}{13}}
+\newlabel{SubSec::Timeout}{{3.9}{13}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {3}Blocks until the communication queue is empty and may block indefinitely in case of a failure.}{13}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {4}Just check if the operation has completed and return as soon as possible.}{13}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {5}Blocks until the queue is empty or more than $10$ milliseconds have passed since wait has been called.}{13}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.10}{\sc  Gaspi}{} collective communication}{13}}
+\mph@setcol{ii:13}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.11}{\sc  Gaspi}{} return values}{14}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}{\sc  Gaspi}{} definitions}{14}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Types}{14}}
+\mph@setcol{ii:14}{\mph@nr}
+\mph@setcol{ii:15}{\mph@nr}
+\mph@setcol{ii:16}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Constants}{17}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}Timeout values}{17}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}Function return values}{17}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}State vector states}{17}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.4}Allocation policies}{17}}
+\mph@setcol{ii:17}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.5}Statistics interface}{18}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Execution model}{18}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Introduction and overview}{18}}
+\newlabel{SubSec:ExecPhases}{{5.1}{18}}
+\mph@setcol{ii:18}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Process configuration}{19}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}{\sc  Gaspi}{} configuration structure}{19}}
+\newlabel{subsubsec:confstruct}{{5.2.1}{19}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {6}GASPI configuration structure.}{19}}
+\mph@setcol{ii:19}{\mph@nr}
+\mph@setcol{ii:20}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.2}{\tt  \zsep {gaspi\_config\_get}}}{21}}
+\mph@setcol{ii:21}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.3}{\tt  \zsep {gaspi\_config\_set}}}{22}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Process management calls}{22}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}{\tt  \zsep {gaspi\_proc\_init}}}{22}}
+\mph@setcol{ii:22}{\mph@nr}
+\mph@setcol{ii:23}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.2}{\tt  \zsep {gaspi\_proc\_num}}}{24}}
+\newlabel{sec:gaspi_proc_num}{{5.3.2}{24}}
+\mph@setcol{ii:24}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.3}{\tt  \zsep {gaspi\_proc\_rank}}}{25}}
+\newlabel{sec::getrank}{{5.3.3}{25}}
+\mph@setcol{ii:25}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.4}{\tt  \zsep {gaspi\_proc\_term}}}{26}}
+\newlabel{sec:shutdown}{{5.3.4}{26}}
+\mph@setcol{ii:26}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.5}{\tt  \zsep {gaspi\_proc\_kill}}}{27}}
+\mph@setcol{ii:27}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.6}Example}{28}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {7}{\sc  Gaspi}{} hello world example. }{28}}
+\newlabel{lst:hello_world}{{7}{28}}
+\mph@setcol{ii:28}{\mph@nr}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {8}{\sc  Gaspi}{} hello world example in f90. }{29}}
+\newlabel{lst:hello_world_f90}{{8}{29}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {9}Signal handling.}{29}}
+\newlabel{lst:signal}{{9}{29}}
+\mph@setcol{ii:29}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Connection management utilities}{30}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.1}{\tt  \zsep {gaspi\_connect}}}{30}}
+\mph@setcol{ii:30}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.2}{\tt  \zsep {gaspi\_disconnect}}}{31}}
+\mph@setcol{ii:31}{\mph@nr}
+\mph@setcol{ii:32}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}State vector for individual processes}{33}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.5.1}Introduction}{33}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.5.2}{\tt  \zsep {gaspi\_state\_vec\_get}}}{33}}
+\mph@setcol{ii:33}{\mph@nr}
+\mph@setcol{ii:34}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}MPI Interoperability}{35}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {10}Embedded {\sc  Gaspi}{} program}{35}}
+\newlabel{lst:embedded_gaspi}{{10}{35}}
+\mph@setcol{ii:35}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.7}Argument checks and performance}{36}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Groups}{36}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Introduction}{36}}
+\mph@setcol{ii:36}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}{\sc  Gaspi}{} group generics}{37}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.2.1}{\sc  Gaspi}{} group type}{37}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.2.2}{\tt  \zsep {GASPI\_GROUP\_ALL}}{}}{37}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Group creation}{37}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.3.1}{\tt  \zsep {gaspi\_group\_create}}}{37}}
+\mph@setcol{ii:37}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.3.2}{\tt  \zsep {gaspi\_group\_add}}}{38}}
+\mph@setcol{ii:38}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.3.3}{\tt  \zsep {gaspi\_group\_commit}}}{39}}
+\mph@setcol{ii:39}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Group deletion}{40}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.4.1}{\tt  \zsep {gaspi\_group\_delete}}}{40}}
+\mph@setcol{ii:40}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.5}Group utilities}{41}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.5.1}{\tt  \zsep {gaspi\_group\_num}}}{41}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.5.2}{\tt  \zsep {gaspi\_group\_size}}}{41}}
+\mph@setcol{ii:41}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.5.3}{\tt  \zsep {gaspi\_group\_ranks}}}{42}}
+\mph@setcol{ii:42}{\mph@nr}
+\@writefile{toc}{\contentsline {section}{\numberline {7}{\sc  Gaspi}{} segments}{43}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Introduction and overview}{43}}
+\mph@setcol{ii:43}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Segment creation}{44}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.2.1}{\tt  \zsep {gaspi\_segment\_alloc}}}{44}}
+\mph@setcol{ii:44}{\mph@nr}
+\mph@setcol{ii:45}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.2.2}{\tt  \zsep {gaspi\_segment\_register}}}{46}}
+\mph@setcol{ii:46}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.2.3}{\tt  \zsep {gaspi\_segment\_create}}}{47}}
+\mph@setcol{ii:47}{\mph@nr}
+\mph@setcol{ii:48}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.2.4}{\tt  \zsep {gaspi\_segment\_bind}}}{49}}
+\mph@setcol{ii:49}{\mph@nr}
+\mph@setcol{ii:50}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.2.5}{\tt  \zsep {gaspi\_segment\_use}}}{51}}
+\mph@setcol{ii:51}{\mph@nr}
+\mph@setcol{ii:52}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}Segment deletion}{53}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.3.1}{\tt  \zsep {gaspi\_segment\_delete}}}{53}}
+\mph@setcol{ii:53}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}Segment utilities}{54}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.4.1}{\tt  \zsep {gaspi\_segment\_num}}}{54}}
+\mph@setcol{ii:54}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.4.2}{\tt  \zsep {gaspi\_segment\_list}}}{55}}
+\mph@setcol{ii:55}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.4.3}{\tt  \zsep {gaspi\_segment\_ptr}}}{56}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.5}Segment memory management}{56}}
+\mph@setcol{ii:56}{\mph@nr}
+\@writefile{toc}{\contentsline {section}{\numberline {8}One-sided communication}{57}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}Introduction and overview}{57}}
+\mph@setcol{ii:57}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}Basic communication calls}{58}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {8.2.1}{\tt  \zsep {gaspi\_write}}}{58}}
+\mph@setcol{ii:58}{\mph@nr}
+\mph@setcol{ii:59}{\mph@nr}
+\mph@setcol{ii:60}{\mph@nr}
+\newlabel{useradvice:gaspi_write}{{8.2.1}{61}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {8.2.2}{\tt  \zsep {gaspi\_read}}}{61}}
+\mph@setcol{ii:61}{\mph@nr}
+\mph@setcol{ii:62}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {8.2.3}{\tt  \zsep {gaspi\_wait}}}{63}}
+\mph@setcol{ii:63}{\mph@nr}
+\mph@setcol{ii:64}{\mph@nr}
+\newlabel{useradvice:gaspi_wait}{{8.2.3}{65}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {8.2.4}Examples}{65}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {11}{\sc  Gaspi}{} all-to-all communication (matrix transpose) implemented with {\tt  \zsep {gaspi\_write}}}{65}}
+\newlabel{lst:alltoall_write}{{11}{65}}
+\mph@setcol{ii:65}{\mph@nr}
+\mph@setcol{ii:66}{\mph@nr}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {12}{\sc  Gaspi}{} all-to-all communication (matrix transpose) implemented with {\tt  \zsep {gaspi\_read}}}{67}}
+\newlabel{lst:alltoall_read}{{12}{67}}
+\mph@setcol{ii:67}{\mph@nr}
+\mph@setcol{ii:68}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.3}Weak synchronisation primitives}{69}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {8.3.1}Introduction}{69}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {8.3.2}{\tt  \zsep {gaspi\_notify}}}{69}}
+\mph@setcol{ii:69}{\mph@nr}
+\mph@setcol{ii:70}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {8.3.3}{\tt  \zsep {gaspi\_notify\_waitsome}}}{71}}
+\mph@setcol{ii:71}{\mph@nr}
+\mph@setcol{ii:72}{\mph@nr}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {13}Blocking waitsome in a multi-threaded application}{73}}
+\newlabel{lst:waitsome_select.c}{{13}{73}}
+\mph@setcol{ii:73}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {8.3.4}{\tt  \zsep {gaspi\_notify\_reset}}}{74}}
+\mph@setcol{ii:74}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.4}Extended communication calls}{75}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {8.4.1}{\tt  \zsep {gaspi\_write\_notify}}}{75}}
+\mph@setcol{ii:75}{\mph@nr}
+\mph@setcol{ii:76}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {8.4.2}{\tt  \zsep {gaspi\_write\_list}}}{77}}
+\mph@setcol{ii:77}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {8.4.3}{\tt  \zsep {gaspi\_write\_list\_notify}}}{78}}
+\mph@setcol{ii:78}{\mph@nr}
+\mph@setcol{ii:79}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {8.4.4}{\tt  \zsep {gaspi\_read\_notify}}}{80}}
+\mph@setcol{ii:80}{\mph@nr}
+\mph@setcol{ii:81}{\mph@nr}
+\mph@setcol{ii:82}{\mph@nr}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {14}{\tt  \zsep {gaspi\_read\_notify}} Example usage}{83}}
+\mph@setcol{ii:83}{\mph@nr}
+\mph@setcol{ii:84}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {8.4.5}{\tt  \zsep {gaspi\_read\_list}}}{85}}
+\mph@setcol{ii:85}{\mph@nr}
+\mph@setcol{ii:86}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.5}Communication utilities}{87}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {8.5.1}{\tt  \zsep {gaspi\_queue\_create}}}{87}}
+\mph@setcol{ii:87}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {8.5.2}{\tt  \zsep {gaspi\_queue\_delete}}}{88}}
+\mph@setcol{ii:88}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {8.5.3}{\tt  \zsep {gaspi\_queue\_size}}}{89}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {8.5.4}{\tt  \zsep {gaspi\_queue\_purge}}}{89}}
+\mph@setcol{ii:89}{\mph@nr}
+\mph@setcol{ii:90}{\mph@nr}
+\@writefile{toc}{\contentsline {section}{\numberline {9}Passive communication}{91}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.1}Introduction and overview}{91}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.2}Passive communication calls}{91}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {9.2.1}{\tt  \zsep {gaspi\_passive\_send}}}{91}}
+\mph@setcol{ii:91}{\mph@nr}
+\mph@setcol{ii:92}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {9.2.2}{\tt  \zsep {gaspi\_passive\_receive}}}{93}}
+\mph@setcol{ii:93}{\mph@nr}
+\mph@setcol{ii:94}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.3}Passive communication utilities}{95}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {9.3.1}{\tt  \zsep {gaspi\_passive\_queue\_purge}}}{95}}
+\mph@setcol{ii:95}{\mph@nr}
+\@writefile{toc}{\contentsline {section}{\numberline {10}Global atomics}{96}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.1}Introduction and Overview}{96}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.2}Atomic operation calls}{96}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {10.2.1}{\tt  \zsep {gaspi\_atomic\_fetch\_add}}}{96}}
+\mph@setcol{ii:96}{\mph@nr}
+\mph@setcol{ii:97}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {10.2.2}{\tt  \zsep {gaspi\_atomic\_compare\_swap}}}{98}}
+\mph@setcol{ii:98}{\mph@nr}
+\mph@setcol{ii:99}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {10.2.3}Examples}{100}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {15} {\sc  Gaspi}{} global resource lock implemented with atomic counters  }{100}}
+\newlabel{lst:rsrclock}{{15}{100}}
+\mph@setcol{ii:100}{\mph@nr}
+\mph@setcol{ii:101}{\mph@nr}
+\@writefile{toc}{\contentsline {section}{\numberline {11}Collective communication}{102}}
+\newlabel{sec:collectives}{{11}{102}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {11.1}Introduction and overview}{102}}
+\mph@setcol{ii:102}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {11.2}Barrier synchronisation}{103}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {11.2.1}{\tt  \zsep {gaspi\_barrier}}}{103}}
+\mph@setcol{ii:103}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {11.2.2}Examples}{104}}
+\mph@setcol{ii:104}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {11.3}Predefined global reduction operations}{105}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {11.3.1}{\tt  \zsep {gaspi\_allreduce}}}{105}}
+\newlabel{SubSec:allreduce}{{11.3.1}{105}}
+\mph@setcol{ii:105}{\mph@nr}
+\mph@setcol{ii:106}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {11.3.2}Predefined reduction operations}{107}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {11.3.3}Predefined types}{107}}
+\mph@setcol{ii:107}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {11.4}User-defined global reduction operations}{108}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {11.4.1}{\tt  \zsep {gaspi\_allreduce\_user}}}{108}}
+\mph@setcol{ii:108}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {11.4.2}User defined reduction operations}{109}}
+\mph@setcol{ii:109}{\mph@nr}
+\mph@setcol{ii:110}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {11.4.3}allreduce state}{111}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {11.4.4}Example}{111}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {16}{\sc  Gaspi}{} User defined allreduce, fortran example. }{111}}
+\newlabel{lst:allreduce_user_f90}{{16}{111}}
+\mph@setcol{ii:111}{\mph@nr}
+\mph@setcol{ii:112}{\mph@nr}
+\@writefile{toc}{\contentsline {section}{\numberline {12}{\sc  Gaspi}{} getter functions}{113}}
+\newlabel{sec:getterfn}{{12}{113}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.1}Getter functions for group management}{113}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {12.1.1}{\tt  \zsep {gaspi\_group\_max}}}{113}}
+\mph@setcol{ii:113}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.2}Getter functions for segment management}{114}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {12.2.1}{\tt  \zsep {gaspi\_segment\_max}}}{114}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.3}Getter functions for communication management}{114}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {12.3.1}{\tt  \zsep {gaspi\_queue\_num}}}{114}}
+\mph@setcol{ii:114}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {12.3.2}{\tt  \zsep {gaspi\_queue\_size\_max}}}{115}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {12.3.3}{\tt  \zsep {gaspi\_queue\_max}}}{115}}
+\mph@setcol{ii:115}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {12.3.4}{\tt  \zsep {gaspi\_transfer\_size\_max}}}{116}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {12.3.5}{\tt  \zsep {gaspi\_notification\_num}}}{116}}
+\mph@setcol{ii:116}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.4}Getter functions for passive communication}{117}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {12.4.1}{\tt  \zsep {gaspi\_passive\_transfer\_size\_max}}}{117}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.5}Getter functions related to atomic operations}{117}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {12.5.1}{\tt  \zsep {gaspi\_atomic\_max}}}{117}}
+\mph@setcol{ii:117}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.6}Getter functions for collective communication}{118}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {12.6.1}{\tt  \zsep {gaspi\_allreduce\_buf\_size}}}{118}}
+\mph@setcol{ii:118}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {12.6.2}{\tt  \zsep {gaspi\_allreduce\_elem\_max}}}{119}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.7}Getter functions related to infrastructure}{119}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {12.7.1}{\tt  \zsep {gaspi\_network\_type}}}{119}}
+\mph@setcol{ii:119}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {12.7.2}{\tt  \zsep {gaspi\_build\_infrastructure}}}{120}}
+\@writefile{toc}{\contentsline {section}{\numberline {13}{\sc  Gaspi}{} Environmental Management}{120}}
+\newlabel{sec:envcheck}{{13}{120}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {13.1}Implementation Information}{120}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {13.1.1}{\tt  \zsep {gaspi\_version}}}{120}}
+\mph@setcol{ii:120}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {13.2}Timing information}{121}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {13.2.1}{\tt  \zsep {gaspi\_time\_get}}}{121}}
+\mph@setcol{ii:121}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {13.2.2}{\tt  \zsep {gaspi\_time\_ticks}}}{122}}
+\mph@setcol{ii:122}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {13.3}Error Codes and Classes}{123}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {13.3.1}{\sc  Gaspi}{} error codes}{123}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {13.3.2}{\tt  \zsep {gaspi\_print\_error}}}{123}}
+\mph@setcol{ii:123}{\mph@nr}
+\@writefile{toc}{\contentsline {section}{\numberline {14}Profiling Interface}{124}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {14.1}Statistics}{124}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {14.1.1}{\tt  \zsep {gaspi\_statistic\_counter\_max}}}{124}}
+\mph@setcol{ii:124}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {14.1.2}{\tt  \zsep {gaspi\_statistic\_counter\_info}}}{125}}
+\mph@setcol{ii:125}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {14.1.3}{\tt  \zsep {gaspi\_statistic\_verbosity\_level}}}{126}}
+\mph@setcol{ii:126}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {14.1.4}{\tt  \zsep {gaspi\_statistic\_counter\_get}}}{127}}
+\mph@setcol{ii:127}{\mph@nr}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {14.1.5}{\tt  \zsep {gaspi\_statistic\_counter\_reset}}}{128}}
+\mph@setcol{ii:128}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {14.2}Event Tracing}{129}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {14.2.1}{\tt  \zsep {gaspi\_pcontrol}}}{129}}
+\mph@setcol{ii:129}{\mph@nr}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Listings}{130}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}success\_or\_die}{130}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {17}success\_or\_die.h}{130}}
+\newlabel{lst:success_or_die_h}{{17}{130}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {18}success\_or\_die.c}{130}}
+\newlabel{lst:success_or_die_c}{{18}{130}}
+\mph@setcol{ii:130}{\mph@nr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}wait\_if\_queue\_full}{131}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {19}wait\_if\_queue\_full.h}{131}}
+\newlabel{lst:wait_if_queue_full_h}{{19}{131}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {20}wait\_if\_queue\_full.c}{131}}
+\newlabel{lst:wait_if_queue_full_c}{{20}{131}}
+\mph@setcol{ii:131}{\mph@nr}
+\gdef\mph@lastpage{132}
+\csname mph@do@warn\endcsname
