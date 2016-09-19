@@ -258,7 +258,7 @@ basicstyle=\ttfamily
 ~\\
 Specification of a PGAS API for communication\\
 ~\\
-Version 16.1
+Version 16.6
 }
 
 %TODO
@@ -4195,7 +4195,7 @@ One scenario for the usage of \gaspifunction{notify\_waitsome}
 inspecting only one notification is the following: The 
 local side posts a \gaspifunction{read\_notify} call. \GASPI{} guarantees, that
 if the notification has arrived on the local process, the posted read
-request carrying the work load of the function \gaspifunction{gaspi\_read\_notify}
+request carrying the work load of the function \gaspifunction{read\_notify}
 has arrived as well.
 \end{useradvice}
 
@@ -4652,7 +4652,8 @@ GASPI_READ_NOTIFY (  segment_id_local
                    , segment_id_remote                                                                       
                    , offset_remote        
                    , size
-                   , notification_id_local
+
+                   , notification_id
                    , queue                                                                                                                                     
                    , timeout )                                                                                                                                 
 \end{verbatim}
@@ -4720,7 +4721,7 @@ a call to the \gaspifunction{wait} procedure is required.
 \end{useradvice}
 
 \begin{useradvice}
-The two GASPI functions \gaspifunction{read\_notify} and  \gaspifunction{waitsome} establish a logical and thread safe happens-before relation between them.
+The two \GASPI{} functions \gaspifunction{read\_notify} and  \gaspifunction{notify\_waitsome} establish a logical and thread safe happens-before relation between them.
 \end{useradvice}
 
 \begin{useradvice}
@@ -4728,12 +4729,12 @@ The notifcation driven \gaspifunction{read\_notify} complements the \gaspifuncti
 
 While a \gaspifunction{read\_notify} features a variety of use cases (e.g. in distributed memory management)
 one of the more remarkable goals of the function \gaspifunction{read\_notify} is to establish latency-tolerant multithreading in distributed memory systems.
-To that end we first note that GASPI is able to sustain an extremely high concurrency: the number of messages GASPI can keep in flight at any point in time is 
+To that end we first note that \GASPI{} is able to sustain an extremely high concurrency: the number of messages \GASPI{} can keep in flight at any point in time is 
 (in first order) given by the product of the number of available queues and the queue depth ($queue\_num * queue\_size\_max$).
 
 Following ideas which go back to the first of Cray's MTA machines, we hence can leverage Little's law ($bandwidth = concurrency/latency$)
 and use the high concurrency available in GASPI to effectively hide away latency for remote read access in distributed memory systems.
-In doing so we gain e.g. the ability to perform overhead-free graph traversal for non-partitionable (but distributed) large-scale graphs. We note that the same general principle holds true for all applications, which allow for a high concurrency: whenever we can sustain high concurrency in fetching and evaluating remote data, Little's law will allow us to tolerate the corresponding read latency. This applies to all forms of parallel graph-problems, parallel table lookups, parallel searches in a data-base and many other use cases.   
+In doing so we gain, e.g., the ability to perform overhead-free graph traversal for non-partitionable (but distributed) large-scale graphs. We note that the same general principle holds true for all applications, which allow for a high concurrency: whenever we can sustain high concurrency in fetching and evaluating remote data, Little's law will allow us to tolerate the corresponding read latency. This applies to all forms of parallel graph-problems, parallel table lookups, parallel searches in a data-base and many other use cases.   
 
 \end{useradvice}
 
