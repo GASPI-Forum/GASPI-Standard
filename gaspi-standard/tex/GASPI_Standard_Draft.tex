@@ -2810,19 +2810,18 @@ GASPI_SEGMENT_BIND ( segment_id
 \parameterlistitem{in}{memory\_description}{The description of the
   memory provided.}
 \parameterlistend
-\begin{FDef}
+
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t gaspi_segment_bind
-  ( gaspi_segment_id_t const segment_id
-  , gaspi_pointer_t const pointer
-  , gaspi_size_t const size
-  , gaspi_memory_description_t const memory_description
-  )
+gaspi_return_t 
+gaspi_segment_bind ( gaspi_segment_id_t const segment_id
+                   , gaspi_pointer_t const pointer
+                   , gaspi_size_t const size
+                   , gaspi_memory_description_t const memory_description
+                   )
 \end{verbatim}
 \end{FDefSign}
-\end{FDef}
-\begin{FDef}
+
 \begin{FDefSign}
 \begin{verbatim}
 function gaspi_segment_bind ( segment_id                  &
@@ -2839,7 +2838,7 @@ function gaspi_segment_bind ( segment_id                  &
 end function gaspi_segment_bind
 \end{verbatim}
 \end{FDefSign}
-\end{FDef}
+
 \executionphasework
 \FStdRetDescNOTimeout
 \end{FDef}
@@ -2906,21 +2905,20 @@ GASPI_SEGMENT_USE ( segment_id
 \parameterlistitem{in}{memory\_description}{The description of the
   memory provided.}
 \parameterlistend
-\begin{FDef}
+
 \begin{FDefSign}
 \begin{verbatim}
-gaspi_return_t gaspi_segment_use
-  ( gaspi_segment_id_t const segment_id
-  , gaspi_pointer_t const pointer
-  , gaspi_size_t const size
-  , gaspi_group_t const group
-  , gaspi_timeout_t const timeout
-  , gaspi_memory_description_t const memory_description
-  )
+gaspi_return_t 
+gaspi_segment_use ( gaspi_segment_id_t const segment_id
+                  , gaspi_pointer_t const pointer
+                  , gaspi_size_t const size
+                  , gaspi_group_t const group
+                  , gaspi_timeout_t const timeout
+                  , gaspi_memory_description_t const memory_description
+                  ) 
 \end{verbatim}
 \end{FDefSign}
-\end{FDef}
-\begin{FDef}
+
 \begin{FDefSign}
 \begin{verbatim}
 function gaspi_segment_use ( segment_id                  &
@@ -2941,7 +2939,7 @@ function gaspi_segment_use ( segment_id                  &
 end function gaspi_segment_bind
 \end{verbatim}
 \end{FDefSign}
-\end{FDef}
+
 \executionphasework
 \FStdRetDesc
 \end{FDef}
@@ -4646,16 +4644,15 @@ procedure.
 
 \begin{FDefSign}
 \begin{verbatim}                                                                                                                                               
-GASPI_READ_NOTIFY (  segment_id_local                                                                                                                          
-                   , offset_local                                                                                                                              
-                   , rank                                                                                                                                      
-                   , segment_id_remote                                                                       
-                   , offset_remote        
+GASPI_READ_NOTIFY (  segment_id_local
+                   , offset_local
+                   , rank
+                   , segment_id_remote
+                   , offset_remote
                    , size
-
                    , notification_id
-                   , queue                                                                                                                                     
-                   , timeout )                                                                                                                                 
+                   , queue
+                   , timeout )
 \end{verbatim}
 \end{FDefSign}
 \parameterlistbegin
@@ -4673,36 +4670,36 @@ GASPI_READ_NOTIFY (  segment_id_local
 
 \begin{FDefSign}
 \begin{verbatim}                                                                                                                                               
-gaspi_return_t                                                                                                                                                 
-gaspi_read_notify (  gaspi_segment_id_t segment_id_local                                                                                                       
-                   , gaspi_offset_t offset_local                                                                                                               
+gaspi_return_t
+gaspi_read_notify (  gaspi_segment_id_t segment_id_local
+                   , gaspi_offset_t offset_local
                    , gaspi_rank_t rank
-                   , gaspi_segment_id_t segment_id_remote    
-                   , gaspi_offset_t offset_remote                                                                                                              
-                   , gaspi_size_t size                                                                                                                         
-                   , gaspi_notification_id_t notification_id                                                                                                   
-                   , gaspi_queue_id_t queue 
-                   , gaspi_timeout_t timeout )                                                                                                                 
+                   , gaspi_segment_id_t segment_id_remote
+                   , gaspi_offset_t offset_remote
+                   , gaspi_size_t size
+                   , gaspi_notification_id_t notification_id
+                   , gaspi_queue_id_t queue
+                   , gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 \begin{FDefSign}
 \begin{verbatim}                                                                                                                                               
 function gaspi_read_notify(segment_id_local,offset_local,rank,&
-&         segment_id_remote, offset_remote,&                       
-&         size,notification_id,queue,&     
-&         timeout_ms) &                                                                                                                          
-&         result( res ) bind(C, name="gaspi_read_notify")                                                                                                      
-  integer(gaspi_segment_id_t), value :: segment_id_local                                                                                                       
-  integer(gaspi_offset_t), value :: offset_local                                                                                                               
+&         segment_id_remote, offset_remote,&
+&         size,notification_id,queue,&
+&         timeout_ms) &
+&         result( res ) bind(C, name="gaspi_read_notify")
+  integer(gaspi_segment_id_t), value :: segment_id_local
+  integer(gaspi_offset_t), value :: offset_local
   integer(gaspi_rank_t), value :: rank
-  integer(gaspi_segment_id_t), value :: segment_id_remote                                                                                                      
-  integer(gaspi_offset_t), value :: offset_remote                                                                                                              
-  integer(gaspi_size_t), value :: size                                                                                                                         
+  integer(gaspi_segment_id_t), value :: segment_id_remote
+  integer(gaspi_offset_t), value :: offset_remote
+  integer(gaspi_size_t), value :: size
   integer(gaspi_notification_id_t), value :: notification_id
-  integer(gaspi_queue_id_t), value :: queue                                                                                                                    
-  integer(gaspi_timeout_t), value :: timeout_ms                                                                                                                
-  integer(gaspi_return_t) :: res                                                                                                                               
-end function gaspi_read_notify                                                                                                                                 
+  integer(gaspi_queue_id_t), value :: queue
+  integer(gaspi_timeout_t), value :: timeout_ms
+  integer(gaspi_return_t) :: res
+end function gaspi_read_notify
 \end{verbatim}
 \end{FDefSign}
 
@@ -4849,9 +4846,7 @@ GASPI_QUEUE_CREATE ( queue
 \parameterlistitem{out}{queue}{the created queue}
 \parameterlistitem{in}{timeout}{the timeout}
 \parameterlistend
-\end{FDef}
 
-\begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
@@ -4860,9 +4855,7 @@ gaspi_queue_create ( gaspi_queue_id_t queue
                    )
 \end{verbatim}
 \end{FDefSign}
-\end{FDef}
 
-\begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
 function gaspi_queue_create (queue, timeout) &
@@ -4922,18 +4915,14 @@ GASPI_QUEUE_DELETE ( queue )
 \parameterlistbegin
 \parameterlistitem{in}{queue}{the queue to delete}
 \parameterlistend
-\end{FDef}
 
-\begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
 gaspi_queue_delete ( gaspi_queue_id_t queue )
 \end{verbatim}
 \end{FDefSign}
-\end{FDef}
 
-\begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
 function gaspi_queue_delete ( queue ) &
@@ -6080,7 +6069,7 @@ The internal buffer size can be queried through \gaspifunction{allreduce\_buf\_s
 % In case of \GASPIGERR{}, \parameter{reduce\_state} has an undefined value.
 % The same is true in case of \GASPITIME{}.
 
-\subsubsection{User defined reduction operations}
+\subsubsection{\gaspifunction{reduce_operation}}
 
 The prototype for the user defined reduction operations is the following:
 
@@ -6361,18 +6350,14 @@ GASPI_QUEUE_MAX ( queue_max )
 \parameterlistbegin
 \parameterlistitem{out}{queue\_max}{the maximum number of allowed queues}
 \parameterlistend
-\end{FDef}
 
-\begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
 gaspi_queue_max ( gaspi_number_t queue_max )
 \end{verbatim}
 \end{FDefSign}
-\end{FDef}
 
-\begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
 function gaspi_queue_max ( queue_max ) &
