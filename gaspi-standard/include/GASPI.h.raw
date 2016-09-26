@@ -6,6 +6,8 @@ extern "C"
 {
 #endif
 
+#include "GASPI_types.h"
+
 /*
  * Elementary GASPI types and implementation specific enumerations.
  *
@@ -26,8 +28,9 @@ extern "C"
  * ENUMERATION:
  *   gaspi_operation_t
  *
- * Collective communication operations. 
- * The GASPI specification defines the following enumeration:
+ * DESCRIPTION:
+ *   Collective communication operations. 
+ *   The GASPI specification defines the following enumeration:
  *
  *   GASPI_OP_MIN - determines the minimum of the elements of each column of the input vector.
  *   GASPI_OP_MAX - determines the maximum of the elements of each column of the input vector.
@@ -43,8 +46,9 @@ typedef enum { GASPI_OP_MIN
  * ENUMERATION:
  *   gaspi_datatype_t
  *
- * Predefined types for the allreduce operation 
- * The GASPI specification defines the following enumeration:
+ * DESCRIPTION:
+ *   Predefined types for the allreduce operation 
+ *   The GASPI specification defines the following enumeration:
  *
  *   GASPI_TYPE_INT - integer
  *   GASPI_TYPE_UINT - unsigned integer
@@ -66,47 +70,48 @@ typedef enum { GASPI_TYPE_INT
  * TYPE:
  *   gaspi_config_t
  *
- * Predefined type which contains the GASPI config values.
- * These can be set, retrieved by gaspi_config_set and gaspi_config_get respectively.
+ * DESCRIPTION:
+ *   Predefined type which contains the GASPI config values.
+ *   These can be set, retrieved by gaspi_config_set and gaspi_config_get respectively.
  *
- *   group_max - the desired maximum number of permissible groups per process. 
+ *   - group_max - the desired maximum number of permissible groups per process. 
  *     There is a hardware/implementation dependent maximum.
  *
- *   segment_max - the desired number of maximally permissible 
+ *   - segment_max - the desired number of maximally permissible 
  *     segments per GASPI process. There is a hardware/implementation dependent maximum.
  * 
- *   queue_num - the desired number of one-sided communication queues to be created. 
+ *   - queue_num - the desired number of one-sided communication queues to be created. 
  *     There is a hardware/implementation dependent maximum.
  *
- *   queue_size_max - the desired number of simultaneously allowed on-going requests on a 
+ *   - queue_size_max - the desired number of simultaneously allowed on-going requests on a 
  *     one-sided communication queue. There is a hardware/implementation dependent maximum.
  *
- *   transfer_size_max - the desired maximum size of a single data
+ *   - transfer_size_max - the desired maximum size of a single data
  *     transfer in the one-sided communication channel.
  *     There is a hardware/implementation dependent maximum.
  *
- *   notification_num - the desired number of internal notification buffers for weak 
+ *   - notification_num - the desired number of internal notification buffers for weak 
  *     synchronisation to be created. There is a hardware/implementation dependent maximum.
  *
- *   passive_queue_size_max - the desired number of simultaneously allowed on-going requests on the
+ *   - passive_queue_size_max - the desired number of simultaneously allowed on-going requests on the
  *     passive communication queue. There is a hardware/implementation dependent maximum.
  *
- *   passive_transfer_size_max - the desired maximum size of a
+ *   - passive_transfer_size_max - the desired maximum size of a
  *     single data transfer in the passive communication channel.
  *     There is a hardware/implementation dependent maximum.
  *
- *   allreduce_elem_max - the maximum number of elements in gaspi_allreduce.
+ *   - allreduce_elem_max - the maximum number of elements in gaspi_allreduce.
  *     There is a hardware/implementation dependent maximum.
  *
- *   allreduce_buf_size - the size of the internal buffer of gaspi_allreduce_user.
+ *   - allreduce_buf_size - the size of the internal buffer of gaspi_allreduce_user.
  *     There is a hardware/implementation dependent maximum.
  *
- *   network - the network type to be used.
+ *   - network - the network type to be used.
  *
- *   build_infrastructure - indicates whether the communication infrastructure should
+ *   - build_infrastructure - indicates whether the communication infrastructure should
  *     be built up at startup time. The default value is true.
  *
- *   user_defined - some user defined information that is application / implementation dependent.
+ *   - user_defined - some user defined information that is application / implementation dependent.
  */
 
 typedef struct {
