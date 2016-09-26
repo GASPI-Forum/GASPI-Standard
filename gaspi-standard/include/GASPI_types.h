@@ -22,7 +22,8 @@ typedef enum
  */
 typedef enum 
   {
-    GASPI_ALLOC_DEFAULT = 0
+    GASPI_MEM_UNINITIALIZED = 0,
+    GASPI_ALLOC_DEFAULT =  GASPI_MEM_UNINITIALIZED
   } gaspi_alloc_t;
 
 /*
