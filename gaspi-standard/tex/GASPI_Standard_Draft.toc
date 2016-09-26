@@ -125,7 +125,7 @@
 \contentsline {subsubsection}{\numberline {11.3.3}Predefined types}{107}
 \contentsline {subsection}{\numberline {11.4}User-defined global reduction operations}{108}
 \contentsline {subsubsection}{\numberline {11.4.1}{\tt \zsep {gaspi\_allreduce\_user}}}{108}
-\contentsline {subsubsection}{\numberline {11.4.2}User defined reduction operations}{109}
+\contentsline {subsubsection}{\numberline {11.4.2}{\tt \zsep {gaspi\_reduce\_operation}}}{109}
 \contentsline {subsubsection}{\numberline {11.4.3}allreduce state}{111}
 \contentsline {subsubsection}{\numberline {11.4.4}Example}{111}
 \contentsline {section}{\numberline {12}{\sc Gaspi}{} getter functions}{113}
