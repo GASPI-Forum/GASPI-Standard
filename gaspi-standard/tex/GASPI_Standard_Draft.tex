@@ -1646,6 +1646,7 @@ function gaspi_connect(rank,timeout_ms) &
   integer(gaspi_rank_t), value :: rank
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
+end function gaspi_connect
 \end{verbatim}
 \end{FDefSign}
 
@@ -2936,7 +2937,7 @@ function gaspi_segment_use ( segment_id                  &
   integer (gaspi_timeout_t), value :: timeout
   integer (gaspi_memory_description_t), value :: memory_description
   integer (gaspi_return_t) :: res
-end function gaspi_segment_bind
+end function gaspi_segment_use
 \end{verbatim}
 \end{FDefSign}
 
@@ -5871,8 +5872,8 @@ function gaspi_allreduce(buffer_send,buffer_receive,num, &
   type(c_ptr), value :: buffer_send
   type(c_ptr), value :: buffer_receive
   integer(gaspi_number_t), value :: num
-  integer(gaspi_int), value :: operation
-  integer(gaspi_int), value :: datatyp
+  integer(gaspi_operation_t), value :: operation
+  integer(gaspi_datatype_t), value :: datatyp
   integer(gaspi_group_t), value :: group
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
@@ -6103,16 +6104,11 @@ gaspi_reduce_operation ( gaspi_const_pointer_t operand_one
 
 \begin{FDefSign}
 \begin{verbatim}
-function my_reduce_operation(op_one,op_two,op_res, &
+function gaspi_reduce_operation(op_one,op_two,op_res, &
 &   op_state,num,element_size,timeout) &
 &   result ( res ) bind(C,name="my_reduce_operation")
   implicit none
   integer(gaspi_number_t), intent(in), value :: num        
-!
-! the fortran user defined callback function requires an 
-! explicit type from the iso_c_binding module. in this 
-! example integer(c_int) (op_one,op_two,op_res,op_state)
-!
   integer(c_int), intent(in)  :: op_one(num)
   integer(c_int), intent(in)  :: op_two(num)
   integer(c_int), intent(out) :: op_res(num)
@@ -6120,11 +6116,7 @@ function my_reduce_operation(op_one,op_two,op_res, &
   integer(gaspi_size_t), value :: element_size
   integer(gaspi_timeout_t), value :: timeout
   integer(gaspi_return_t) :: res
-!
-! your user defined operation       
-! ...
-  res = GASPI_SUCCESS
-end function my_reduce_operation
+end function gaspi_reduce_operation
 \end{verbatim}
 \end{FDefSign}
 
@@ -6133,6 +6125,8 @@ end function my_reduce_operation
 
 \end{FDef}
 
+The fortran user defined callback function requires an  explicit type from the iso\_c\_binding module. in this
+example integer(c\_int) (op\_one,op\_two,op\_res,op\_state).
 
 A pointer to the first operand and a pointer to the second operand
 are passed. The result is stored in the memory represented by the
@@ -6693,7 +6687,7 @@ gaspi_version (float *version)
 \begin{verbatim}
 function gaspi_version(version) &
 &         result( res ) bind(C, name="gaspi_version")
-  real(gaspi_float) :: version
+  real(c_float) :: version
   integer(gaspi_return_t) :: res
 end function gaspi_version
 \end{verbatim}
