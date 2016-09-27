@@ -1,0 +1,133 @@
+module GASPI
+	
+  use, intrinsic :: ISO_C_BINDING
+  use GASPI_types
+
+  implicit none
+
+!
+! Elementary GASPI types and implementation specific enumerations.
+!
+! TYPES:
+!   The elementary GASPI types, (gaspi_rank_t, gaspi_timeout_t, etc.) 
+!   used in the GASPI specification shall be part of the actual 
+!   implementation. The elementary GASPI types shall be included as part of an external 
+!   implementation header file.
+! 
+! ENUMERATIONS:
+!   The error code enumeration, policy enumeration, enumerations for configuration files
+!   and possible states for the state vector are specific for an actual implementation. 
+!   The enumerations shall be included as part of an external implementation header file.
+!
+
+  
+! 
+! ENUMERATION:
+!   gaspi_operation_t
+!
+! DESCRIPTION:
+!   Collective communication operations. 
+!   The GASPI specification defines the following enumeration:
+!
+!   GASPI_OP_MIN - determines the minimum of the elements of each column of the input vector.
+!   GASPI_OP_MAX - determines the maximum of the elements of each column of the input vector.
+!   GASPI_OP_SUM - sums up all elements of each column of the input vector.
+!
+  integer, parameter   :: gaspi_operation_t = c_int
+  enum, bind(C)	
+     enumerator :: GASPI_OP_MIN = 0
+     enumerator :: GASPI_OP_MAX = 1
+     enumerator :: GASPI_OP_SUM = 2
+  end enum
+
+!
+! ENUMERATION:
+!   gaspi_datatype_t
+!
+! DESCRIPTION:
+!   Predefined types for the allreduce operation 
+!   The GASPI specification defines the following enumeration:
+!
+!   GASPI_TYPE_INT - integer
+!   GASPI_TYPE_UINT - unsigned integer
+!   GASPI_TYPE_LONG - long
+!   GASPI_TYPE_ULONG - unsigned long
+!   GASPI_TYPE_FLOAT - float
+!   GASPI_TYPE_DOUBLE - double
+!
+  integer, parameter   :: gaspi_datatype_t = c_int
+  enum, bind(C)	
+     enumerator :: GASPI_TYPE_INT = 0
+     enumerator :: GASPI_TYPE_UINT = 1
+     enumerator :: GASPI_TYPE_LONG = 2
+     enumerator :: GASPI_TYPE_ULONG = 3
+     enumerator :: GASPI_TYPE_FLOAT = 4
+     enumerator :: GASPI_TYPE_DOUBLE = 5
+  end enum
+
+!
+! TYPE:
+!   gaspi_config_t
+!
+! DESCRIPTION:
+!   Predefined type which contains the GASPI config values.
+!   These can be set, retrieved by gaspi_config_set and gaspi_config_get respectively.
+!
+!   - group_max - the desired maximum number of permissible groups per process. 
+!     There is a hardware/implementation dependent maximum.
+!
+!   - segment_max - the desired number of maximally permissible 
+!     segments per GASPI process. There is a hardware/implementation dependent maximum.
+! 
+!   - queue_num - the desired number of one-sided communication queues to be created. 
+!     There is a hardware/implementation dependent maximum.
+!
+!   - queue_size_max - the desired number of simultaneously allowed on-going requests on a 
+!     one-sided communication queue. There is a hardware/implementation dependent maximum.
+!
+!   - transfer_size_max - the desired maximum size of a single data
+!     transfer in the one-sided communication channel.
+!     There is a hardware/implementation dependent maximum.
+!
+!   - notification_num - the desired number of internal notification buffers for weak 
+!     synchronisation to be created. There is a hardware/implementation dependent maximum.
+!
+!   - passive_queue_size_max - the desired number of simultaneously allowed on-going requests on the
+!     passive communication queue. There is a hardware/implementation dependent maximum.
+!
+!   - passive_transfer_size_max - the desired maximum size of a
+!     single data transfer in the passive communication channel.
+!     There is a hardware/implementation dependent maximum.
+!
+!   - allreduce_elem_max - the maximum number of elements in gaspi_allreduce.
+!     There is a hardware/implementation dependent maximum.
+!
+!   - allreduce_buf_size - the size of the internal buffer of gaspi_allreduce_user.
+!     There is a hardware/implementation dependent maximum.
+!
+!   - network - the network type to be used.
+!
+!   - build_infrastructure - indicates whether the communication infrastructure should
+!     be built up at startup time. The default value is true.
+!
+!   - user_defined - some user defined information that is application / implementation dependent.
+!
+  type, bind(C) :: gaspi_config_t
+     integer (gaspi_number_t)   :: group_max
+     integer (gaspi_number_t)   :: segment_max
+     integer (gaspi_number_t)   :: queue_num
+     integer (gaspi_number_t)   :: queue_size_max
+     integer (gaspi_size_t)     :: transfer_size_max
+     integer (gaspi_number_t)   :: notification_num
+     integer (gaspi_number_t)   :: passive_queue_size_max
+     integer (gaspi_size_t)     :: passive_transfer_size_max
+     integer (gaspi_size_t)     :: allreduce_buf_size
+     integer (gaspi_number_t)   :: allreduce_elem_max
+     integer (gaspi_network_t)  :: network
+     integer (gaspi_number_t)   :: build_infrastructure
+     type(c_ptr)                :: user_defined
+  end type gaspi_config_t  
+  
+! HERE
+
+end module GASPI

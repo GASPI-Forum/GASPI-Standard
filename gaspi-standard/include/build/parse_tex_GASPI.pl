@@ -52,7 +52,7 @@ my $filename = $ARGV[0];
 
 # clean up, remove comments, tex style, empty lines, etc.
 open INFILE,"<$filename";
-open OUTFILE,">$filename.tmp";
+open OUTFILE,">TEX.tmp";
 while ($line = <INFILE>) {
     if ( $line !~ /^\%.*$/) {
 	$line =~ s/\\_/_/g;
@@ -73,12 +73,13 @@ close OUTFILE;
 close INFILE;
 
 
-open INFILE,"<$filename.tmp";
+open INFILE,"<TEX.tmp";
 my $string = do { local $/; <INFILE> };
 close INFILE;
 
 
-open OUTFILE,">GASPI.h.in";
+open F90_FILE,">GASPI.f90.in";
+open C_FILE,">GASPI.h.in";
 
 # match from subsubsection to end of FDef
 my @functions     = $string 
@@ -90,50 +91,78 @@ my %declarations  = $string
 
 foreach my $function (@functions) {
 
-    my $comment;
-    my $declaration;
-    my $param;
     my $prototype;
     my $fortran;    
     my $c;
     
 # function    
-    print OUTFILE "/\*\n \* FUNCTION:\n \*   $function\n \*\n";
+    print C_FILE "/\*\n \* FUNCTION:\n \*   $function\n \*\n";
+    print F90_FILE "!\n! FUNCTION:\n!   $function\n!\n";
 
 # line wrap comments/description
-    $comment = $comments{$function};
+    my $comment = $comments{$function};
     my @comment_words = split(/\s+/,$comment);
-    $comment = " \*  ";
-    my $len = 0;
-    my $max = 60;    
+
+    my $len;
+    my $max = 60;
+
+# line wrap c
+    $len = 0;
+    my $c_text = " \*  ";
     foreach (@comment_words) {
 	$len = $len + 1 + length $_;
-	$comment = $comment . "$_ ";
+	$c_text = $c_text . "$_ ";
 	if ( $len > $max )  {	    
-	    $comment = $comment . "\n \*   ";
+	    $c_text = $c_text . "\n \*   ";
 	    $len = 0;
 	}
     }
-    $comment =~ s/\\gaspifunction\{(.*?)\}/gaspi_$1/g;
-    $comment =~ s/\\begin\{listing\}\[.*?\]\{.*?\}/\n \*\n \*  /g;
-    $comment =~ s/\\end\{listing\}/\n \*  /g;
-    print OUTFILE " \* DESCRIPTION:\n$comment\n";
+# line wrap fortran 
+    $len = 0;
+    my $f90_text = "!  ";
+    foreach (@comment_words) {
+	$len = $len + 1 + length $_;
+	$f90_text = $f90_text . "$_ ";
+	if ( $len > $max )  {	    
+	    $f90_text = $f90_text . "\n!   ";
+	    $len = 0;
+	}
+    }
+    $c_text =~ s/\\gaspifunction\{(.*?)\}/gaspi_$1/g;
+    $c_text =~ s/\\begin\{listing\}\[.*?\]\{.*?\}/\n \*\n \*  /g;
+    $c_text =~ s/\\end\{listing\}/\n \*  /g;
+    print C_FILE " \* DESCRIPTION:\n$c_text\n";
+
+    $f90_text =~ s/\\gaspifunction\{(.*?)\}/gaspi_$1/g;
+    $f90_text =~ s/\\begin\{listing\}\[.*?\]\{.*?\}/\n!\n!  /g;
+    $f90_text =~ s/\\end\{listing\}/\n!  /g;
+    print F90_FILE "! DESCRIPTION:\n$f90_text\n";
 
 # prototype, c, fortran
-    $declaration = $declarations{$function};
+    my $declaration = $declarations{$function};
     $declaration =~ s/\\gaspifunction\{(.*?)\}/gaspi_$1/sg;    
     ($prototype, $c, $fortran) = $declaration 
 	=~ m/\\begin\{FDefSign\}.*?\\begin\{verbatim\}(.*?)\\end\{verbatim\}.*?\\end\{FDefSign\}/sg;    
-    $prototype =~ s/^\s*\n//mg;
-    $prototype =~ s/^(.*)$/ \*   $1/mg;    
-    print OUTFILE " \*\n \* FUNCTION PROTOTYPE:\n$prototype";
+
+    my $c_prototype = $prototype;
+    $c_prototype =~ s/^\s*\n//mg;
+    $c_prototype =~ s/^(.*)$/ \*   $1/mg;    
+    print C_FILE " \*\n \* FUNCTION PROTOTYPE:\n$c_prototype";
+
+    my $f90_prototype = $prototype;
+    $f90_prototype =~ s/^\s*\n//mg;
+    $f90_prototype =~ s/^(.*)$/!   $1/mg;    
+    print F90_FILE "!\n! FUNCTION PROTOTYPE:\n$f90_prototype";
 
 # parameter values    
+    my $param;
     $param = $declarations{$function};
     $param =~ s/\\gaspifunction\{(.*?)\}/gaspi_$1/sg;
-    my @params = $param 
+    my @params = $param
 	=~ m/(\\parameterlistitem\{\s*.*?\s*\}\{\s*.*?\s*\}\{\s*.*?\s*\})/sg;    
-    print OUTFILE " \*\n \* PARAMETER:\n";
+
+    print C_FILE " \*\n \* PARAMETER:\n";
+    print F90_FILE "!\n! PARAMETER:\n";
 
     my $timeout=0;
     foreach (@params) {
@@ -144,62 +173,108 @@ foreach my $function (@functions) {
 	($in, $parameter, $description) = $string 
 	    =~ m/\\parameterlistitem\{\s*(.*?)\s*\}\{\s*(.*?)\s*\}\{\s*(.*?)\s*\}/sg;
 
-	my @description_words = split(/\s+/,$description);
-	$description = "";
-	my $len = 0;
-	my $max = 50;
-
 # const correctness 
 	if ( $in =~ /in/ ) {
 	    $c =~ s/\s+$parameter/ const $parameter/;
 	    $c =~ s/const const/const/;
 	}
 
+	my @description_words = split(/\s+/,$description);
+
+	my $len;
+	my $max = 50;
+
 # line wrap parameter description
+	$len = 0;
+	my $c_description = "";
 	foreach (@description_words) {
 	    $len = $len + 1 + length $_;
-	    $description = $description . "$_ ";
+	    $c_description = $c_description . "$_ ";
 	    if ( $len > $max )  {	    
-		$description = $description . "\n \*          ";
+		$c_description = $c_description . "\n \*          ";
 		$len = 0;
 	    }
 	}
+	print C_FILE " \*   \@param $parameter $c_description ($in)\n";
+
+	$len = 0;
+	my $f90_description = "";
+	foreach (@description_words) {
+	    $len = $len + 1 + length $_;
+	    $f90_description = $f90_description . "$_ ";
+	    if ( $len > $max )  {	    
+		$f90_description = $f90_description . "\n!          ";
+		$len = 0;
+	    }
+	}
+	print F90_FILE "!   \@param $parameter $f90_description ($in)\n";
+	
 	if ( $parameter =~ /timeout/i ) {
 	    $timeout=1;
 	}	    
-	print OUTFILE " \*   \@param $parameter $description ($in)\n";
 
     }
     
 # return values
-    print OUTFILE " \*\n \* RETURN VALUE:\n";
-    print OUTFILE " \*   \@return GASPI_SUCCESS in case of success.\n";
-    print OUTFILE " \*           GASPI_ERROR in case of error.\n";
+    print C_FILE " \*\n \* RETURN VALUE:\n";
+    print C_FILE " \*   \@return GASPI_SUCCESS in case of success.\n";
+    print C_FILE " \*           GASPI_ERROR in case of error.\n";
     if ( $timeout != 0 ) {
-	print OUTFILE " \*           GASPI_TIMEOUT in case of timeout.\n";
+	print C_FILE " \*           GASPI_TIMEOUT in case of timeout.\n";
     }	
+
+    print F90_FILE "!\n! RETURN VALUE:\n";
+    print F90_FILE "!   \@return GASPI_SUCCESS in case of success.\n";
+    print F90_FILE "!           GASPI_ERROR in case of error.\n";
+    if ( $timeout != 0 ) {
+	print F90_FILE "!           GASPI_TIMEOUT in case of timeout.\n";
+    }	
+
     
 # include actual c forward declaration     
     $c =~ s/^(.*)\n$/$1;/s;        
-    print OUTFILE " \*/\n";
-    print OUTFILE "$c\n\n";   
+    print C_FILE " \*/\n";
+    print C_FILE "$c\n\n";
+
+# include actual f90 forward declaration     
+    $fortran =~ s/^(.*)\n$/$1/s;
+    $fortran =~ s/(\Wbind\s*\(.*?\))/$1\n  import/s;        
+    print F90_FILE "!\n\ninterface";
+    print F90_FILE "$fortran\nend interface\n\n";   
 
 }
-close OUTFILE;
+close C_FILE;
+close F90_FILE;
 
 # assemble everyting 
-open INFILE,"<GASPI.h.in";
-$string = do { local $/; <INFILE> };
+open C_INFILE,"<GASPI.h.in";
+$string = do { local $/; <C_INFILE> };
 close INFILE;
 
-open OUTFILE,">GASPI.h";
-open INFILE,"<GASPI.h.raw";
-while ($line = <INFILE>) {
+open C_FILE,">GASPI.h";
+open C_INFILE,"<GASPI.h.raw";
+while ($line = <C_INFILE>) {
     if ( $line =~ /^\/\* HERE \*\/$/) {
-	print OUTFILE $string;
+	print C_FILE $string;
     } else {
-	print OUTFILE $line;
+	print C_FILE $line;
     }
 }
-close INFILE;
-close OUTFILE;
+close C_INFILE;
+close C_FILE;
+
+open F90_INFILE,"<GASPI.f90.in";
+$string = do { local $/; <F90_INFILE> };
+close F90_INFILE;
+
+open F90_FILE,">GASPI.f90";
+open F90_INFILE,"<GASPI.f90.raw";
+while ($line = <F90_INFILE>) {
+    if ( $line =~ /^! HERE/) {
+	print F90_FILE $string;
+    } else {
+	print F90_FILE $line;
+    }
+}
+close F90_INFILE;
+close F90_FILE;

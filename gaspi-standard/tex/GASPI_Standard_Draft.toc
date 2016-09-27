@@ -131,8 +131,8 @@
 \contentsline {section}{\numberline {12}{\sc Gaspi}{} getter functions}{113}
 \contentsline {subsection}{\numberline {12.1}Getter functions for group management}{113}
 \contentsline {subsubsection}{\numberline {12.1.1}{\tt \zsep {gaspi\_group\_max}}}{113}
-\contentsline {subsection}{\numberline {12.2}Getter functions for segment management}{114}
-\contentsline {subsubsection}{\numberline {12.2.1}{\tt \zsep {gaspi\_segment\_max}}}{114}
+\contentsline {subsection}{\numberline {12.2}Getter functions for segment management}{113}
+\contentsline {subsubsection}{\numberline {12.2.1}{\tt \zsep {gaspi\_segment\_max}}}{113}
 \contentsline {subsection}{\numberline {12.3}Getter functions for communication management}{114}
 \contentsline {subsubsection}{\numberline {12.3.1}{\tt \zsep {gaspi\_queue\_num}}}{114}
 \contentsline {subsubsection}{\numberline {12.3.2}{\tt \zsep {gaspi\_queue\_size\_max}}}{115}
@@ -145,7 +145,7 @@
 \contentsline {subsubsection}{\numberline {12.5.1}{\tt \zsep {gaspi\_atomic\_max}}}{117}
 \contentsline {subsection}{\numberline {12.6}Getter functions for collective communication}{118}
 \contentsline {subsubsection}{\numberline {12.6.1}{\tt \zsep {gaspi\_allreduce\_buf\_size}}}{118}
-\contentsline {subsubsection}{\numberline {12.6.2}{\tt \zsep {gaspi\_allreduce\_elem\_max}}}{119}
+\contentsline {subsubsection}{\numberline {12.6.2}{\tt \zsep {gaspi\_allreduce\_elem\_max}}}{118}
 \contentsline {subsection}{\numberline {12.7}Getter functions related to infrastructure}{119}
 \contentsline {subsubsection}{\numberline {12.7.1}{\tt \zsep {gaspi\_network\_type}}}{119}
 \contentsline {subsubsection}{\numberline {12.7.2}{\tt \zsep {gaspi\_build\_infrastructure}}}{120}
@@ -155,10 +155,10 @@
 \contentsline {subsection}{\numberline {13.2}Timing information}{121}
 \contentsline {subsubsection}{\numberline {13.2.1}{\tt \zsep {gaspi\_time\_get}}}{121}
 \contentsline {subsubsection}{\numberline {13.2.2}{\tt \zsep {gaspi\_time\_ticks}}}{122}
-\contentsline {subsection}{\numberline {13.3}Error Codes and Classes}{123}
-\contentsline {subsubsection}{\numberline {13.3.1}{\sc Gaspi}{} error codes}{123}
+\contentsline {subsection}{\numberline {13.3}Error Codes and Classes}{122}
+\contentsline {subsubsection}{\numberline {13.3.1}{\sc Gaspi}{} error codes}{122}
 \contentsline {subsubsection}{\numberline {13.3.2}{\tt \zsep {gaspi\_print\_error}}}{123}
-\contentsline {section}{\numberline {14}Profiling Interface}{124}
+\contentsline {section}{\numberline {14}Profiling Interface}{123}
 \contentsline {subsection}{\numberline {14.1}Statistics}{124}
 \contentsline {subsubsection}{\numberline {14.1.1}{\tt \zsep {gaspi\_statistic\_counter\_max}}}{124}
 \contentsline {subsubsection}{\numberline {14.1.2}{\tt \zsep {gaspi\_statistic\_counter\_info}}}{125}
@@ -169,4 +169,4 @@
 \contentsline {subsubsection}{\numberline {14.2.1}{\tt \zsep {gaspi\_pcontrol}}}{129}
 \contentsline {section}{\numberline {A}Listings}{130}
 \contentsline {subsection}{\numberline {A.1}success\_or\_die}{130}
-\contentsline {subsection}{\numberline {A.2}wait\_if\_queue\_full}{131}
+\contentsline {subsection}{\numberline {A.2}wait\_if\_queue\_full}{130}
