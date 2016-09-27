@@ -52,7 +52,7 @@ my $filename = $ARGV[0];
 
 # clean up, remove comments, tex style, empty lines, etc.
 open INFILE,"<$filename";
-open OUTFILE,">$filename.tmp";
+open OUTFILE,">TEX.tmp";
 while ($line = <INFILE>) {
     if ( $line !~ /^\%.*$/) {
 	$line =~ s/\\_/_/g;
@@ -73,7 +73,7 @@ close OUTFILE;
 close INFILE;
 
 
-open INFILE,"<$filename.tmp";
+open INFILE,"<TEX.tmp";
 my $string = do { local $/; <INFILE> };
 close INFILE;
 
