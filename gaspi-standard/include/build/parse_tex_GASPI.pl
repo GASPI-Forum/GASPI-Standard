@@ -6,13 +6,13 @@
 #           parse_tex_GASPI.pl
 #
 #
-#  current version            : 0.1
+#  current version            : 0.2
 #  last release version       :
 #  date of delivery           :
 #  status (since last version): 
 #
 #  last modification by       : C. Simmendinger, T-Systems SfR
-#  date                       : 1.9.2016
+#  date                       : 26.9.2016
 #
 # FUNCTION
 #
@@ -32,7 +32,7 @@
 #  
 #  Includes timeout return value., if available
 #    
-#  Output is integrated into the GASPI.h.raw template.
+#  Output is integrated into the GASPI.h.raw, GASPI.f90.raw templates.
 #
 #  Intermediate files not (yet) removed.
 #
@@ -117,6 +117,7 @@ foreach my $function (@functions) {
 	    $len = 0;
 	}
     }
+
 # line wrap fortran 
     $len = 0;
     my $f90_text = "!  ";
@@ -184,7 +185,7 @@ foreach my $function (@functions) {
 	my $len;
 	my $max = 50;
 
-# line wrap parameter description
+# line wrap c parameter description
 	$len = 0;
 	my $c_description = "";
 	foreach (@description_words) {
@@ -197,6 +198,7 @@ foreach my $function (@functions) {
 	}
 	print C_FILE " \*   \@param $parameter $c_description ($in)\n";
 
+# line wrap fortran parameter description
 	$len = 0;
 	my $f90_description = "";
 	foreach (@description_words) {
@@ -215,7 +217,7 @@ foreach my $function (@functions) {
 
     }
     
-# return values
+# return values c
     print C_FILE " \*\n \* RETURN VALUE:\n";
     print C_FILE " \*   \@return GASPI_SUCCESS in case of success.\n";
     print C_FILE " \*           GASPI_ERROR in case of error.\n";
@@ -223,13 +225,13 @@ foreach my $function (@functions) {
 	print C_FILE " \*           GASPI_TIMEOUT in case of timeout.\n";
     }	
 
+# return values fortran
     print F90_FILE "!\n! RETURN VALUE:\n";
     print F90_FILE "!   \@return GASPI_SUCCESS in case of success.\n";
     print F90_FILE "!           GASPI_ERROR in case of error.\n";
     if ( $timeout != 0 ) {
 	print F90_FILE "!           GASPI_TIMEOUT in case of timeout.\n";
     }	
-
     
 # include actual c forward declaration     
     $c =~ s/^(.*)\n$/$1;/s;        
@@ -238,6 +240,8 @@ foreach my $function (@functions) {
 
 # include actual f90 forward declaration     
     $fortran =~ s/^(.*)\n$/$1/s;
+
+# include interface, import for fortran 
     $fortran =~ s/(\Wbind\s*\(.*?\))/$1\n  import/s;        
     print F90_FILE "!\n\ninterface";
     print F90_FILE "$fortran\nend interface\n\n";   
@@ -246,7 +250,7 @@ foreach my $function (@functions) {
 close C_FILE;
 close F90_FILE;
 
-# assemble everyting 
+# assemble c header
 open C_INFILE,"<GASPI.h.in";
 $string = do { local $/; <C_INFILE> };
 close INFILE;
@@ -263,6 +267,7 @@ while ($line = <C_INFILE>) {
 close C_INFILE;
 close C_FILE;
 
+# assemble fortran header
 open F90_INFILE,"<GASPI.f90.in";
 $string = do { local $/; <F90_INFILE> };
 close F90_INFILE;
