@@ -1,5 +1,7 @@
 module GASPI_types
   
+  use, intrinsic :: ISO_C_BINDING
+  
 !
 ! ENUMERATION:
 !   gaspi_network_t
@@ -7,6 +9,7 @@ module GASPI_types
 ! DESCRIPTON:
 !   the GASPI network infrastructure type.
 !
+  integer, parameter   :: gaspi_network_t = c_int
   enum, bind(C)
      enumerator :: GASPI_NOT_USED = -1
   end enum
@@ -18,6 +21,7 @@ module GASPI_types
 ! DESCRIPTION:
 !   the policy by which memory is allocated.
 !
+  integer, parameter   :: gaspi_alloc_t = c_int
   enum, bind(C)
      enumerator :: GASPI_MEM_UNINITIALIZED = 0
      enumerator :: GASPI_ALLOC_DEFAULT = 0
@@ -30,6 +34,7 @@ module GASPI_types
 ! DESCRIPTION:
 !   the GASPI return value.
 !
+  integer, parameter   :: gaspi_return_t = c_int
   enum, bind(C)
      enumerator :: GASPI_ERROR = -1
      enumerator :: GASPI_SUCCESS = 0
@@ -43,6 +48,7 @@ module GASPI_types
 ! DESCRIPTION:
 !   the health state of a remote GASPI process.
 !
+  integer, parameter   :: gaspi_state_t = c_int
   enum, bind(C)
      enumerator :: GASPI_STATE_HEALTHY = 0
      enumerator :: GASPI_STATE_CORRUPT = 1
@@ -55,6 +61,7 @@ module GASPI_types
 ! DESCRIPTION:
 !   the meaning of the argument value for the statistic counters.  
 !
+  integer, parameter   :: gaspi_statistic_argument_t = c_int
   enum, bind(C)
      enumerator :: GASPI_STATISTIC_ARGUMENT_NONE = 0 
      enumerator :: GASPI_STATISTIC_ARGUMENT_RANK = 1
@@ -68,7 +75,6 @@ module GASPI_types
 !   the value used in atomic global GASPI operations.
 ! 
   integer, parameter   :: gaspi_atomic_value_t = c_long
-
 
 !
 ! TYPE:

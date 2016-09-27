@@ -33,6 +33,7 @@ module GASPI
 !   GASPI_OP_MAX - determines the maximum of the elements of each column of the input vector.
 !   GASPI_OP_SUM - sums up all elements of each column of the input vector.
 !
+  integer, parameter   :: gaspi_operation_t = c_int
   enum, bind(C)	
      enumerator :: GASPI_OP_MIN = 0
      enumerator :: GASPI_OP_MAX = 1
@@ -54,6 +55,7 @@ module GASPI
 !   GASPI_TYPE_FLOAT - float
 !   GASPI_TYPE_DOUBLE - double
 !
+  integer, parameter   :: gaspi_datatype_t = c_int
   enum, bind(C)	
      enumerator :: GASPI_TYPE_INT = 0
      enumerator :: GASPI_TYPE_UINT = 1
@@ -146,11 +148,14 @@ module GASPI
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_config_get(config) &
 &   result( res ) bind(C, name="gaspi_config_get")
+  import
   type(gaspi_config_t) :: config
   integer(gaspi_return_t) :: res
 end function gaspi_config_get
+end interface
 
 !
 ! FUNCTION:
@@ -172,11 +177,14 @@ end function gaspi_config_get
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_config_set(new_config) &
 &   result( res ) bind(C, name="gaspi_config_set")
+  import
   type(gaspi_config_t), value :: new_config
   integer(gaspi_return_t) :: res
 end function gaspi_config_set
+end interface
 
 !
 ! FUNCTION:
@@ -199,11 +207,14 @@ end function gaspi_config_set
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_proc_init(timeout_ms) &
 &         result( res ) bind(C, name="gaspi_proc_init")
+  import
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_proc_init
+end interface
 
 !
 ! FUNCTION:
@@ -225,11 +236,14 @@ end function gaspi_proc_init
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_proc_num(proc_num) &
 &         result( res ) bind(C, name="gaspi_proc_num")
+  import
   integer(gaspi_rank_t) :: proc_num
   integer(gaspi_return_t) :: res
 end function gaspi_proc_num
+end interface
 
 !
 ! FUNCTION:
@@ -253,11 +267,14 @@ end function gaspi_proc_num
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_proc_rank(rank) &
 &         result( res ) bind(C, name="gaspi_proc_rank")
+  import
   integer(gaspi_rank_t) :: rank
   integer(gaspi_return_t) :: res
 end function gaspi_proc_rank
+end interface
 
 !
 ! FUNCTION:
@@ -285,11 +302,14 @@ end function gaspi_proc_rank
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_proc_term(timeout_ms) &
 &         result( res ) bind(C, name="gaspi_proc_term")
+  import
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_proc_term
+end interface
 
 !
 ! FUNCTION:
@@ -314,12 +334,15 @@ end function gaspi_proc_term
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_proc_kill(rank,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_proc_kill")
+  import
   integer(gaspi_rank_t), value :: rank
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_proc_kill
+end interface
 
 !
 ! FUNCTION:
@@ -347,11 +370,15 @@ end function gaspi_proc_kill
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_connect(rank,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_connect")
+  import
   integer(gaspi_rank_t), value :: rank
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
+end function gaspi_connect
+end interface
 
 !
 ! FUNCTION:
@@ -378,12 +405,15 @@ function gaspi_connect(rank,timeout_ms) &
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_disconnect(rank,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_disconnect")
+  import
   integer(gaspi_rank_t), value :: rank
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_disconnect
+end interface
 
 !
 ! FUNCTION:
@@ -405,11 +435,14 @@ end function gaspi_disconnect
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_state_vec_get(state_vector) &
 &         result( res ) bind(C, name="gaspi_state_vec_get")
+  import
   type(c_ptr), value :: state_vector
   integer(gaspi_return_t) :: res
 end function gaspi_state_vec_get
+end interface
 
 !
 ! FUNCTION:
@@ -430,11 +463,14 @@ end function gaspi_state_vec_get
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_group_create(group) &
 &         result( res ) bind(C, name="gaspi_group_create")
+  import
   integer(gaspi_group_t) :: group
   integer(gaspi_return_t) :: res
 end function gaspi_group_create
+end interface
 
 !
 ! FUNCTION:
@@ -458,12 +494,15 @@ end function gaspi_group_create
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_group_add(group,rank) &
 &         result( res ) bind(C, name="gaspi_group_add")
+  import
   integer(gaspi_group_t), value :: group
   integer(gaspi_rank_t), value :: rank
   integer(gaspi_return_t) :: res
 end function gaspi_group_add
+end interface
 
 !
 ! FUNCTION:
@@ -488,12 +527,15 @@ end function gaspi_group_add
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_group_commit(group,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_group_commit")
+  import
   integer(gaspi_group_t), value :: group
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_group_commit
+end interface
 
 !
 ! FUNCTION:
@@ -514,11 +556,14 @@ end function gaspi_group_commit
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_group_delete(group) &
 &         result( res ) bind(C, name="gaspi_group_delete")
+  import
   integer(gaspi_group_t), value :: group
   integer(gaspi_return_t) :: res
 end function gaspi_group_delete
+end interface
 
 !
 ! FUNCTION:
@@ -540,11 +585,14 @@ end function gaspi_group_delete
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_group_num(group_num) &
 &         result( res ) bind(C, name="gaspi_group_num")
+  import
   integer(gaspi_number_t) :: group_num
   integer(gaspi_return_t) :: res
 end function gaspi_group_num
+end interface
 
 !
 ! FUNCTION:
@@ -568,12 +616,15 @@ end function gaspi_group_num
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_group_size(group,group_size) &
 &         result( res ) bind(C, name="gaspi_group_size")
+  import
   integer(gaspi_group_t), value :: group
   integer(gaspi_number_t) :: group_size
   integer(gaspi_return_t) :: res
 end function gaspi_group_size
+end interface
 
 !
 ! FUNCTION:
@@ -597,12 +648,15 @@ end function gaspi_group_size
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_group_ranks(group,group_ranks) &
 &         result( res ) bind(C, name="gaspi_group_ranks")
+  import
   integer(gaspi_group_t), value :: group
   type(c_ptr), value :: group_ranks
   integer(gaspi_return_t) :: res
 end function gaspi_group_ranks
+end interface
 
 !
 ! FUNCTION:
@@ -629,13 +683,16 @@ end function gaspi_group_ranks
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_segment_alloc(segment_id,size,alloc_policy) &
 &         result( res ) bind(C, name="gaspi_segment_alloc")
+  import
   integer(gaspi_segment_id_t), value :: segment_id
   integer(gaspi_size_t), value :: size
   integer(gaspi_alloc_t), value :: alloc_policy
   integer(gaspi_return_t) :: res
 end function gaspi_segment_alloc
+end interface
 
 !
 ! FUNCTION:
@@ -667,13 +724,16 @@ end function gaspi_segment_alloc
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_segment_register(segment_id,rank,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_segment_register")
+  import
   integer(gaspi_segment_id_t), value :: segment_id
   integer(gaspi_rank_t), value :: rank
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_segment_register
+end interface
 
 !
 ! FUNCTION:
@@ -709,9 +769,11 @@ end function gaspi_segment_register
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_segment_create(segment_id,size,group, &
 &         timeout_ms,alloc_policy) &
 &         result( res ) bind(C, name="gaspi_segment_create")
+  import
   integer(gaspi_segment_id_t), value :: segment_id
   integer(gaspi_size_t), value :: size
   integer(gaspi_group_t), value :: group
@@ -719,6 +781,7 @@ function gaspi_segment_create(segment_id,size,group, &
   integer(gaspi_alloc_t), value :: alloc_policy
   integer(gaspi_return_t) :: res
 end function gaspi_segment_create
+end interface
 
 !
 ! FUNCTION:
@@ -747,18 +810,21 @@ end function gaspi_segment_create
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_segment_bind ( segment_id                  &
 &                           , pointer                     &
 &                           , size                        &
 &                           , memory_description          &
 &                           )                             &
 &        result (res) bind (C, name="gaspi_segment_bind")
+  import
   integer (gaspi_segment_id_t), value :: segment_id
   type (c_ptr), value :: pointer
   integer (gaspi_size_t), value :: size
   integer (gaspi_memory_description_t), value :: memory_description
   integer (gaspi_return_t) :: res
 end function gaspi_segment_bind
+end interface
 
 !
 ! FUNCTION:
@@ -796,6 +862,7 @@ end function gaspi_segment_bind
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_segment_use ( segment_id                  &
 &                          , pointer                     &
 &                          , size                        &
@@ -804,6 +871,7 @@ function gaspi_segment_use ( segment_id                  &
 &                          , memory_description          &
 &                          )                             &
 &        result (res) bind (C, name="gaspi_segment_use")
+  import
   integer (gaspi_segment_id_t), value :: segment_id
   type (c_ptr), value :: pointer
   integer (gaspi_size_t), value :: size
@@ -811,7 +879,8 @@ function gaspi_segment_use ( segment_id                  &
   integer (gaspi_timeout_t), value :: timeout
   integer (gaspi_memory_description_t), value :: memory_description
   integer (gaspi_return_t) :: res
-end function gaspi_segment_bind
+end function gaspi_segment_use
+end interface
 
 !
 ! FUNCTION:
@@ -833,11 +902,14 @@ end function gaspi_segment_bind
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_segment_delete(segment_id) &
 &         result( res ) bind(C, name="gaspi_segment_delete")
+  import
   integer(gaspi_segment_id_t), value :: segment_id
   integer(gaspi_return_t) :: res
 end function gaspi_segment_delete
+end interface
 
 !
 ! FUNCTION:
@@ -859,11 +931,14 @@ end function gaspi_segment_delete
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_segment_num(segment_num) &
 &         result( res ) bind(C, name="gaspi_segment_num")
+  import
   integer(gaspi_number_t) :: segment_num
   integer(gaspi_return_t) :: res
 end function gaspi_segment_num
+end interface
 
 !
 ! FUNCTION:
@@ -887,12 +962,15 @@ end function gaspi_segment_num
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_segment_list(num,segment_id_list) &
 &         result( res ) bind(C, name="gaspi_segment_list")
+  import
   integer(gaspi_number_t), value :: num
   type(c_ptr), value :: segment_id_list
   integer(gaspi_return_t) :: res
 end function gaspi_segment_list
+end interface
 
 !
 ! FUNCTION:
@@ -918,12 +996,15 @@ end function gaspi_segment_list
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_segment_ptr(segment_id,ptr) &
 &         result( res ) bind(C, name="gaspi_segment_ptr")
+  import
   integer(gaspi_segment_id_t), value :: segment_id
   type(c_ptr) :: ptr
   integer(gaspi_return_t) :: res
 end function gaspi_segment_ptr
+end interface
 
 !
 ! FUNCTION:
@@ -961,10 +1042,12 @@ end function gaspi_segment_ptr
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_write(segment_id_local,offset_local,&
 &         rank, segment_id_remote,offset_remote,size,&
 &         queue,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_write")
+  import
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_offset_t), value :: offset_local
   integer(gaspi_rank_t), value :: rank
@@ -975,6 +1058,7 @@ function gaspi_write(segment_id_local,offset_local,&
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_write
+end interface
 
 !
 ! FUNCTION:
@@ -1012,10 +1096,12 @@ end function gaspi_write
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_read(segment_id_local,offset_local,&
 &         rank,segment_id_remote,offset_remote,size,&
 &         queue,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_read")
+  import
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_offset_t), value :: offset_local
   integer(gaspi_rank_t), value :: rank
@@ -1026,6 +1112,7 @@ function gaspi_read(segment_id_local,offset_local,&
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_read
+end interface
 
 !
 ! FUNCTION:
@@ -1052,12 +1139,15 @@ end function gaspi_read
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_wait(queue,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_wait")
+  import
   integer(gaspi_queue_id_t), value :: queue
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_wait
+end interface
 
 !
 ! FUNCTION:
@@ -1089,9 +1179,11 @@ end function gaspi_wait
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_notify(segment_id_remote,rank,notification_id, &
 &         notification_value,queue,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_notify")
+  import
   integer(gaspi_segment_id_t), value :: segment_id_remote
   integer(gaspi_rank_t), value :: rank
   integer(gaspi_notification_id_t), value :: notification_id
@@ -1100,6 +1192,7 @@ function gaspi_notify(segment_id_remote,rank,notification_id, &
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_notify
+end interface
 
 !
 ! FUNCTION:
@@ -1136,9 +1229,11 @@ end function gaspi_notify
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_notify_waitsome(segment_id_local,&
 &         notification_begin,num,first_id,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_notify_waitsome")
+  import
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_notification_id_t), value :: notification_begin
   integer(gaspi_number_t), value :: num
@@ -1146,6 +1241,7 @@ function gaspi_notify_waitsome(segment_id_local,&
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_notify_waitsome
+end interface
 
 !
 ! FUNCTION:
@@ -1172,14 +1268,17 @@ end function gaspi_notify_waitsome
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_notify_reset(segment_id_local, &
 &         notification_id,old_notification_val) &
 &         result( res ) bind(C, name="gaspi_notify_reset")
+  import
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_notification_id_t), value :: notification_id
   integer(gaspi_notification_t) :: old_notification_val
   integer(gaspi_return_t) :: res
 end function gaspi_notify_reset
+end interface
 
 !
 ! FUNCTION:
@@ -1224,11 +1323,13 @@ end function gaspi_notify_reset
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_write_notify(segment_id_local,offset_local,&
 &         rank,segment_id_remote,offset_remote,size,&
 &         notification_id,notification_value,queue,&
 &         timeout_ms) &
 &         result( res ) bind(C, name="gaspi_write_notify")
+  import
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_offset_t), value :: offset_local
   integer(gaspi_rank_t), value :: rank
@@ -1241,6 +1342,7 @@ function gaspi_write_notify(segment_id_local,offset_local,&
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_write_notify
+end interface
 
 !
 ! FUNCTION:
@@ -1281,10 +1383,12 @@ end function gaspi_write_notify
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_write_list(num,segment_id_local,offset_local,&
 &         rank,segment_id_remote,offset_remote,size,queue,&
 &         timeout_ms) &
 &         result( res ) bind(C, name="gaspi_write_list")
+  import
   integer(gaspi_number_t), value :: num
   type(c_ptr), value :: segment_id_local
   type(c_ptr), value  :: offset_local
@@ -1296,6 +1400,7 @@ function gaspi_write_list(num,segment_id_local,offset_local,&
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_write_list
+end interface
 
 !
 ! FUNCTION:
@@ -1341,11 +1446,13 @@ end function gaspi_write_list
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_write_list_notify(num,segment_id_local,&
 &         offset_local,rank,segment_id_remote,&
 &         offset_remote,size,segment_id_notification, &
 &         notification_id,notification_value,queue,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_write_list_notify")
+  import
   integer(gaspi_number_t), value :: num
   type(c_ptr), value :: segment_id_local
   type(c_ptr), value :: offset_local
@@ -1360,6 +1467,7 @@ function gaspi_write_list_notify(num,segment_id_local,&
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_write_list_notify
+end interface
 
 !
 ! FUNCTION:
@@ -1401,12 +1509,14 @@ end function gaspi_write_list_notify
 !           GASPI_ERROR in case of error.
 !           GASPI_TIMEOUT in case of timeout.
 !
-                                                                                                                                               
+
+interface                                                                                                                                               
 function gaspi_read_notify(segment_id_local,offset_local,rank,&
 &         segment_id_remote, offset_remote,&
 &         size,notification_id,queue,&
 &         timeout_ms) &
 &         result( res ) bind(C, name="gaspi_read_notify")
+  import
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_offset_t), value :: offset_local
   integer(gaspi_rank_t), value :: rank
@@ -1418,6 +1528,7 @@ function gaspi_read_notify(segment_id_local,offset_local,rank,&
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_read_notify
+end interface
 
 !
 ! FUNCTION:
@@ -1458,10 +1569,12 @@ end function gaspi_read_notify
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_read_list(num,segment_id_local,offset_local,&
 &         rank,segment_id_remote,offset_remote,size,queue,&
 &         timeout_ms) &
 &         result( res ) bind(C, name="gaspi_read_list")
+  import
   integer(gaspi_number_t), value :: num
   type(c_ptr), value :: segment_id_local
   type(c_ptr), value :: offset_local
@@ -1473,6 +1586,7 @@ function gaspi_read_list(num,segment_id_local,offset_local,&
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_read_list
+end interface
 
 !
 ! FUNCTION:
@@ -1498,12 +1612,15 @@ end function gaspi_read_list
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_queue_create (queue, timeout) &
 &        result(res) bind (C, name="gaspi_queue_create" )
+  import
   integer(gaspi_queue_id_t) :: queue
   integer(gaspi_timeout_t), value :: timeout
   integer(gaspi_return_t) :: res
 end function gaspi_queue_create
+end interface
 
 !
 ! FUNCTION:
@@ -1525,11 +1642,14 @@ end function gaspi_queue_create
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_queue_delete ( queue ) &
 &        result(res) bind (C, name="gaspi_queue_delete" )
+  import
   integer(gaspi_queue_id_t), value :: queue
   integer(gaspi_return_t) :: res
 end function gaspi_queue_delete
+end interface
 
 !
 ! FUNCTION:
@@ -1553,12 +1673,15 @@ end function gaspi_queue_delete
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_queue_size(queue,queue_size) &
 &         result( res ) bind(C, name="gaspi_queue_size")
+  import
   integer(gaspi_queue_id_t), value :: queue
   integer(gaspi_number_t) :: queue_size
   integer(gaspi_return_t) :: res
 end function gaspi_queue_size
+end interface
 
 !
 ! FUNCTION:
@@ -1582,12 +1705,15 @@ end function gaspi_queue_size
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_queue_purge(queue,timeout) &
 &         result( res ) bind(C, name="gaspi_queue_purge")
+  import
   integer(gaspi_queue_id_t), value :: queue
   integer(gaspi_timeout_t), value :: timeout
   integer(gaspi_return_t) :: res
 end function gaspi_queue_purge
+end interface
 
 !
 ! FUNCTION:
@@ -1618,9 +1744,11 @@ end function gaspi_queue_purge
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_passive_send(segment_id_local,offset_local, &
 &         rank,size,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_passive_send")
+  import
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_offset_t), value :: offset_local
   integer(gaspi_rank_t), value :: rank
@@ -1628,6 +1756,7 @@ function gaspi_passive_send(segment_id_local,offset_local, &
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_passive_send
+end interface
 
 !
 ! FUNCTION:
@@ -1659,9 +1788,11 @@ end function gaspi_passive_send
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_passive_receive(segment_id_local,offset_local, &
 &         rem_rank,size,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_passive_receive")
+  import
   integer(gaspi_segment_id_t), value :: segment_id_local
   integer(gaspi_offset_t), value :: offset_local
   integer(gaspi_rank_t) :: rem_rank
@@ -1669,6 +1800,7 @@ function gaspi_passive_receive(segment_id_local,offset_local, &
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_passive_receive
+end interface
 
 !
 ! FUNCTION:
@@ -1691,11 +1823,14 @@ end function gaspi_passive_receive
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_passive_queue_purge(timeout) &
 &         result( res ) bind(C, name="gaspi_passive_queue_purge")
+  import
   integer(gaspi_timeout_t), value :: timeout
   integer(gaspi_return_t) :: res
 end function gaspi_passive_queue_purge
+end interface
 
 !
 ! FUNCTION:
@@ -1728,9 +1863,11 @@ end function gaspi_passive_queue_purge
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_atomic_fetch_add(segment_id,offset,rank, &
 &         val_add,val_old,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_atomic_fetch_add")
+  import
   integer(gaspi_segment_id_t), value :: segment_id
   integer(gaspi_offset_t), value :: offset
   integer(gaspi_rank_t), value :: rank
@@ -1739,6 +1876,7 @@ function gaspi_atomic_fetch_add(segment_id,offset,rank, &
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_atomic_fetch_add
+end interface
 
 !
 ! FUNCTION:
@@ -1776,9 +1914,11 @@ end function gaspi_atomic_fetch_add
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_atomic_compare_swap(segment_id,offset,rank,&
 &         comparator,val_new,val_old,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_atomic_compare_swap")
+  import
   integer(gaspi_segment_id_t), value :: segment_id
   integer(gaspi_offset_t), value :: offset
   integer(gaspi_rank_t), value :: rank
@@ -1788,6 +1928,7 @@ function gaspi_atomic_compare_swap(segment_id,offset,rank,&
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_atomic_compare_swap
+end interface
 
 !
 ! FUNCTION:
@@ -1813,12 +1954,15 @@ end function gaspi_atomic_compare_swap
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_barrier(group,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_barrier")
+  import
   integer(gaspi_group_t), value :: group
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_barrier
+end interface
 
 !
 ! FUNCTION:
@@ -1855,18 +1999,21 @@ end function gaspi_barrier
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_allreduce(buffer_send,buffer_receive,num, &
 &         operation,datatyp,group,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_allreduce")
+  import
   type(c_ptr), value :: buffer_send
   type(c_ptr), value :: buffer_receive
   integer(gaspi_number_t), value :: num
-  integer(gaspi_int), value :: operation
-  integer(gaspi_int), value :: datatyp
+  integer(gaspi_operation_t), value :: operation
+  integer(gaspi_datatype_t), value :: datatyp
   integer(gaspi_group_t), value :: group
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_allreduce
+end interface
 
 !
 ! FUNCTION:
@@ -1908,10 +2055,12 @@ end function gaspi_allreduce
 !           GASPI_TIMEOUT in case of timeout.
 !
 
+interface
 function gaspi_allreduce_user(buffer_send,buffer_receive, &
 &         num,element_size,reduce_operation,reduce_state,&
 &         group,timeout_ms) &
 &         result( res ) bind(C, name="gaspi_allreduce_user")
+  import
   type(c_ptr), value :: buffer_send
   type(c_ptr), value :: buffer_receive
   integer(gaspi_number_t), value :: num        
@@ -1922,6 +2071,7 @@ function gaspi_allreduce_user(buffer_send,buffer_receive, &
   integer(gaspi_timeout_t), value :: timeout_ms
   integer(gaspi_return_t) :: res
 end function gaspi_allreduce_user
+end interface
 
 !
 ! FUNCTION:
@@ -1951,16 +2101,13 @@ end function gaspi_allreduce_user
 !           GASPI_TIMEOUT in case of timeout.
 !
 
-function my_reduce_operation(op_one,op_two,op_res, &
+interface
+function gaspi_reduce_operation(op_one,op_two,op_res, &
 &   op_state,num,element_size,timeout) &
 &   result ( res ) bind(C,name="my_reduce_operation")
+  import
   implicit none
   integer(gaspi_number_t), intent(in), value :: num        
-!
-! the fortran user defined callback function requires an 
-! explicit type from the iso_c_binding module. in this 
-! example integer(c_int) (op_one,op_two,op_res,op_state)
-!
   integer(c_int), intent(in)  :: op_one(num)
   integer(c_int), intent(in)  :: op_two(num)
   integer(c_int), intent(out) :: op_res(num)
@@ -1968,11 +2115,8 @@ function my_reduce_operation(op_one,op_two,op_res, &
   integer(gaspi_size_t), value :: element_size
   integer(gaspi_timeout_t), value :: timeout
   integer(gaspi_return_t) :: res
-!
-! your user defined operation       
-! ...
-  res = GASPI_SUCCESS
-end function my_reduce_operation
+end function gaspi_reduce_operation
+end interface
 
 !
 ! FUNCTION:
@@ -1992,11 +2136,14 @@ end function my_reduce_operation
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_group_max(group_max) &
 &         result( res ) bind(C, name="gaspi_group_max")
+  import
   integer(gaspi_number_t) :: group_max
   integer(gaspi_return_t) :: res
 end function gaspi_group_max
+end interface
 
 !
 ! FUNCTION:
@@ -2016,11 +2163,14 @@ end function gaspi_group_max
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_segment_max(segment_max) &
 &         result( res ) bind(C, name="gaspi_segment_max")
+  import
   integer(gaspi_number_t) :: segment_max
   integer(gaspi_return_t) :: res
 end function gaspi_segment_max
+end interface
 
 !
 ! FUNCTION:
@@ -2040,11 +2190,14 @@ end function gaspi_segment_max
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_queue_num(queue_num) &
 &         result( res ) bind(C, name="gaspi_queue_num")
+  import
   integer(gaspi_number_t) :: queue_num
   integer(gaspi_return_t) :: res
 end function gaspi_queue_num
+end interface
 
 !
 ! FUNCTION:
@@ -2065,11 +2218,14 @@ end function gaspi_queue_num
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_queue_size_max(queue_size_max) &
 &         result( res ) bind(C, name="gaspi_queue_size_max")
+  import
   integer(gaspi_number_t) :: queue_size_max
   integer(gaspi_return_t) :: res
 end function gaspi_queue_size_max
+end interface
 
 !
 ! FUNCTION:
@@ -2089,11 +2245,14 @@ end function gaspi_queue_size_max
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_queue_max ( queue_max ) &
 &        result(res) bind (C, name="gaspi_queue_max" )
+  import
   integer(gaspi_number_t), value :: queue_max
   integer(gaspi_return_t) :: res
 end function gaspi_queue_max
+end interface
 
 !
 ! FUNCTION:
@@ -2114,12 +2273,15 @@ end function gaspi_queue_max
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_transfer_size_max(transfer_size_max) &
 &         result( res ) &
 &         bind(C, name="gaspi_transfer_size_max")
+  import
   integer(gaspi_size_t) :: transfer_size_max
   integer(gaspi_return_t) :: res
 end function gaspi_transfer_size_max
+end interface
 
 !
 ! FUNCTION:
@@ -2139,11 +2301,14 @@ end function gaspi_transfer_size_max
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_notification_num(notification_num) &
 &         result( res ) bind(C, name="gaspi_notification_num")
+  import
   integer(gaspi_number_t) :: notification_num
   integer(gaspi_return_t) :: res
 end function gaspi_notification_num
+end interface
 
 !
 ! FUNCTION:
@@ -2164,12 +2329,15 @@ end function gaspi_notification_num
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_passive_transfer_size_max(transfer_size_max) &
 &         result( res ) &
 &         bind(C, name="gaspi_passive_transfer_size_max")
+  import
   integer(gaspi_size_t) :: transfer_size_max
   integer(gaspi_return_t) :: res
 end function gaspi_passive_transfer_size_max
+end interface
 
 !
 ! FUNCTION:
@@ -2190,11 +2358,14 @@ end function gaspi_passive_transfer_size_max
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_atomic_max(max_value) &
 &         result( res ) bind(C, name="gaspi_atomic_max")
+  import
   integer(gaspi_atomic_value_t) :: max_value
   integer(gaspi_return_t) :: res
 end function gaspi_atomic_max
+end interface
 
 !
 ! FUNCTION:
@@ -2215,11 +2386,14 @@ end function gaspi_atomic_max
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_allreduce_buf_size(buf_size) &
 &         result( res ) bind(C, name="gaspi_allreduce_buf_size")
+  import
   integer(gaspi_size_t) :: buf_size
   integer(gaspi_return_t) :: res
 end function gaspi_allreduce_buf_size
+end interface
 
 !
 ! FUNCTION:
@@ -2240,11 +2414,14 @@ end function gaspi_allreduce_buf_size
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_allreduce_elem_max(elem_max) &
 &         result( res ) bind(C, name="gaspi_allreduce_elem_max")
+  import
   integer(gaspi_number_t) :: elem_max
   integer(gaspi_return_t) :: res
 end function gaspi_allreduce_elem_max
+end interface
 
 !
 ! FUNCTION:
@@ -2264,11 +2441,14 @@ end function gaspi_allreduce_elem_max
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_network_type(network_type) &
 &         result( res ) bind(C, name="gaspi_network_type")
+  import
   integer(gaspi_network_t) :: network_type
   integer(gaspi_return_t) :: res
 end function gaspi_network_type
+end interface
 
 !
 ! FUNCTION:
@@ -2288,12 +2468,15 @@ end function gaspi_network_type
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_build_infrastructure(build_infrastructure) &
 &         result( res ) &
 &         bind(C, name="gaspi_build_infrastructure")
+  import
   integer (gaspi_number_t) :: build_infrastructure
   integer(gaspi_return_t) :: res
 end function gaspi_build_infrastructure
+end interface
 
 !
 ! FUNCTION:
@@ -2315,11 +2498,14 @@ end function gaspi_build_infrastructure
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_version(version) &
 &         result( res ) bind(C, name="gaspi_version")
-  real(gaspi_float) :: version
+  import
+  real(c_float) :: version
   integer(gaspi_return_t) :: res
 end function gaspi_version
+end interface
 
 !
 ! FUNCTION:
@@ -2341,11 +2527,14 @@ end function gaspi_version
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_time_get(wtime) &
 &         result( res ) bind(C, name="gaspi_time_get")
+  import
   integer(gaspi_time_t) :: wtime
   integer(gaspi_return_t) :: res
 end function gaspi_time_get
+end interface
 
 !
 ! FUNCTION:
@@ -2368,11 +2557,14 @@ end function gaspi_time_get
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_time_ticks(resolution) &
 &         result( res ) bind(C, name="gaspi_time_ticks")
+  import
   integer(gaspi_time_t) :: resolution
   integer(gaspi_return_t) :: res
 end function gaspi_time_ticks
+end interface
 
 !
 ! FUNCTION:
@@ -2396,12 +2588,15 @@ end function gaspi_time_ticks
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_print_error(error_code,error_message) &
 &         result( res ) bind(C, name="gaspi_print_error")
+  import
   integer(gaspi_return_t), value :: error_code
   character(c_char), dimension(*) :: error_message
   integer(gaspi_return_t) :: res
 end function gaspi_print_error
+end interface
 
 !
 ! FUNCTION:
@@ -2428,12 +2623,15 @@ end function gaspi_print_error
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_statistic_counter_max(counter_max) &
 &         result( res ) &
 &         bind(C, name="gaspi_statistic_counter_max")
+  import
   integer(gaspi_statistic_counter_t) :: counter_max
   integer(gaspi_return_t) :: res
 end function gaspi_statistic_counter_max
+end interface
 
 !
 ! FUNCTION:
@@ -2474,10 +2672,12 @@ end function gaspi_statistic_counter_max
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_statistic_counter_info(counter,counter_argument, &
 &         counter_name,counter_description,verbosity_level) &
 &         result( res ) &
 &         bind(C, name="gaspi_statistic_counter_info")
+  import
   integer(gaspi_statistic_counter_t), value :: counter
   integer(gaspi_statistic_argument_t) :: counter_argument
   character(c_char), dimension(*) :: counter_name
@@ -2485,6 +2685,7 @@ function gaspi_statistic_counter_info(counter,counter_argument, &
   integer(gaspi_number_t) :: verbosity_level
   integer(gaspi_return_t) :: res
 end function gaspi_statistic_counter_info
+end interface
 
 !
 ! FUNCTION:
@@ -2516,12 +2717,15 @@ end function gaspi_statistic_counter_info
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_statistic_verbosity_level(verbosity_level_) &
 &         result( res ) &
 &         bind(C, name="gaspi_statistic_verbosity_level")
+  import
   integer(gaspi_number_t), value :: verbosity_level_
   integer(gaspi_return_t) :: res
 end function gaspi_statistic_verbosity_level
+end interface
 
 !
 ! FUNCTION:
@@ -2547,15 +2751,18 @@ end function gaspi_statistic_verbosity_level
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_statistic_counter_get(counter,argument,&
 &         value_arg) &
 &         result( res ) &
 &         bind(C, name="gaspi_statistic_counter_get")
+  import
   integer(gaspi_statistic_counter_t), value :: counter
   integer(gaspi_statistic_argument_t), value :: argument
   integer(gaspi_number_t) :: value_arg
   integer(gaspi_return_t) :: res
 end function gaspi_statistic_counter_get
+end interface
 
 !
 ! FUNCTION:
@@ -2577,12 +2784,15 @@ end function gaspi_statistic_counter_get
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_statistic_counter_reset(counter) &
 &         result( res ) &
 &         bind(C, name="gaspi_statistic_counter_reset")
+  import
   integer(gaspi_statistic_counter_t), value :: counter
   integer(gaspi_return_t) :: res
 end function gaspi_statistic_counter_reset
+end interface
 
 !
 ! FUNCTION:
@@ -2606,11 +2816,14 @@ end function gaspi_statistic_counter_reset
 !           GASPI_ERROR in case of error.
 !
 
+interface
 function gaspi_pcontrol(argument) &
 &         result( res ) bind(C, name="gaspi_pcontrol")
+  import
   type(c_ptr), value :: argument
   integer(gaspi_return_t) :: res
 end function gaspi_pcontrol
+end interface
 
 
 end module GASPI

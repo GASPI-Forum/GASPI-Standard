@@ -33,6 +33,7 @@ module GASPI
 !   GASPI_OP_MAX - determines the maximum of the elements of each column of the input vector.
 !   GASPI_OP_SUM - sums up all elements of each column of the input vector.
 !
+  integer, parameter   :: gaspi_operation_t = c_int
   enum, bind(C)	
      enumerator :: GASPI_OP_MIN = 0
      enumerator :: GASPI_OP_MAX = 1
@@ -54,6 +55,7 @@ module GASPI
 !   GASPI_TYPE_FLOAT - float
 !   GASPI_TYPE_DOUBLE - double
 !
+  integer, parameter   :: gaspi_datatype_t = c_int
   enum, bind(C)	
      enumerator :: GASPI_TYPE_INT = 0
      enumerator :: GASPI_TYPE_UINT = 1

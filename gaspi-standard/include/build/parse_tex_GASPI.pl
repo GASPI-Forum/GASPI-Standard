@@ -237,9 +237,10 @@ foreach my $function (@functions) {
     print C_FILE "$c\n\n";
 
 # include actual f90 forward declaration     
-    $fortran =~ s/^(.*)\n$/$1/s;        
-    print F90_FILE "!\n";
-    print F90_FILE "$fortran\n\n";   
+    $fortran =~ s/^(.*)\n$/$1/s;
+    $fortran =~ s/(\Wbind\s*\(.*?\))/$1\n  import/s;        
+    print F90_FILE "!\n\ninterface";
+    print F90_FILE "$fortran\nend interface\n\n";   
 
 }
 close C_FILE;
