@@ -233,7 +233,7 @@ typedef char * gaspi_string_t;
  *   gaspi_timeout_t
  *
  * DESCRIPTION:
- *   the GASPI timeout value (predfined - GASPI_BLOCK, GAPSI_TEST) or milliseconds.
+ *   the GASPI timeout value (predefined - GASPI_BLOCK, GAPSI_TEST) or milliseconds.
  */
 typedef unsigned long gaspi_timeout_t;
 
