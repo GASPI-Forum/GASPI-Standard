@@ -432,7 +432,7 @@ gaspi_group_create ( gaspi_group_t *group );
  */
 
 gaspi_return_t
-gaspi_group_add ( gaspi_group_t const group
+gaspi_group_add ( gaspi_group_t group
                 , gaspi_rank_t const rank );
 
 /*
@@ -1743,7 +1743,7 @@ gaspi_allreduce_user ( gaspi_const_pointer_t const buffer_send
                      , gaspi_number_t const num
                      , gaspi_size_t const size_element
                      , gaspi_reduce_operation_t const reduce_operation
-                     , gaspi_reduce_state_t const reduce_state
+                     , gaspi_reduce_state_t reduce_state
                      , gaspi_group_t const group
                      , gaspi_timeout_t const timeout );
 
@@ -2341,7 +2341,7 @@ gaspi_statistic_counter_reset (gaspi_statistic_counter_t const counter);
  */
 
 gaspi_return_t
-gaspi_pcontrol ( gaspi_pointer_t const argument );
+gaspi_pcontrol ( gaspi_pointer_t argument );
 
 
 
