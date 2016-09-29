@@ -175,7 +175,7 @@ foreach my $function (@functions) {
 	    =~ m/\\parameterlistitem\{\s*(.*?)\s*\}\{\s*(.*?)\s*\}\{\s*(.*?)\s*\}/sg;
 
 # const correctness 
-	if ( $in =~ /in/ ) {
+	if ( $in !~ /out/ ) {
 	    $c =~ s/\s+$parameter/ const $parameter/;
 	    $c =~ s/const const/const/;
 	}
