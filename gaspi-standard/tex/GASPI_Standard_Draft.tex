@@ -1209,7 +1209,7 @@ GASPI_CONFIG_SET ( config )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_config_set ( gaspi_config_t const config )
+gaspi_config_set ( gaspi_config_t config )
 \end{verbatim}
 \end{FDefSign}
 
@@ -1257,7 +1257,7 @@ GASPI_PROC_INIT ( timeout )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_proc_init ( gaspi_timeout_t const timeout )
+gaspi_proc_init ( gaspi_timeout_t timeout )
 \end{verbatim}
 \end{FDefSign}
 
@@ -2815,10 +2815,10 @@ GASPI_SEGMENT_BIND ( segment_id
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t 
-gaspi_segment_bind ( gaspi_segment_id_t const segment_id
-                   , gaspi_pointer_t const pointer
-                   , gaspi_size_t const size
-                   , gaspi_memory_description_t const memory_description
+gaspi_segment_bind ( gaspi_segment_id_t segment_id
+                   , gaspi_pointer_t pointer
+                   , gaspi_size_t size
+                   , gaspi_memory_description_t memory_description
                    )
 \end{verbatim}
 \end{FDefSign}
@@ -2910,12 +2910,12 @@ GASPI_SEGMENT_USE ( segment_id
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t 
-gaspi_segment_use ( gaspi_segment_id_t const segment_id
-                  , gaspi_pointer_t const pointer
-                  , gaspi_size_t const size
-                  , gaspi_group_t const group
-                  , gaspi_timeout_t const timeout
-                  , gaspi_memory_description_t const memory_description
+gaspi_segment_use ( gaspi_segment_id_t segment_id
+                  , gaspi_pointer_t pointer
+                  , gaspi_size_t size
+                  , gaspi_group_t group
+                  , gaspi_timeout_t timeout
+                  , gaspi_memory_description_t memory_description
                   ) 
 \end{verbatim}
 \end{FDefSign}
@@ -4481,12 +4481,12 @@ GASPI_WRITE_LIST ( num
 \begin{verbatim}
 gaspi_return_t
 gaspi_write_list ( gaspi_number_t num
-                 , gaspi_segment_id_t const *segment_id_local
-                 , gaspi_offset_t const *offset_local
+                 , gaspi_segment_id_t *segment_id_local
+                 , gaspi_offset_t *offset_local
                  , gaspi_rank_t rank
-                 , gaspi_segment_id_t const *segment_id_remote
-                 , gaspi_offset_t const *offset_remote
-                 , gaspi_size_t const *size
+                 , gaspi_segment_id_t *segment_id_remote
+                 , gaspi_offset_t *offset_remote
+                 , gaspi_size_t *size
                  , gaspi_queue_id_t queue
                  , gaspi_timeout_t timeout )
 \end{verbatim}
@@ -4577,12 +4577,12 @@ GASPI_WRITE_LIST_NOTIFY
 gaspi_return_t
 gaspi_write_list_notify
                 ( gaspi_number_t num
-                , gaspi_segment_id_t const *segment_id_local
-                , gaspi_offset_t const *offset_local
+                , gaspi_segment_id_t *segment_id_local
+                , gaspi_offset_t *offset_local
                 , gaspi_rank_t rank
-                , gaspi_segment_id_t const *segment_id_remote
-                , gaspi_offset_t const *offset_remote
-                , gaspi_size_t const *size
+                , gaspi_segment_id_t *segment_id_remote
+                , gaspi_offset_t *offset_remote
+                , gaspi_size_t *size
                 , gaspi_notification_id_t notification_id
                 , gaspi_notification_t notification_value
                 , gaspi_queue_id_t queue
@@ -4788,12 +4788,12 @@ GASPI_READ_LIST ( num
 \begin{verbatim}
 gaspi_return_t
 gaspi_read_list ( gaspi_number_t num
-                , gaspi_segment_id_t const *segment_id_local
-                , gaspi_offset_t const *offset_local
+                , gaspi_segment_id_t *segment_id_local
+                , gaspi_offset_t *offset_local
                 , gaspi_rank_t rank
-                , gaspi_segment_id_t const *segment_id_remote
-                , gaspi_offset_t const *offset_remote
-                , gaspi_size_t const *size
+                , gaspi_segment_id_t *segment_id_remote
+                , gaspi_offset_t *offset_remote
+                , gaspi_size_t *size
                 , gaspi_queue_id_t queue
                 , gaspi_timeout_t timeout )
 \end{verbatim}
@@ -4974,7 +4974,7 @@ GASPI_QUEUE_SIZE ( queue
 \begin{verbatim}
 gaspi_return_t
 gaspi_queue_size ( gaspi_queue_id_t queue
-                 , gaspi_number_t const *queue_size )
+                 , gaspi_number_t *queue_size )
 \end{verbatim}
 \end{FDefSign}
 
@@ -5256,7 +5256,7 @@ GASPI_PASSIVE_RECEIVE ( segment_id_local
 gaspi_return_t
 gaspi_passive_receive ( gaspi_segment_id_t segment_id_local
                       , gaspi_offset_t offset_local
-                      , gaspi_rank_t const *rank
+                      , gaspi_rank_t *rank
                       , gaspi_size_t size
                       , gaspi_timeout_t timeout )
 \end{verbatim}
@@ -6930,7 +6930,7 @@ A \GASPI{} implementation is free to extend the above enumeration.
 \begin{FDef}
 \begin{FDefSign}
 \begin{verbatim}
-GASPI_STATISTIC_COUNTER_INFO ( const counter
+GASPI_STATISTIC_COUNTER_INFO ( counter
                              , argument
                              , counter_name
                              , counter_description
