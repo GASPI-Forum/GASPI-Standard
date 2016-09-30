@@ -1238,12 +1238,12 @@ end interface
 !
 ! PARAMETER:
 !   @param num the number of elements to write  (in)
-!   @param segment_id_local[num] list of local segment ID's to read from  (in)
-!   @param offset_local[num] list of local offsets in bytes to read from  (in)
+!   @param segment_id_local list of local segment ID's to read from  (in)
+!   @param offset_local list of local offsets in bytes to read from  (in)
 !   @param rank the remote rank to write to  (in)
-!   @param segment_id_remote[num] list of remote segments to write to  (in)
-!   @param offset_remote[num] list of remote offsets to write to  (in)
-!   @param size[num] list of sizes of the data to write  (in)
+!   @param segment_id_remote list of remote segments to write to  (in)
+!   @param offset_remote list of remote offsets to write to  (in)
+!   @param size list of sizes of the data to write  (in)
 !   @param queue the queue to use  (in)
 !   @param timeout the timeout  (in)
 !
@@ -1299,12 +1299,12 @@ end interface
 !
 ! PARAMETER:
 !   @param num the number of elements to write  (in)
-!   @param segment_id_local[num] list of local segment ID's to read from  (in)
-!   @param offset_local[num] list of local offsets in bytes to read from  (in)
+!   @param segment_id_local list of local segment ID's to read from  (in)
+!   @param offset_local list of local offsets in bytes to read from  (in)
 !   @param rank the remote rank to be write to  (in)
-!   @param segment_id_remote[num] list of remote segments to write to  (in)
-!   @param offset_remote[num] list of remote offsets to write to  (in)
-!   @param size[num] list of sizes of the data to write  (in)
+!   @param segment_id_remote list of remote segments to write to  (in)
+!   @param offset_remote list of remote offsets to write to  (in)
+!   @param size list of sizes of the data to write  (in)
 !   @param notification_id the remote notification ID  (in)
 !   @param notification_value the value of the notification to write  (in)
 !   @param queue the queue to use  (in)
@@ -1424,12 +1424,12 @@ end interface
 !
 ! PARAMETER:
 !   @param num the number of elements to read  (in)
-!   @param segment_id_local[num] list of local segment ID's to write to  (in)
-!   @param offset_local[num] list of local offsets in bytes to write to  (in)
+!   @param segment_id_local list of local segment ID's to write to  (in)
+!   @param offset_local list of local offsets in bytes to write to  (in)
 !   @param rank the remote rank to read from  (in)
-!   @param segment_id_remote[num] list of remote segments to read from  (in)
-!   @param offset_remote[num] list of remote offsets to read from  (in)
-!   @param size[num] list of sizes of the data to read  (in)
+!   @param segment_id_remote list of remote segments to read from  (in)
+!   @param offset_remote list of remote offsets to read from  (in)
+!   @param size list of sizes of the data to read  (in)
 !   @param queue the queue to use  (in)
 !   @param timeout the timeout  (in)
 !

@@ -3531,7 +3531,7 @@ GASPI_QUEUE_CREATE ( queue
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_queue_create ( gaspi_queue_id_t queue
+gaspi_queue_create ( gaspi_queue_id_t *queue
                    , gaspi_timeout_t timeout
                    )
 \end{verbatim}
@@ -4727,7 +4727,7 @@ GASPI_QUEUE_MAX ( queue_max )
 \begin{FDefSign}
 \begin{verbatim}
 gaspi_return_t
-gaspi_queue_max ( gaspi_number_t queue_max )
+gaspi_queue_max ( gaspi_number_t *queue_max )
 \end{verbatim}
 \end{FDefSign}
 \begin{FDefSign}

@@ -178,8 +178,10 @@ foreach my $function (@functions) {
 
 # const correctness 
 	if ( $in !~ /out/ ) {
-	    $c =~ s/\s+$parameter/ const $parameter/;
-	    $c =~ s/const const/const/;
+	    if ($parameter =~  /\[num\]/ ) {
+		$parameter =~ s/(.*?)\[num\]/$1/;
+	    }
+	    $c =~ s/\s+([\*]*)$parameter/ const $1$parameter/;
 	}
 
 	my @description_words = split(/\s+/,$description);
