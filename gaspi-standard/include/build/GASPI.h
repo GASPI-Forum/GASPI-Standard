@@ -1154,12 +1154,12 @@ gaspi_write_notify ( gaspi_segment_id_t const segment_id_local
  *
  * PARAMETER:
  *   @param num the number of elements to write  (in)
- *   @param segment_id_local[num] list of local segment ID's to read from  (in)
- *   @param offset_local[num] list of local offsets in bytes to read from  (in)
+ *   @param segment_id_local list of local segment ID's to read from  (in)
+ *   @param offset_local list of local offsets in bytes to read from  (in)
  *   @param rank the remote rank to write to  (in)
- *   @param segment_id_remote[num] list of remote segments to write to  (in)
- *   @param offset_remote[num] list of remote offsets to write to  (in)
- *   @param size[num] list of sizes of the data to write  (in)
+ *   @param segment_id_remote list of remote segments to write to  (in)
+ *   @param offset_remote list of remote offsets to write to  (in)
+ *   @param size list of sizes of the data to write  (in)
  *   @param queue the queue to use  (in)
  *   @param timeout the timeout  (in)
  *
@@ -1171,12 +1171,12 @@ gaspi_write_notify ( gaspi_segment_id_t const segment_id_local
 
 gaspi_return_t
 gaspi_write_list ( gaspi_number_t const num
-                 , gaspi_segment_id_t *segment_id_local
-                 , gaspi_offset_t *offset_local
+                 , gaspi_segment_id_t const *segment_id_local
+                 , gaspi_offset_t const *offset_local
                  , gaspi_rank_t const rank
-                 , gaspi_segment_id_t *segment_id_remote
-                 , gaspi_offset_t *offset_remote
-                 , gaspi_size_t *size
+                 , gaspi_segment_id_t const *segment_id_remote
+                 , gaspi_offset_t const *offset_remote
+                 , gaspi_size_t const *size
                  , gaspi_queue_id_t const queue
                  , gaspi_timeout_t const timeout );
 
@@ -1207,12 +1207,12 @@ gaspi_write_list ( gaspi_number_t const num
  *
  * PARAMETER:
  *   @param num the number of elements to write  (in)
- *   @param segment_id_local[num] list of local segment ID's to read from  (in)
- *   @param offset_local[num] list of local offsets in bytes to read from  (in)
+ *   @param segment_id_local list of local segment ID's to read from  (in)
+ *   @param offset_local list of local offsets in bytes to read from  (in)
  *   @param rank the remote rank to be write to  (in)
- *   @param segment_id_remote[num] list of remote segments to write to  (in)
- *   @param offset_remote[num] list of remote offsets to write to  (in)
- *   @param size[num] list of sizes of the data to write  (in)
+ *   @param segment_id_remote list of remote segments to write to  (in)
+ *   @param offset_remote list of remote offsets to write to  (in)
+ *   @param size list of sizes of the data to write  (in)
  *   @param notification_id the remote notification ID  (in)
  *   @param notification_value the value of the notification to write  (in)
  *   @param queue the queue to use  (in)
@@ -1227,12 +1227,12 @@ gaspi_write_list ( gaspi_number_t const num
 gaspi_return_t
 gaspi_write_list_notify
                 ( gaspi_number_t const num
-                , gaspi_segment_id_t *segment_id_local
-                , gaspi_offset_t *offset_local
+                , gaspi_segment_id_t const *segment_id_local
+                , gaspi_offset_t const *offset_local
                 , gaspi_rank_t const rank
-                , gaspi_segment_id_t *segment_id_remote
-                , gaspi_offset_t *offset_remote
-                , gaspi_size_t *size
+                , gaspi_segment_id_t const *segment_id_remote
+                , gaspi_offset_t const *offset_remote
+                , gaspi_size_t const *size
                 , gaspi_notification_id_t const notification_id
                 , gaspi_notification_t const notification_value
                 , gaspi_queue_id_t const queue
@@ -1314,12 +1314,12 @@ gaspi_read_notify (  gaspi_segment_id_t const segment_id_local
  *
  * PARAMETER:
  *   @param num the number of elements to read  (in)
- *   @param segment_id_local[num] list of local segment ID's to write to  (in)
- *   @param offset_local[num] list of local offsets in bytes to write to  (in)
+ *   @param segment_id_local list of local segment ID's to write to  (in)
+ *   @param offset_local list of local offsets in bytes to write to  (in)
  *   @param rank the remote rank to read from  (in)
- *   @param segment_id_remote[num] list of remote segments to read from  (in)
- *   @param offset_remote[num] list of remote offsets to read from  (in)
- *   @param size[num] list of sizes of the data to read  (in)
+ *   @param segment_id_remote list of remote segments to read from  (in)
+ *   @param offset_remote list of remote offsets to read from  (in)
+ *   @param size list of sizes of the data to read  (in)
  *   @param queue the queue to use  (in)
  *   @param timeout the timeout  (in)
  *
@@ -1331,12 +1331,12 @@ gaspi_read_notify (  gaspi_segment_id_t const segment_id_local
 
 gaspi_return_t
 gaspi_read_list ( gaspi_number_t const num
-                , gaspi_segment_id_t *segment_id_local
-                , gaspi_offset_t *offset_local
+                , gaspi_segment_id_t const *segment_id_local
+                , gaspi_offset_t const *offset_local
                 , gaspi_rank_t const rank
-                , gaspi_segment_id_t *segment_id_remote
-                , gaspi_offset_t *offset_remote
-                , gaspi_size_t *size
+                , gaspi_segment_id_t const *segment_id_remote
+                , gaspi_offset_t const *offset_remote
+                , gaspi_size_t const *size
                 , gaspi_queue_id_t const queue
                 , gaspi_timeout_t const timeout );
 
@@ -1365,7 +1365,7 @@ gaspi_read_list ( gaspi_number_t const num
  */
 
 gaspi_return_t
-gaspi_queue_create ( gaspi_queue_id_t queue
+gaspi_queue_create ( gaspi_queue_id_t *queue
                    , gaspi_timeout_t const timeout
                    );
 
@@ -1886,7 +1886,7 @@ gaspi_queue_size_max ( gaspi_number_t* queue_size_max );
  */
 
 gaspi_return_t
-gaspi_queue_max ( gaspi_number_t queue_max );
+gaspi_queue_max ( gaspi_number_t *queue_max );
 
 /*
  * FUNCTION:
