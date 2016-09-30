@@ -1038,12 +1038,12 @@ gaspi_write_notify ( gaspi_segment_id_t const segment_id_local
 
 gaspi_return_t
 gaspi_write_list ( gaspi_number_t const num
-                 , gaspi_segment_id_t const *segment_id_local
-                 , gaspi_offset_t const *offset_local
+                 , gaspi_segment_id_t *segment_id_local
+                 , gaspi_offset_t *offset_local
                  , gaspi_rank_t const rank
-                 , gaspi_segment_id_t const *segment_id_remote
-                 , gaspi_offset_t const *offset_remote
-                 , gaspi_size_t const *size
+                 , gaspi_segment_id_t *segment_id_remote
+                 , gaspi_offset_t *offset_remote
+                 , gaspi_size_t *size
                  , gaspi_queue_id_t const queue
                  , gaspi_timeout_t const timeout );
 
@@ -1094,12 +1094,12 @@ gaspi_write_list ( gaspi_number_t const num
 gaspi_return_t
 gaspi_write_list_notify
                 ( gaspi_number_t const num
-                , gaspi_segment_id_t const *segment_id_local
-                , gaspi_offset_t const *offset_local
+                , gaspi_segment_id_t *segment_id_local
+                , gaspi_offset_t *offset_local
                 , gaspi_rank_t const rank
-                , gaspi_segment_id_t const *segment_id_remote
-                , gaspi_offset_t const *offset_remote
-                , gaspi_size_t const *size
+                , gaspi_segment_id_t *segment_id_remote
+                , gaspi_offset_t *offset_remote
+                , gaspi_size_t *size
                 , gaspi_notification_id_t const notification_id
                 , gaspi_notification_t const notification_value
                 , gaspi_queue_id_t const queue
@@ -1198,12 +1198,12 @@ gaspi_read_notify (  gaspi_segment_id_t const segment_id_local
 
 gaspi_return_t
 gaspi_read_list ( gaspi_number_t const num
-                , gaspi_segment_id_t const *segment_id_local
-                , gaspi_offset_t const *offset_local
+                , gaspi_segment_id_t *segment_id_local
+                , gaspi_offset_t *offset_local
                 , gaspi_rank_t const rank
-                , gaspi_segment_id_t const *segment_id_remote
-                , gaspi_offset_t const *offset_remote
-                , gaspi_size_t const *size
+                , gaspi_segment_id_t *segment_id_remote
+                , gaspi_offset_t *offset_remote
+                , gaspi_size_t *size
                 , gaspi_queue_id_t const queue
                 , gaspi_timeout_t const timeout );
 
@@ -1283,7 +1283,7 @@ gaspi_queue_delete ( gaspi_queue_id_t const queue );
 
 gaspi_return_t
 gaspi_queue_size ( gaspi_queue_id_t const queue
-                 , gaspi_number_t const *queue_size );
+                 , gaspi_number_t *queue_size );
 
 /*
  * FUNCTION:
@@ -1380,7 +1380,7 @@ gaspi_passive_send ( gaspi_segment_id_t const segment_id_local
 gaspi_return_t
 gaspi_passive_receive ( gaspi_segment_id_t const segment_id_local
                       , gaspi_offset_t const offset_local
-                      , gaspi_rank_t const *rank
+                      , gaspi_rank_t *rank
                       , gaspi_size_t const size
                       , gaspi_timeout_t const timeout );
 
@@ -2071,7 +2071,7 @@ gaspi_statistic_counter_max ( gaspi_number_t *counter_max );
  *   is free to extend the above enumeration. 
  *
  * FUNCTION PROTOTYPE:
- *   GASPI_STATISTIC_COUNTER_INFO ( const counter
+ *   GASPI_STATISTIC_COUNTER_INFO ( counter
  *                                , argument
  *                                , counter_name
  *                                , counter_description

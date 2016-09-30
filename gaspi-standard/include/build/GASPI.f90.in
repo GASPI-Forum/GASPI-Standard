@@ -2522,7 +2522,7 @@ end interface
 !   is free to extend the above enumeration. 
 !
 ! FUNCTION PROTOTYPE:
-!   GASPI_STATISTIC_COUNTER_INFO ( const counter
+!   GASPI_STATISTIC_COUNTER_INFO ( counter
 !                                , argument
 !                                , counter_name
 !                                , counter_description

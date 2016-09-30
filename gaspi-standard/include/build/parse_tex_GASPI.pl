@@ -129,6 +129,8 @@ foreach my $function (@functions) {
 	    $len = 0;
 	}
     }
+
+# actual descriptions, c, fortran
     $c_text =~ s/\\gaspifunction\{(.*?)\}/gaspi_$1/g;
     $c_text =~ s/\\begin\{listing\}\[.*?\]\{.*?\}/\n \*\n \*  /g;
     $c_text =~ s/\\end\{listing\}/\n \*  /g;
