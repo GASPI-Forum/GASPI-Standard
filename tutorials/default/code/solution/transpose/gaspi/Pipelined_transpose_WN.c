@@ -165,19 +165,13 @@ int main (int argc, char *argv[])
 		const int toffset = iProc * mSize;
 		const int soffset = target * mSize;
 		const gaspi_notification_id_t data_available = iProc;
-		wait_for_queue_entries_for_write_notify(&queue_id);
-		SUCCESS_OR_DIE ( gaspi_write_notify
-				 ( source_id
-				   , array_OFFSET (0, soffset)
-				   , target
-				   , work_id
-				   , array_OFFSET (0, toffset)
-				   , len
-				   , data_available
-				   , 1
-				   , queue_id
-				   , GASPI_BLOCK
-				   ));
+		WAIT_IF_QUEUE_FULL
+		  ( gaspi_write_notify
+		    ( source_id, array_OFFSET (0, soffset)
+		      , target, work_id, array_OFFSET (0, toffset)
+		      , len, data_available, 1, queue_id, GASPI_BLOCK
+		      ), queue_id
+		    );
 	      }
 	  }
 

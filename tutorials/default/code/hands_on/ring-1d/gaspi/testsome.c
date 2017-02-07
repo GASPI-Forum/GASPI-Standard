@@ -20,9 +20,7 @@ int test_or_die
     ASSERT (id == notification_id);
 
     gaspi_notification_t value;
-
     SUCCESS_OR_DIE (gaspi_notify_reset (segment_id, id, &value));
-
     ASSERT (value == expected);
 
     return 1;

@@ -8,7 +8,6 @@ CC=$(MPI_HOME)/bin64/mpiicc
 
 
 NAME += Pipelined_transpose_WN
-NAME += Pipelined_transpose_RN
 
 CFLAGS += -Wall
 CFLAGS += -Wextra

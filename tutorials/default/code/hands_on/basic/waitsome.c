@@ -15,13 +15,11 @@ wait_or_die(gaspi_segment_id_t segment_id,
 					1,
 					&id,
 					GASPI_BLOCK));
-
   ASSERT(id == notification_id);
 
   gaspi_notification_t value;
   SUCCESS_OR_DIE(gaspi_notify_reset (segment_id,
 				     id,
 				     &value));
-
   ASSERT(value == expected);
 }

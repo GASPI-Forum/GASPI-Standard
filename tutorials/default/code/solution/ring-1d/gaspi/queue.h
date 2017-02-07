@@ -2,10 +2,32 @@
 #define QUEUE_H
 
 #include <GASPI.h>
+#include "assert.h"
 
-void wait_for_queue_entries_for_write_notify (gaspi_queue_id_t*);
-void wait_for_queue_entries_for_notify (gaspi_queue_id_t*);
-void wait_for_queue_max_half (gaspi_queue_id_t*);
-void wait_for_flush_queues();
+#define WAIT_IF_QUEUE_FULL(f, queue)                    \
+  {                                                     \
+    gaspi_return_t ret;                                 \
+    while ((ret = (f)) == GASPI_QUEUE_FULL)             \
+      {                                                 \
+        /* wait and re-submit */			\
+	ASSERT (gaspi_wait ((queue), GASPI_BLOCK));	\
+      }                                                 \
+    ASSERT (ret == GASPI_SUCCESS);                      \
+  }
+
+
+#define FLIP_IF_QUEUE_FULL(f, queue)                    \
+  {                                                     \
+    gaspi_return_t ret;                                 \
+    while ((ret = (f)) == GASPI_QUEUE_FULL)             \
+      {							\
+	/* flip queue, wait and re-submit */		\
+	queue = 1 - (queue);				\
+	ASSERT (gaspi_wait ((queue), GASPI_BLOCK));	\
+      }                                                 \
+    ASSERT (ret == GASPI_SUCCESS);                      \
+  }
+
+
 
 #endif
