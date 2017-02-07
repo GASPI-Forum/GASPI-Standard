@@ -13,6 +13,8 @@
 
 #define VAL_UNLOCKED 9999999
 
+enum try_lock_t { NO_LOCK_ACQUIRED, LOCK_ACQUIRED };
+
 gaspi_return_t
 global_lock_init ( const gaspi_segment_id_t seg,
 		   const gaspi_offset_t off,
@@ -43,56 +45,50 @@ global_lock_init ( const gaspi_segment_id_t seg,
   return GASPI_SUCCESS;
 }
 
-gaspi_return_t
+
+try_lock_t
 global_try_lock ( const gaspi_segment_id_t seg,
 		  const gaspi_offset_t off,
-		  const gaspi_rank_t rank_loc,
-                , const gaspi_timeout_t timeout
-                )
+		    const gaspi_rank_t rank_loc
+		  )
 {
   gaspi_rank_t iProc;
-
-  SUCCESS_OR_RETURN (gaspi_proc_rank (&iProc));
+  SUCCESS_OR_DIE (gaspi_proc_rank (&iProc));
 
   gaspi_atomic_value_t old_value;
+  SUCCESS_OR_DIE (gaspi_atomic_compare_swap (seg
+					     , off
+					     , rank_loc
+					     , VAL_UNLOCKED
+					     , iProc
+					     , &old_value
+					     , GASPI_BLOCK
+					     ));
 
-  SUCCESS_OR_RETURN (gaspi_atomic_compare_swap ( seg
-						 , off
-						 , rank_loc
-						 , VAL_UNLOCKED
-						 , iProc
-						 , &old_value
-						 , timeout
-                                                )
-		     );
-
-  return (old_value == VALUE_UNLOCKED) ? GASPI_SUCCESS
-                                           : GASPI_ERROR
-                                           ;
+  return (old_value == VALUE_UNLOCKED) ?
+    LOCK_ACQUIRED :
+    NO_LOCK_ACQUIRED;
 }
 
-gaspi_return_t
+void
 global_unlock ( const gaspi_segment_id_t seg,
 		const gaspi_offset_t off,
-		const gaspi_rank_t rank_loc,
-              , const gaspi_timeout_t timeout
-              )
+		  const gaspi_rank_t rank_loc
+		)
 {
   gaspi_rank_t iProc;
+  SUCCESS_OR_DIE (gaspi_proc_rank (&iProc));
 
-  SUCCESS_OR_RETURN (gaspi_proc_rank (&iProc));
+  gaspi_atomic_value_t old_value;
+  SUCCESS_OR_DIE (gaspi_atomic_compare_swap (seg
+					     , off
+					     , rank_loc
+					     , iProc
+					     , VAL_UNLOCKED
+					     , &old_value
+					     , GASPI_BLOCK
+					     ));
 
-  gaspi_atomic_value_t current_value;
-
-  SUCCESS_OR_RETURN (gaspi_atomic_compare_swap ( seg
-						 , off
-						 , rank_loc
-                                                 , iProc
-						 , VAL_UNLOCKED
-						 , &current_value
-						 , timeout
-                                                )
-                    );
-
-  return GASPI_SUCCESS;
+  assert(old_value == iProc);
 }
+

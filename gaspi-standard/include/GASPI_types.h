@@ -37,7 +37,8 @@ typedef enum
   {
     GASPI_ERROR = -1,
     GASPI_SUCCESS = 0,
-    GASPI_TIMEOUT = 1
+    GASPI_TIMEOUT = 1,
+    GASPI_QUEUE_FULL = 1
   } gaspi_return_t;
 
 /*
