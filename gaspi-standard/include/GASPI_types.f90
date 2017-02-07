@@ -39,6 +39,7 @@ module GASPI_types
      enumerator :: GASPI_ERROR = -1
      enumerator :: GASPI_SUCCESS = 0
      enumerator :: GASPI_TIMEOUT = 1
+     enumerator :: GASPI_QUEUE_FULL = 2
   end enum
 
 !

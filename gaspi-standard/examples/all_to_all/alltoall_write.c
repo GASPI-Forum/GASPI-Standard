@@ -50,6 +50,7 @@ main (int argc, char *argv[])
 
   const gaspi_queue_id_t queue_id = 0;
 
+#pragma omp parallel
   for (gaspi_rank_t rank = 0; rank < nProc; ++rank)
     {
       src[rank] = iProc * nProc + rank;
@@ -57,18 +58,16 @@ main (int argc, char *argv[])
       const gaspi_offset_t offset_src = rank * sizeof (int);
       const gaspi_offset_t offset_dst = iProc * sizeof (int);
       const gaspi_notification_id_t notify_ID = rank;
-
-      wait_if_queue_full (queue_id, 2);
-
       const gaspi_notification_t notify_val = 1;
 
-      ASSERT
-        (gaspi_write_notify ( segment_id_src, offset_src
-                            , rank, segment_id_dst, offset_dst
-                            , sizeof (int), notify_ID, notify_val
-                            , queue_id, GASPI_BLOCK
-                            )
-        );
+      WAIT_IF_QUEUE_FULL
+        (gaspi_write( segment_id_src, offset_src
+		      , rank, segment_id_dst, offset_dst
+		      , sizeof (int), notify_ID, notify_val
+		      , queue_id, GASPI_BLOCK
+		      )
+	 , queue_id
+	 );
     }
 
   gaspi_notification_id_t notify_cnt = nProc;

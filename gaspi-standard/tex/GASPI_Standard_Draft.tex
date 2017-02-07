@@ -164,6 +164,8 @@
 \newcommand{\GASPITIMETXT}{operation has run into a timeout}
 \newcommand{\GASPIGERR}{{\tt\protect\zsep{GASPI\_ERROR}}}
 \newcommand{\GASPIGERRTXT}{operation has finished with an error}
+\newcommand{\GASPIQUEUE}{{\tt\protect\zsep{GASPI\_QUEUE\_FULL}}}
+\newcommand{\GASPIQUEUETXT}{operation could not be posted due to a full queue}
 \newcommand{\GASPIGROUPALL}{{\tt\protect\zsep{GASPI\_GROUP\_ALL}}}
 \newcommand{\GASPIALLOCDEF}{{\tt\protect\zsep{GASPI\_ALLOC\_DEFAULT}}}
 
@@ -178,6 +180,16 @@
   \returnlistitem{\GASPISUCC}{\GASPISUCCTXT}
   \returnlistitem{\GASPITIME}{\GASPITIMETXT}
   \returnlistitem{\GASPIGERR}{\GASPIGERRTXT}
+  \fdeffinal\returnlistend
+}
+
+\newcommand{\FStdRetDescQueue}
+{
+  \returnlistbegin
+  \returnlistitem{\GASPISUCC}{\GASPISUCCTXT}
+  \returnlistitem{\GASPITIME}{\GASPITIMETXT}
+  \returnlistitem{\GASPIGERR}{\GASPIGERRTXT}
+  \returnlistitem{\GASPIQUEUE}{\GASPIQUEUETXT}
   \fdeffinal\returnlistend
 }
 
@@ -258,7 +270,7 @@ basicstyle=\ttfamily
 ~\\
 Specification of a PGAS API for communication\\
 ~\\
-Version 16.6
+Version 17.1
 }
 
 %TODO
@@ -736,7 +748,7 @@ operations on the communication queues.
 
 \subsection{\GASPI{} return values}
 
-\GASPI{} procedures have three general return values:
+\GASPI{} procedures have four general return values:
 
 \begin{description}
  \item[\GASPISUCC{}] implies that the procedure has completed successfully.
@@ -748,6 +760,12 @@ operations on the communication queues.
   There are no predefined error values specifying the detailed cause of an error.
   \gaspifunction{error\_message} translates the error code into a human
   readable format.
+\item [\GASPIQUEUE{}]implies that one of the function calls \gaspifunction{notify},
+  \gaspifunction{write}, \gaspifunction{write\_notify}, \gaspifunction{write\_list\_notify},
+  \gaspifunction{read}, \gaspifunction{read\_notify} and \gaspifunction{read\_list\_notify}
+  has reached the end of the queue and that the corresponding communication request
+  could not be issued. If \GASPIQUEUE{} is returned, users should either switch
+  to another queue or wait (see \gaspifunction{wait}) and subsequently re-issue the communication request.
 \end{description}
 
 \begin{implementoradvice}
@@ -929,6 +947,11 @@ optimizations.
 \begin{TDef}
 \TDefDef{\GASPIGERR{}} 
 \TDefDesc{GASPI\_ERROR is returned if a procedure call finished with an error.}
+\end{TDef}
+
+\begin{TDef}
+  \TDefDef{\GASPIQUEUE{}}
+  \TDefDesc{GASPI\_QUEUE\_FULL is returned if the end of the used queue has been reached.}
 \end{TDef}
 
 \subsubsection{State vector states}
@@ -1853,14 +1876,15 @@ required, in each of the following operations:
   \end{itemize}
 \item one-sided communication
   \begin{itemize}
-    \item \gaspifunction{wait}
     \item \gaspifunction{write}
-    \item \gaspifunction{read}
+    \item \gaspifunction{write\_notify}
     \item \gaspifunction{write\_list}
+    \item \gaspifunction{write\_list\_notify}
+    \item \gaspifunction{read}
+    \item \gaspifunction{read\_notify}
     \item \gaspifunction{read\_list}
     \item \gaspifunction{notify}
-    \item \gaspifunction{write\_notify}
-    \item \gaspifunction{write\_list\_notify}
+    \item \gaspifunction{wait}
   \end{itemize}
 \item passive communication
   \begin{itemize}
@@ -3427,6 +3451,7 @@ communication patterns:
 
 \begin{itemize}
 \item \gaspifunction{read}
+\item \gaspifunction{read\_notify}
 \item \gaspifunction{read\_list}
 \end{itemize}
 
@@ -3513,7 +3538,7 @@ end function gaspi_write
 
 
 \executionphasework
-\FStdRetDesc
+\FStdRetDescQueue
 
 
 \end{FDef}
@@ -3564,12 +3589,10 @@ invoked in order to complete the write call.
 A communication request posted to a given queue can be considered as completed, if
 the correspondent \gaspifunction{wait} returns with \GASPISUCC{}.
 
-If the queue to which the communication request is posted is full, i.\,e.\ if the number of
+If the queue to which the communication request has been posted is full, i.\,e.\ if the number of
 posted communication requests has already reached the queue size of a given queue, the communication
-request fails and the procedure returns with return value \GASPIGERR{}.
-If a saturated queue is detected, there are the following two options:
-Either one invokes a \gaspifunction{wait} on the given queue in order to wait for all the
-posted requests to be finished. Alternatively it is possible to use another queue.
+request has not been issued and the procedure returns with return value \GASPIQUEUE{}.
+In this case users should either switch to another queue or wait (see \gaspifunction{wait}) and subsequently re-issue the communication request.
 
 \begin{useradvice}\label{useradvice:gaspi_write}
   Return value \GASPISUCC{} does not mean, that the data has been transferred
@@ -3655,7 +3678,7 @@ end function gaspi_read
 \end{FDefSign}
 
 \executionphasework
-\FStdRetDesc
+\FStdRetDescQueue
 \end{FDef}
 
 \gaspifunction{read} posts a communication request which asynchronously transfers a contiguous block
@@ -3705,13 +3728,10 @@ A communication request posted to a given queue can be considered as completed, 
 the correspondent \gaspifunction{wait} returns with \GASPISUCC{}. For completed  \gaspifunction{read}
 requests, the data is guaranteed to be locally available.
 
-If the queue to which the communication request is posted is full, i.\,e.\ that the number of
+If the queue to which the communication request has been posted is full, i.\,e.\ if the number of
 posted communication requests has already reached the queue size of a given queue, the communication
-request fails and the procedure returns with return value \GASPIGERR{}. If a saturated queue
-is detected, there are the following two options:
-Either one invokes a \gaspifunction{wait} on the given queue in order to wait for all the
-posted requests to be finished. Or one tries to use another queue.
-
+request has not been issued and the procedure returns with return value \GASPIQUEUE{}.
+In this case users should either switch to another queue or wait (see \gaspifunction{wait}) and subsequently re-issue the communication request.
 
 \begin{useradvice}
   Return value \GASPISUCC{} does not mean, that the data transfer has
@@ -3850,11 +3870,10 @@ The definition of the macro \verb|ASSERT| is given in the listings
 \ref{lst:success_or_die_h} and \ref{lst:success_or_die_c}.
 The definition of the function
 \verb|wait_if_queue_full| is given in the listings
-\ref{lst:wait_if_queue_full_h} and \ref{lst:wait_if_queue_full_c}
+\ref{lst:wait_if_queue_full_h} 
 starting on page \pageref{lst:wait_if_queue_full_h}.
 
 \subsection{Weak synchronisation primitives}
-
 
 \subsubsection{Introduction}
 
@@ -3941,7 +3960,7 @@ end function gaspi_notify
 
 
 \executionphasework
-\FStdRetDesc
+\FStdRetDescQueue
 \end{FDef}
 
 \gaspifunction{notify} posts a notification request which asynchronously transfers the notification
@@ -3980,10 +3999,10 @@ invoked in order to complete the call.
 A notification request posted to a given queue can be considered as completed, if the
 the correspondent \gaspifunction{wait} returns with \GASPISUCC{}.
 
-If the queue to which the communication request is posted is full, i.\,e.\ that the number of
-posted communication requests has already reached the queue size of a given queue, the communication
-request fails.
-
+If the queue to which the notification request has been posted is full, i.\,e.\ if the number of
+posted communication requests has already reached the queue size of a given queue, the notification
+request has not been issued and the procedure returns with return value \GASPIQUEUE{}.
+In this case users should either switch to another queue or wait (see \gaspifunction{wait}) and subsequently re-issue the notification request.
 
 \begin{useradvice}
   Return value \GASPISUCC{} does not mean, that the notification has
@@ -4338,10 +4357,26 @@ In case of error, i.\,e.\ return value \GASPIGERR, the value of
 
 \subsection{Extended communication calls}
 
+All extended calls may be posted from every thread of the \GASPI{} process.
+
 All restrictions applying to \gaspifunction{write} and
-\gaspifunction{notify} also apply here. In case of timeout or error,
-no assumptions may be made regarding either the written data or the
-notification.
+\gaspifunction{notify} also apply here. 
+
+If these calls return with \GASPITIME{}, the communication request could not be posted
+to the hardware during the given timeout. This can happen, if another thread is in a \gaspifunction{wait}
+for the same queue. A subsequent call of the communication request has to be
+invoked in order to complete the read call.
+
+A communication request posted to a given queue can be considered as completed, if the
+the correspondent \gaspifunction{wait} returns with \GASPISUCC{}. 
+
+If the queue to which the communication request has been posted is full, i.\,e.\ if the number of
+posted communication requests has already reached the queue size of a given queue, the communication
+request has not been issued and the procedure returns with return value \GASPIQUEUE{}.
+In this case users should either switch to another queue or wait (see \gaspifunction{wait}) and subsequently re-issue the communication request.
+
+The user should be aware that a subsequent \gaspifunction{notify} only guarantees non-overtaking conditions for the same queue to
+which previous communication requests been posted.
 
 \subsubsection{\gaspifunction{write\_notify}}
 
@@ -4426,7 +4461,7 @@ end function gaspi_write_notify
 
 
 \executionphasework
-\FStdRetDesc
+\FStdRetDescQueue
 \end{FDef}
 
 %Two new entries are inserted into the given queue.
@@ -4515,7 +4550,7 @@ end function gaspi_write_list
 
 
 \executionphasework
-\FStdRetDesc
+\FStdRetDescQueue
 \end{FDef}
 
 %\parameter{num} new entries are inserted in the given queue.
@@ -4617,7 +4652,7 @@ end function gaspi_write_list_notify
 
 
 \executionphasework
-\FStdRetDesc
+\FStdRetDescQueue
 \end{FDef}
 
 %\parameter{num+1} new entries are inserted into the given queue.
@@ -4706,7 +4741,7 @@ end function gaspi_read_notify
 
 
 \executionphasework
-\FStdRetDesc
+\FStdRetDescQueue
 \end{FDef}
 
 \begin{useradvice}
@@ -4820,7 +4855,7 @@ end function gaspi_read_list
 \end{FDefSign}
 
 \executionphasework
-\FStdRetDesc
+\FStdRetDescQueue
 \end{FDef}
 
 %\parameter{num} new entries are inserted into the given queue.
@@ -7249,7 +7284,6 @@ end function gaspi_pcontrol
 
 \subsection{wait\_if\_queue\_full}
 \insertlisting{../examples/wait_if_queue_full.h}{wait\_if\_queue\_full.h\label{lst:wait_if_queue_full_h}}
-\insertlisting{../examples/wait_if_queue_full.c}{wait\_if\_queue\_full.c\label{lst:wait_if_queue_full_c}}
 
 %\todooverview
 

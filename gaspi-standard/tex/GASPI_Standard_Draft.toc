@@ -19,8 +19,8 @@
 \contentsline {subsection}{\numberline {3.9}{\sc Gaspi}{} timeouts}{13}
 \contentsline {subsection}{\numberline {3.10}{\sc Gaspi}{} collective communication}{13}
 \contentsline {subsection}{\numberline {3.11}{\sc Gaspi}{} return values}{14}
-\contentsline {section}{\numberline {4}{\sc Gaspi}{} definitions}{14}
-\contentsline {subsection}{\numberline {4.1}Types}{14}
+\contentsline {section}{\numberline {4}{\sc Gaspi}{} definitions}{15}
+\contentsline {subsection}{\numberline {4.1}Types}{15}
 \contentsline {subsection}{\numberline {4.2}Constants}{17}
 \contentsline {subsubsection}{\numberline {4.2.1}Timeout values}{17}
 \contentsline {subsubsection}{\numberline {4.2.2}Function return values}{17}
@@ -33,8 +33,8 @@
 \contentsline {subsubsection}{\numberline {5.2.1}{\sc Gaspi}{} configuration structure}{19}
 \contentsline {subsubsection}{\numberline {5.2.2}{\tt \zsep {gaspi\_config\_get}}}{21}
 \contentsline {subsubsection}{\numberline {5.2.3}{\tt \zsep {gaspi\_config\_set}}}{22}
-\contentsline {subsection}{\numberline {5.3}Process management calls}{22}
-\contentsline {subsubsection}{\numberline {5.3.1}{\tt \zsep {gaspi\_proc\_init}}}{22}
+\contentsline {subsection}{\numberline {5.3}Process management calls}{23}
+\contentsline {subsubsection}{\numberline {5.3.1}{\tt \zsep {gaspi\_proc\_init}}}{23}
 \contentsline {subsubsection}{\numberline {5.3.2}{\tt \zsep {gaspi\_proc\_num}}}{24}
 \contentsline {subsubsection}{\numberline {5.3.3}{\tt \zsep {gaspi\_proc\_rank}}}{25}
 \contentsline {subsubsection}{\numberline {5.3.4}{\tt \zsep {gaspi\_proc\_term}}}{26}
@@ -93,8 +93,8 @@
 \contentsline {subsection}{\numberline {8.4}Extended communication calls}{75}
 \contentsline {subsubsection}{\numberline {8.4.1}{\tt \zsep {gaspi\_write\_notify}}}{75}
 \contentsline {subsubsection}{\numberline {8.4.2}{\tt \zsep {gaspi\_write\_list}}}{77}
-\contentsline {subsubsection}{\numberline {8.4.3}{\tt \zsep {gaspi\_write\_list\_notify}}}{78}
-\contentsline {subsubsection}{\numberline {8.4.4}{\tt \zsep {gaspi\_read\_notify}}}{80}
+\contentsline {subsubsection}{\numberline {8.4.3}{\tt \zsep {gaspi\_write\_list\_notify}}}{79}
+\contentsline {subsubsection}{\numberline {8.4.4}{\tt \zsep {gaspi\_read\_notify}}}{81}
 \contentsline {subsubsection}{\numberline {8.4.5}{\tt \zsep {gaspi\_read\_list}}}{85}
 \contentsline {subsection}{\numberline {8.5}Communication utilities}{87}
 \contentsline {subsubsection}{\numberline {8.5.1}{\tt \zsep {gaspi\_queue\_create}}}{87}

@@ -3,8 +3,13 @@
 
 #include <GASPI.h>
 
-void wait_if_queue_full ( const gaspi_queue_id_t queue_id
-                        , const gaspi_number_t request_size
-                        );
-
+#define WAIT_IF_QUEUE_FULL(f, queue)                    \
+  {                                                     \
+    gaspi_return_t ret;                                 \
+    while ((ret = (f)) == GASPI_QUEUE_FULL)             \
+       {                                                \
+          ASSERT (gaspi_wait ((queue), GASPI_BLOCK));	\
+       }                                                \
+    ASSERT (ret == GASPI_SUCCESS);                      \
+  }
 #endif

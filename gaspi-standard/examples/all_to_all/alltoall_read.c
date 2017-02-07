@@ -54,13 +54,13 @@ main (int argc, char *argv[])
       const gaspi_offset_t offset_src = iProc * sizeof (int);
       const gaspi_offset_t offset_dst = rank * sizeof (int);
 
-      wait_if_queue_full (queue_id, 1);
-
-      ASSERT (gaspi_read ( segment_id_dst, offset_dst
-                         , rank, segment_id_src, offset_src
-                         , sizeof (int), queue_id, GASPI_BLOCK
-                         )
-             );
+      WAIT_IF_QUEUE_FULL
+	(gaspi_read ( segment_id_dst, offset_dst
+		      , rank, segment_id_src, offset_src
+		      , sizeof (int), queue_id, GASPI_BLOCK
+		      )
+	 , queue_id
+	 );
     }
 
   ASSERT (gaspi_wait (queue_id, GASPI_BLOCK));
