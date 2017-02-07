@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2016.11.25)  7 FEB 2017 11:41
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2016.11.25)  7 FEB 2017 12:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -964,10 +964,10 @@ ter)[]
 [128] [129] (../examples/success_or_die.h) (../examples/success_or_die.c)
 (../examples/wait_if_queue_full.h [130]) [131] (./GASPI_Standard_Draft.aux) ) 
 Here is how much of TeX's memory you used:
- 18556 strings out of 494953
- 383673 string characters out of 6180976
+ 18557 strings out of 494953
+ 383685 string characters out of 6180976
  489778 words of memory out of 5000000
- 21386 multiletter control sequences out of 15000+600000
+ 21387 multiletter control sequences out of 15000+600000
  22464 words of font info for 58 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  55i,12n,80p,567b,1551s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -988,7 +988,7 @@ knappen/ec/ecrm1728.600pk> </home/platon/.texmf-var/fonts/pk/ljfour/jknappen/ec
 mmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.p
 fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></u
 sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb>
-Output written on GASPI_Standard_Draft.pdf (132 pages, 431341 bytes).
+Output written on GASPI_Standard_Draft.pdf (132 pages, 431594 bytes).
 PDF statistics:
  965 PDF objects out of 1000 (max. 8388607)
  363 compressed objects within 4 object streams
