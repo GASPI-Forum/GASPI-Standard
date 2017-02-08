@@ -115,7 +115,7 @@ main (int argc, char *argv[])
     }
   
   t1 += mysecond();
-  printf("## messages: %d time: %10.6f messages/sec: %d\n"
+  printf("# messages: %d time: %10.6f messages/sec: %d\n"
 	 , notification_max, t1, (int) ((double) notification_max/t1)); 
     
 
