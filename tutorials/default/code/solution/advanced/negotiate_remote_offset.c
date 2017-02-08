@@ -327,7 +327,7 @@ int main(int argc, char *argv[])
 			 ) == 0 );
 
 
-  double _time = -now();
+  double time = -now();
 
   // negotiate remote offsets for all ranks
   for (int i = 0; i < nProc; ++i)
@@ -398,10 +398,10 @@ int main(int argc, char *argv[])
 	}
     }
 
-  _time += now();
+  time += now();
 
   printf ("# gaspi %s nProc %d time %g\n"
-	  , argv[0], nProc, _time
+	  , argv[0], nProc, time
 	  );
 
   printf("done\n");

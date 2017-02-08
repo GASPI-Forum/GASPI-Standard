@@ -2,6 +2,7 @@
 #include <GASPI.h>
 #include <success_or_die.h>
 #include "constant.h"
+#include "now.h"
 
 static double mysecond()
 {
@@ -61,7 +62,7 @@ main (int argc, char *argv[])
     }
 
   gaspi_rank_t target = 1 - iProc;  
-  double t1 = -mysecond();
+  double time = -now();
   
   /* notify target for notification_max integers */
 #pragma omp parallel
@@ -95,9 +96,9 @@ main (int argc, char *argv[])
       num_received++;
     }
 
-  t1 += mysecond();
+  time += now();
   printf("# messages: %d time: %10.6f messages/sec: %d\n"
-	 , notification_max, t1, (int) ((double) notification_max/t1)); 
+	 , notification_max, time, (int) ((double) notification_max/time)); 
     
   wait_for_flush_queues();
 
