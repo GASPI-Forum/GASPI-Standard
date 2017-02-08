@@ -91,21 +91,17 @@ int main (int argc, char *argv[])
         if (tid == 0)
         {
 	  // issue write
-          WAIT_IF_QUEUE_FULL
-	    ( gaspi_write_notify
-              ( segment_id, array_OFFSET_left (buffer_id, left_halo + 1, 0), LEFT(iProc, nProc) 
-		, segment_id, array_OFFSET_left (buffer_id, right_halo, 0), VLEN * sizeof (double)
-		, right_data_available[buffer_id], 1 + i, queue_id, GASPI_BLOCK)
-	      , queue_id
+	  write_notify_and_cycle
+	    ( segment_id, array_OFFSET_left (buffer_id, left_halo + 1, 0), LEFT(iProc, nProc) 
+	      , segment_id, array_OFFSET_left (buffer_id, right_halo, 0), VLEN * sizeof (double)
+	      , right_data_available[buffer_id], 1 + i
 	      );
 
 	  // issue write
-	  WAIT_IF_QUEUE_FULL
-	    ( gaspi_write_notify
-              ( segment_id, array_OFFSET_right (buffer_id, right_halo - 1, 0), RIGHT(iProc, nProc)
-		, segment_id, array_OFFSET_right (buffer_id, left_halo, 0), VLEN * sizeof (double)
-		, left_data_available[buffer_id], 1 + i, queue_id, GASPI_BLOCK)
-	      , queue_id
+	  write_notify_and_cycle
+	    ( segment_id, array_OFFSET_right (buffer_id, right_halo - 1, 0), RIGHT(iProc, nProc)
+	      , segment_id, array_OFFSET_right (buffer_id, left_halo, 0), VLEN * sizeof (double)
+	      , left_data_available[buffer_id], 1 + i
 	      );
 
 	  // wait for data notification

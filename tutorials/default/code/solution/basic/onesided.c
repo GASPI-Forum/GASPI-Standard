@@ -64,16 +64,16 @@ main(int argc,
   gaspi_offset_t loc_off = 0;
   gaspi_offset_t rem_off = VLEN * sizeof(double);
 
-
-  WAIT_IF_QUEUE_FULL
-    ( gaspi_write_notify
-      ( segment_id, loc_off, RIGHT (iProc, nProc),
-	segment_id, rem_off, VLEN * sizeof (double),
-	data_available, 1 + iProc, queue_id, GASPI_BLOCK
-	)
-      , queue_id
-      );
-
+  gaspi_write_notify_and_cycle ( segment_id
+				 , loc_off
+				 , RIGHT (iProc, nProc)
+				 , segment_id
+				 , rem_off
+				 , VLEN * sizeof (double)
+				 , data_available
+				 , 1 + iProc
+				 );
+  
   gaspi_notification_id_t id;
   gaspi_notification_t expected = 1 + LEFT(iProc,
 					   nProc);
