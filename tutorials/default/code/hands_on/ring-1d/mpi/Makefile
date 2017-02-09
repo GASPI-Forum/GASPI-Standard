@@ -13,7 +13,7 @@ CFLAGS += -Wall
 CFLAGS += -Wextra
 CFLAGS += -Wshadow
 CFLAGS += -O3
-CFLAGS += -fopenmp
+CFLAGS += -qopenmp
 CFLAGS += -std=c99
 
 ###############################################################################
@@ -21,7 +21,7 @@ CFLAGS += -std=c99
 INCLUDE_DIR += ..
 LDFLAGS += $(addprefix -L,$(LIBRARY_DIR))
 
-LDFLAGS += -openmp-link static
+LDFLAGS += -qopenmp-link=static
 CFLAGS += $(addprefix -I,$(INCLUDE_DIR))
 
 
@@ -58,7 +58,7 @@ run: $(addprefix $(CURDIR)/, $(addsuffix .run, $(NAME)))
 .PHONY: clean objclean
 
 objclean:
-	rm -f *.o
+	rm -f ../*.o *.o
 
 clean: objclean
 	rm -f $(BIN)

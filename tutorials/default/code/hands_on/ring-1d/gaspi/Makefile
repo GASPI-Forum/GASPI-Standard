@@ -1,12 +1,11 @@
 ifndef GPI2_HOME
-  GPI2_HOME=/opt/GPI2-1.3.0_impi-5.0.3
+  GPI2_HOME=/opt/GPI2
 endif
-CC = mpiicc
+CC = icc
 
 ifndef CMD_RUN
   CMD_RUN = $(GPI2_HOME)/bin/gaspi_run -m $$PBS_NODEFILE -N
 endif
-
 
 NAME += left_right_double_buffer_funneled
 NAME += left_right_double_buffer_multiple
@@ -16,7 +15,7 @@ CFLAGS += -Wall
 CFLAGS += -Wextra
 CFLAGS += -Wshadow
 CFLAGS += -O3
-CFLAGS += -fopenmp
+CFLAGS += -qopenmp
 CFLAGS += -std=c99
 
 ###############################################################################
@@ -28,7 +27,7 @@ LIBRARY_DIR += $(GPI2_HOME)/lib64
 LDFLAGS += $(addprefix -L,$(LIBRARY_DIR))
 
 ifeq "$(CC)" "icc"
-  LDFLAGS += -openmp-link static
+  LDFLAGS += -qopenmp-link=static
 endif
 
 CFLAGS += $(addprefix -I,$(INCLUDE_DIR))
@@ -68,7 +67,7 @@ run: $(addprefix $(CURDIR)/, $(addsuffix .run, $(NAME)))
 .PHONY: clean objclean
 
 objclean:
-	rm -f *.o
+	rm -f ../*.o *.o
 
 clean: objclean
 	rm -f $(BIN)
