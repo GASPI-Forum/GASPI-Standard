@@ -4,6 +4,6 @@
 
 
 #define MIN(x,y) ((x)<(y)?(x):(y))
-static const int nThreads  = 1;
+static const int nThreads  = 2;
 
 #endif

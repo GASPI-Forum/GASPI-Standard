@@ -29,7 +29,8 @@ main (int argc, char *argv[])
   
   gaspi_number_t notification_max;
   SUCCESS_OR_DIE (gaspi_notification_num(&notification_max));
-
+  notification_max -= 1;
+    
   const gaspi_segment_id_t segment_id_src = 0;
   const gaspi_segment_id_t segment_id_dst = 1;
   SUCCESS_OR_DIE (gaspi_segment_create ( segment_id_src
@@ -109,8 +110,11 @@ main (int argc, char *argv[])
     }
   
   time += now();
-  printf("# messages: %d time: %10.6f messages/sec: %d\n"
-	 , notification_max, time, (int) ((double) notification_max/time)); 
+  printf("# messages sent/recveived: %d, total message rate [#/sec]: %d, bandwidth [MB/sec]: %10.6f\n"
+	 , notification_max
+	 , (int) ((double) 2*notification_max/time)
+	 , 16*notification_max/time/1024/1024
+	 ); 
 
   for (i = 0; i < queue_num; ++i)
     {
