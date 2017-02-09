@@ -10,11 +10,15 @@ typedef struct offset_entry_t
   gaspi_offset_t remote_recv_offset;
 } offset_entry;
 
-enum handler_t { SAY_HELLO, RETURN_OFFSET };
+typedef enum handler_t
+  {
+    SAY_HELLO,
+    RETURN_OFFSET
+  } handler;
 
 typedef struct packet_t
 {
-  handler_t handler;   
+  handler type;   
   gaspi_rank_t rank;
   gaspi_size_t len;
   gaspi_offset_t offset;

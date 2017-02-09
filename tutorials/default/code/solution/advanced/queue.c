@@ -4,7 +4,9 @@
 
 
 static int my_queue = 0;
+#ifdef _OPENMP
 #pragma omp threadprivate(my_queue)
+#endif
 
 void
 notify_and_wait ( gaspi_segment_id_t const segment_id_remote

@@ -1,6 +1,7 @@
 ifndef GPI2_HOME
-  GPI2_HOME=../../..
+GPI2_HOME=/opt/GPI2
 endif
+CC=icc
 
 BIN += negotiate_remote_offset.exe
 

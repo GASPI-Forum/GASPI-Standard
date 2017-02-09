@@ -1,10 +1,9 @@
 ifndef GPI2_HOME
-  GPI2_HOME=/opt/GPI2-1.3.0_impi-5.0.3
+  GPI2_HOME=/opt/GPI2_impi-5.1.2
 endif
-CC = mpiicc
 
-MPI_HOME=/opt/intel/impi/5.0.3.048
-CC=$(MPI_HOME)/bin64/mpiicc
+MPI_HOME=/opt/intel/compilers_and_libraries_2016.1.150/linux/mpi/intel64
+CC=$(MPI_HOME)/bin/mpiicc
 
 
 NAME += Pipelined_transpose_WN
@@ -14,7 +13,7 @@ CFLAGS += -Wextra
 CFLAGS += -Wshadow
 #CFLAGS += -O3 -debug -mmic
 CFLAGS += -O3
-CFLAGS += -openmp
+CFLAGS += -qopenmp
 CFLAGS += -std=c99
 #CFLAGS += -DDEBUG
 CFLAGS += -DUSE_ALIGNMENT
@@ -32,7 +31,7 @@ LIBRARY_DIR += $(GPI2_HOME)/lib64
 LDFLAGS += $(addprefix -L,$(LIBRARY_DIR))
 
 ifeq "$(CC)" "mpiicc"
-  LDFLAGS += -openmp-link static
+  LDFLAGS += -qopenmp-link=static
 endif
 
 CFLAGS += $(addprefix -I,$(INCLUDE_DIR))

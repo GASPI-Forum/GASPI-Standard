@@ -46,48 +46,6 @@ static gaspi_offset_t local_send_offset = 0;
 // max array elements per rank
 #define LEN_MAX 128
 
-void *handle_passive(void *arg)
-{
-  gaspi_pointer_t _vptr;
-  SUCCESS_OR_DIE(gaspi_segment_ptr(passive_segment, &_vptr));
-
-  // passive recv offset after passive_send
-  const gaspi_offset_t passive_offset = sizeof(packet);
-  
-  while(1)
-    {
-      gaspi_rank_t sender;
-      SUCCESS_OR_DIE(gaspi_passive_receive(passive_segment
-					   , passive_offset
-					   , &sender
-					   , sizeof(packet)
-					   , GASPI_BLOCK
-					   ));
-      packet *t = (packet *) (_vptr + sizeof(packet));
-      handler_t handler = t->handler;
-      ASSERT(sender == t->rank);
-      
-      // execute requested remote procedure handler
-      switch(handler)
-	{	  
-	case SAY_HELLO :
-	  say_hello(t->rank, t->len, t->offset);
-	  break; 
-	  
-	case RETURN_OFFSET :
-	  return_offset(t->rank, t->len, t->offset);
-	  break;
-	  
-	default : 
-	  ASSERT(0);
-	}
-    }
-
-  return NULL;
-
-}
-
-
 static void say_hello(gaspi_rank_t rank, gaspi_size_t len, gaspi_offset_t offset)
 {
 
@@ -97,39 +55,13 @@ static void say_hello(gaspi_rank_t rank, gaspi_size_t len, gaspi_offset_t offset
 }
 
 
-static void call_say_hello(gaspi_rank_t rank
-		      , gaspi_size_t len
-		      , gaspi_offset_t offset)
-{
-  gaspi_pointer_t _vptr;
-  SUCCESS_OR_DIE(gaspi_segment_ptr(passive_segment, &_vptr));
-
-  gaspi_rank_t myrank;
-  SUCCESS_OR_DIE (gaspi_proc_rank(&myrank));
-
-  // start of passive segment
-  const gaspi_offset_t passive_offset = 0;
-  packet *t = (packet *) (_vptr + passive_offset);
-  t->handler = SAY_HELLO;
-  t->rank = myrank;
-  t->len = len;      
-  t->offset = offset;
-
-  SUCCESS_OR_DIE(gaspi_passive_send(passive_segment
-				    , passive_offset
-				    , rank
-				    , sizeof(packet)
-				    , GASPI_BLOCK
-				    ));
-
-}
-
 static gaspi_offset_t get_offset(char const * ptr, gaspi_segment_id_t id)
 {
   gaspi_pointer_t _vptr;
   SUCCESS_OR_DIE(gaspi_segment_ptr(id, &_vptr));
-  return (ptr - (char const *) _vptr);
+  return (ptr - (char*) _vptr);
 }
+
 
 
 static void return_offset(gaspi_rank_t rank, gaspi_size_t len, gaspi_offset_t offset)
@@ -166,6 +98,75 @@ static void return_offset(gaspi_rank_t rank, gaspi_size_t len, gaspi_offset_t of
 			   );
 }
 
+void *handle_passive(void *arg)
+{
+  gaspi_pointer_t _vptr;
+  SUCCESS_OR_DIE(gaspi_segment_ptr(passive_segment, &_vptr));
+
+  // passive recv offset after passive_send
+  const gaspi_offset_t passive_offset = sizeof(packet);
+  
+  while(1)
+    {
+      gaspi_rank_t sender;
+      SUCCESS_OR_DIE(gaspi_passive_receive(passive_segment
+					   , passive_offset
+					   , &sender
+					   , sizeof(packet)
+					   , GASPI_BLOCK
+					   ));
+      packet *t = (packet *) ((char*)_vptr + sizeof(packet));
+      handler type = t->type;
+      ASSERT(sender == t->rank);
+      
+      // execute requested remote procedure handler
+      switch(type)
+	{	  
+	case SAY_HELLO :
+	  say_hello(t->rank, t->len, t->offset);
+	  break; 
+	  
+	case RETURN_OFFSET :
+	  return_offset(t->rank, t->len, t->offset);
+	  break;
+	  
+	default : 
+	  ASSERT(0);
+	}
+    }
+
+  return NULL;
+
+}
+
+
+static void call_say_hello(gaspi_rank_t rank
+		      , gaspi_size_t len
+		      , gaspi_offset_t offset)
+{
+  gaspi_pointer_t _vptr;
+  SUCCESS_OR_DIE(gaspi_segment_ptr(passive_segment, &_vptr));
+
+  gaspi_rank_t myrank;
+  SUCCESS_OR_DIE (gaspi_proc_rank(&myrank));
+
+  // start of passive segment
+  const gaspi_offset_t passive_offset = 0;
+  packet *t = (packet *) ((char*)_vptr + passive_offset);
+  t->type = SAY_HELLO;
+  t->rank = myrank;
+  t->len = len;      
+  t->offset = offset;
+
+  SUCCESS_OR_DIE(gaspi_passive_send(passive_segment
+				    , passive_offset
+				    , rank
+				    , sizeof(packet)
+				    , GASPI_BLOCK
+				    ));
+
+}
+
 
 
 static void call_return_offset(gaspi_rank_t rank
@@ -182,8 +183,8 @@ static void call_return_offset(gaspi_rank_t rank
 
   // start of passive segment
   const gaspi_offset_t passive_offset = 0;
-  packet *t = (packet *) (_vptr + passive_offset);
-  t->handler = RETURN_OFFSET;
+  packet *t = (packet *) ((char*)_vptr + passive_offset);
+  t->type = RETURN_OFFSET;
   t->rank = myrank;
   t->len = len;      
   t->offset = offset;
@@ -253,7 +254,7 @@ static void init_data()
     {
       if (local_offset[i].local_send_len > 0)
 	{
-	  int *send_array = (int *) (_dptr + local_offset[i].local_send_offset);
+	  int *send_array = (int *) ((char*)_dptr + local_offset[i].local_send_offset);
 	  for (gaspi_size_t j = 0; j < local_offset[i].local_send_len; ++j)
 	    {
 	      send_array[j] = myrank;
@@ -302,7 +303,7 @@ int main(int argc, char *argv[])
   SUCCESS_OR_DIE(gaspi_segment_ptr(passive_segment, &_vptr));
 
   // offset data after passive send/recv packets
-  local_offset = (offset_entry *) (_vptr + 2 * sizeof(packet));
+  local_offset = (offset_entry *) ((char*)_vptr + 2 * sizeof(packet));
 
   // set initial offset for send/recv
   local_send_offset = 0;
@@ -384,7 +385,7 @@ int main(int argc, char *argv[])
 	  const gaspi_rank_t rank = i;
 	  const gaspi_notification_id_t data_id = rank;
 	  wait_or_die(core_segment, data_id, DATA_VAL); 
-	  int *recv_array = (int *) (_dptr + local_offset[i].local_recv_offset);
+	  int *recv_array = (int *) ((char*)_dptr + local_offset[i].local_recv_offset);
 	  for (gaspi_size_t j = 0; j < local_offset[i].local_recv_len; ++j)
 	    {
 	      ASSERT(recv_array[j] == rank);

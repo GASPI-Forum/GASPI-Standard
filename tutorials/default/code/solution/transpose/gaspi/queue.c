@@ -4,9 +4,34 @@
 
 
 static int my_queue = 0;
+#ifdef _OPENMP
 #pragma omp threadprivate(my_queue)
+#endif
 
-int 
+void
+notify_and_wait ( gaspi_segment_id_t const segment_id_remote
+	        , gaspi_rank_t const rank
+		, gaspi_notification_id_t const notification_id
+	        , gaspi_notification_t const notification_value
+	        , gaspi_queue_id_t const queue
+	        )
+{
+  gaspi_timeout_t const timeout = GASPI_BLOCK;
+  gaspi_return_t ret;
+
+  /* notify, wait if required and re-submit */
+  while ((ret = ( gaspi_notify (segment_id_remote, rank, 
+				notification_id, notification_value, 
+				queue, timeout)
+		  )) == GASPI_QUEUE_FULL)
+    {
+      SUCCESS_OR_DIE (gaspi_wait (queue,
+				  GASPI_BLOCK));
+    }
+  ASSERT (ret == GASPI_SUCCESS);  
+}
+
+void
 write_and_wait ( gaspi_segment_id_t const segment_id_local
 	       , gaspi_offset_t const offset_local
 	       , gaspi_rank_t const rank
@@ -18,7 +43,6 @@ write_and_wait ( gaspi_segment_id_t const segment_id_local
 {
   gaspi_timeout_t const timeout = GASPI_BLOCK;
   gaspi_return_t ret;
-  int qstate = -1;
   
   /* write, wait if required and re-submit */
   while ((ret = ( gaspi_write( segment_id_local, offset_local, rank,
@@ -28,12 +52,8 @@ write_and_wait ( gaspi_segment_id_t const segment_id_local
     {
       SUCCESS_OR_DIE (gaspi_wait (queue,
 				  GASPI_BLOCK));
-      /* flag flushed queue */
-      qstate = queue;
     }
-  ASSERT (ret == GASPI_SUCCESS);  
-
-  return qstate; 
+  ASSERT (ret == GASPI_SUCCESS);
 }
 
 void
@@ -59,7 +79,7 @@ write_notify_and_cycle ( gaspi_segment_id_t const segment_id_local
 				      segment_id_remote, offset_remote, size,
 				      notification_id, notification_value,
 				      my_queue, timeout)
-	    )) == GASPI_QUEUE_FULL)
+		  )) == GASPI_QUEUE_FULL)
     {
       my_queue = (my_queue + 1) % queue_num;
       SUCCESS_OR_DIE (gaspi_wait (my_queue,
