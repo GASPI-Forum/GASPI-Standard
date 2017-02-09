@@ -154,19 +154,16 @@ static void return_offset(gaspi_rank_t rank, gaspi_size_t len, gaspi_offset_t of
   
   // return offset information
   gaspi_queue_id_t queue_id = 0;
-  wait_for_queue_entries_for_write_notify ( &queue_id );
-  SUCCESS_OR_DIE ( gaspi_write_notify
-		   ( passive_segment
-		     , offset_l
-		     , rank
-		     , passive_segment
-		     , offset_r
-		     , sizeof(gaspi_offset_t) 
-		     , OFFSET_ID
-		     , OFFSET_VAL
-		     , queue_id
-		     , GASPI_BLOCK
-		     ));
+
+  write_notify_and_cycle ( passive_segment
+			   , offset_l
+			   , rank
+			   , passive_segment
+			   , offset_r
+			   , sizeof(gaspi_offset_t) 
+			   , OFFSET_ID
+			   , OFFSET_VAL
+			   );
 }
 
 
@@ -350,19 +347,16 @@ int main(int argc, char *argv[])
 	{
 	  const gaspi_rank_t rank = i;
 	  const gaspi_notification_id_t data_id = myrank;
-	  wait_for_queue_entries_for_write_notify ( &queue_id );
-	  SUCCESS_OR_DIE ( gaspi_write_notify
-			   ( core_segment
-			     , local_offset[i].local_send_offset
-			     , rank
-			     , core_segment
-			     , local_offset[i].remote_recv_offset
-			     , local_offset[i].local_send_len * sizeof(int)
-			     , data_id
-			     , DATA_VAL
-			     , queue_id
-			     , GASPI_BLOCK
-			     ));
+
+	  write_notify_and_cycle ( core_segment
+				   , local_offset[i].local_send_offset
+				   , rank
+				   , core_segment
+				   , local_offset[i].remote_recv_offset
+				   , local_offset[i].local_send_len * sizeof(int)
+				   , data_id
+				   , DATA_VAL
+				   );
 	}
     }
 

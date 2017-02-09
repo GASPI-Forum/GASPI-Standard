@@ -81,14 +81,11 @@ void handle_slice( slice *sl, double* array
     SUCCESS_OR_DIE (gaspi_proc_rank (&iProc));
     SUCCESS_OR_DIE (gaspi_proc_num (&nProc));
 
-    WAIT_IF_QUEUE_FULL
-      ( gaspi_write_notify
-        ( segment_id, array_OFFSET_left (new_buffer_id, left_halo + 1, 0), LEFT (iProc, nProc)
-	  , segment_id, array_OFFSET_left (new_buffer_id, right_halo, 0), VLEN * sizeof (double)
-	  , right_data_available[new_buffer_id], 1
-	  , queue_id, GASPI_BLOCK)
-	, queue_id
-	);
+    write_notify_and_cycle
+      ( segment_id, array_OFFSET_left (new_buffer_id, left_halo + 1, 0), LEFT (iProc, nProc)
+	, segment_id, array_OFFSET_left (new_buffer_id, right_halo, 0), VLEN * sizeof (double)
+	, right_data_available[new_buffer_id], 1
+      );
   }
   if (sl->index == right_halo - 1)
   {
@@ -96,13 +93,10 @@ void handle_slice( slice *sl, double* array
     SUCCESS_OR_DIE (gaspi_proc_rank (&iProc));
     SUCCESS_OR_DIE (gaspi_proc_num (&nProc));
 
-    WAIT_IF_QUEUE_FULL
-      ( gaspi_write_notify
-        ( segment_id, array_OFFSET_right (new_buffer_id, right_halo - 1, 0), RIGHT (iProc, nProc)
-	  , segment_id, array_OFFSET_right (new_buffer_id, left_halo, 0), VLEN * sizeof (double)
-	  , left_data_available[new_buffer_id], 1
-	  , queue_id, GASPI_BLOCK)
-	, queue_id
+    write_notify_and_cycle
+      ( segment_id, array_OFFSET_right (new_buffer_id, right_halo - 1, 0), RIGHT (iProc, nProc)
+	, segment_id, array_OFFSET_right (new_buffer_id, left_halo, 0), VLEN * sizeof (double)
+	, left_data_available[new_buffer_id], 1
 	);
   }
 
