@@ -33,36 +33,21 @@ main (int argc, char *argv[])
     
   const gaspi_segment_id_t segment_id_src = 0;
   const gaspi_segment_id_t segment_id_dst = 1;
+
+  /* dummy allocation, we use notification values as data */
   SUCCESS_OR_DIE (gaspi_segment_create ( segment_id_src
-					 , notification_max * sizeof(double)
+					 , 1
 					 , GASPI_GROUP_ALL, GASPI_BLOCK
 					 , GASPI_ALLOC_DEFAULT
 					 )
 	  );
   SUCCESS_OR_DIE (gaspi_segment_create ( segment_id_dst
-					 , notification_max * sizeof(double)
+					 , 1
 					 , GASPI_GROUP_ALL, GASPI_BLOCK
 					 , GASPI_ALLOC_DEFAULT
 					 )
 	  );
-
-  gaspi_pointer_t _src_ptr = NULL;
-  gaspi_pointer_t _dst_ptr = NULL;
-  SUCCESS_OR_DIE (gaspi_segment_ptr (segment_id_src, &_src_ptr));
-  SUCCESS_OR_DIE (gaspi_segment_ptr (segment_id_dst, &_dst_ptr));
-
-  double *src = (double *) _src_ptr;
-  double *dst = (double *) _dst_ptr;
-
-#pragma omp parallel
-  for (i = 0; i < notification_max; ++i)
-    {
-      src[i] = 1;
-      dst[i] = 0;
-    }
-
-  SUCCESS_OR_DIE (gaspi_barrier (GASPI_GROUP_ALL, GASPI_BLOCK));
-
+    
   double time = -now();
   
   /* notify target for notification_max integers */
@@ -93,7 +78,7 @@ main (int argc, char *argv[])
     }
   
   time += now();
-  printf("# messages sent/recveived: %d, total message rate [#/sec]: %d\n"
+  printf("# messages sent/recveived: %8d, total bi-directional message rate [#/sec]: %d\n"
 	 , notification_max, (int) ((double) 2*notification_max/time)); 
 
   for (i = 0; i < notification_max; ++i)

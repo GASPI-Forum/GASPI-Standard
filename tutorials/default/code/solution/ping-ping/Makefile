@@ -3,8 +3,8 @@ GPI2_HOME=/opt/GPI2
 endif
 CC = icc
 
-BIN += ping_notify.exe
-BIN += ping_write.exe
+BIN += message_rate.exe
+BIN += bandwidth.exe
 
 CFLAGS += -Wall
 CFLAGS += -Wextra
@@ -26,7 +26,8 @@ LDFLAGS += $(addprefix -L,$(LIBRARY_DIR))
 CFLAGS += $(addprefix -I,$(INCLUDE_DIR))
 
 #LIB += ibverbs
-LIB += GPI2-dbg
+#LIB += GPI2-dbg
+LIB += GPI2
 LIB += m
 LIB += pthread
 
