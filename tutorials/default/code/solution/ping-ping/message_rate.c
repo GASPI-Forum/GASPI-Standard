@@ -24,9 +24,6 @@ main (int argc, char *argv[])
   omp_set_num_threads(nThreads);
   gaspi_rank_t target = 1 - iProc;  
   
-  gaspi_number_t queue_num;
-  SUCCESS_OR_DIE(gaspi_queue_num (&queue_num));
-  
   gaspi_number_t notification_max;
   SUCCESS_OR_DIE (gaspi_notification_num(&notification_max));
   notification_max -= 1;
@@ -51,18 +48,15 @@ main (int argc, char *argv[])
   double time = -now();
   
   /* notify target for notification_max integers */
-#pragma omp parallel
+#pragma omp parallel for
   for (i = 0; i < notification_max; ++i)
     {
-      int tid = omp_get_thread_num();
-      gaspi_queue_id_t queue_id = tid % queue_num;
-      
-      notify_and_wait (segment_id_dst
-		       , target
-		       , (gaspi_notification_id_t) i
-		       , 1
-		       , queue_id
-		       );
+      /* cycle queues  */
+      notify_and_cycle (segment_id_dst
+			, target
+			, (gaspi_notification_id_t) i
+			, 1
+			);
     }
   
   for (i = 0; i < notification_max; ++i)
