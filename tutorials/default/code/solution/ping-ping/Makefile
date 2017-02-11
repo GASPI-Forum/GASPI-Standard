@@ -5,6 +5,7 @@ CC = icc
 
 BIN += message_rate.exe
 BIN += bandwidth.exe
+BIN += multithreaded_waitsome.exe
 
 CFLAGS += -Wall
 CFLAGS += -Wextra
