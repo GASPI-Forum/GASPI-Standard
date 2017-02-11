@@ -119,12 +119,11 @@ main (int argc, char *argv[])
 				 , (gaspi_notification_id_t) id
 				 , send_count[id]
 				 , (gaspi_queue_id_t) id
-				 );		
+				 );
 	      }
 	  }
       }
     
-    /* multithreaded waitsome */
     volatile int received;
     while ((received = get_received()) < queue_num)
       {
@@ -149,10 +148,11 @@ main (int argc, char *argv[])
 		  {
 		    ASSERT (dst[id * M_SZ +j] == (int) id);
 		  }
-		__sync_add_and_fetch(&num_received, 1);
 		
 		printf("# queue: %8d message size: %8d send_count: %8d\n", id, elem_size[id],value);
-		fflush(stdout);		
+		fflush(stdout);
+		
+		__sync_add_and_fetch(&num_received, 1);
 	      }
 	  }
       }
