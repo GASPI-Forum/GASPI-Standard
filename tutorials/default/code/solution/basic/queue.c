@@ -1,40 +1,91 @@
 #include "queue.h"
 #include "success_or_die.h"
+#include "assert.h"
 
-static void
-wait_for_queue_entries(gaspi_queue_id_t* queue,
-		       int wanted_entries)
+
+static int my_queue = 0;
+#ifdef _OPENMP
+#pragma omp threadprivate(my_queue)
+#endif
+
+void
+notify_and_wait ( gaspi_segment_id_t const segment_id_remote
+	        , gaspi_rank_t const rank
+		, gaspi_notification_id_t const notification_id
+	        , gaspi_notification_t const notification_value
+	        , gaspi_queue_id_t const queue
+	        )
 {
-  gaspi_number_t queue_size_max;
-  gaspi_number_t queue_size;
+  gaspi_timeout_t const timeout = GASPI_BLOCK;
+  gaspi_return_t ret;
+
+  /* notify, wait if required and re-submit */
+  while ((ret = ( gaspi_notify (segment_id_remote, rank, 
+				notification_id, notification_value, 
+				queue, timeout)
+		  )) == GASPI_QUEUE_FULL)
+    {
+      SUCCESS_OR_DIE (gaspi_wait (queue,
+				  GASPI_BLOCK));
+    }
+  ASSERT (ret == GASPI_SUCCESS);  
+}
+
+void
+write_and_wait ( gaspi_segment_id_t const segment_id_local
+	       , gaspi_offset_t const offset_local
+	       , gaspi_rank_t const rank
+	       , gaspi_segment_id_t const segment_id_remote
+	       , gaspi_offset_t const offset_remote
+	       , gaspi_size_t const size
+	       , gaspi_queue_id_t const queue
+	       )
+{
+  gaspi_timeout_t const timeout = GASPI_BLOCK;
+  gaspi_return_t ret;
+  
+  /* write, wait if required and re-submit */
+  while ((ret = ( gaspi_write( segment_id_local, offset_local, rank,
+			       segment_id_remote, offset_remote, size,
+			       queue, timeout)
+	    )) == GASPI_QUEUE_FULL)
+    {
+      SUCCESS_OR_DIE (gaspi_wait (queue,
+				  GASPI_BLOCK));
+    }
+  ASSERT (ret == GASPI_SUCCESS);
+}
+
+void
+write_notify_and_cycle ( gaspi_segment_id_t const segment_id_local
+		       , gaspi_offset_t const offset_local
+		       , gaspi_rank_t const rank
+		       , gaspi_segment_id_t const segment_id_remote
+		       , gaspi_offset_t const offset_remote
+		       , gaspi_size_t const size
+		       , gaspi_notification_id_t const notification_id
+		       , gaspi_notification_t const notification_value
+		       )
+{
   gaspi_number_t queue_num;
-
-  SUCCESS_OR_DIE(gaspi_queue_size_max (&queue_size_max));
-  SUCCESS_OR_DIE(gaspi_queue_size (*queue,
-				   &queue_size));
-
   SUCCESS_OR_DIE(gaspi_queue_num (&queue_num));
 
-  if (!(queue_size + wanted_entries <= queue_size_max))
+  gaspi_timeout_t const timeout = GASPI_BLOCK;
+  gaspi_return_t ret;
+
+  
+  /* write, cycle if required and re-submit */
+  while ((ret = ( gaspi_write_notify( segment_id_local, offset_local, rank,
+				      segment_id_remote, offset_remote, size,
+				      notification_id, notification_value,
+				      my_queue, timeout)
+		  )) == GASPI_QUEUE_FULL)
     {
-      *queue = (*queue + 1) % queue_num;
-      SUCCESS_OR_DIE(gaspi_wait (*queue,
-				 GASPI_BLOCK));
+      my_queue = (my_queue + 1) % queue_num;
+      SUCCESS_OR_DIE (gaspi_wait (my_queue,
+				  GASPI_BLOCK));
     }
-}
-
-void
-wait_for_queue_entries_for_write_notify(gaspi_queue_id_t* queue_id)
-{
-  wait_for_queue_entries (queue_id,
-			  2);
-}
-
-void
-wait_for_queue_entries_for_notify(gaspi_queue_id_t* queue_id)
-{
-  wait_for_queue_entries (queue_id,
-			  1);
+  ASSERT (ret == GASPI_SUCCESS);
 }
 
 void
@@ -44,10 +95,12 @@ wait_for_flush_queues()
   SUCCESS_OR_DIE(gaspi_queue_num (&queue_num));
 
   gaspi_queue_id_t queue = 0;
+  
+  /* cycle all queues and wait */
   while (queue < queue_num)
     {
-      SUCCESS_OR_DIE(gaspi_wait (queue,
-				 GASPI_BLOCK));
+      SUCCESS_OR_DIE(gaspi_wait ( queue,
+				  GASPI_BLOCK));
       ++queue;
     }
 }

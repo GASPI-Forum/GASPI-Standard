@@ -89,14 +89,14 @@ int main (int argc, char *argv[])
 	const int right_halo  = NTHREADS+1;
 	
         if (tid == 0)
-        {
+	{
 	  // issue write
-          wait_for_queue_max_half (&queue_id);
-          SUCCESS_OR_DIE ( gaspi_write_notify
-              ( segment_id, array_OFFSET_left (buffer_id, left_halo + 1, 0), LEFT(iProc, nProc) 
-              , segment_id, array_OFFSET_left (buffer_id, right_halo, 0), VLEN * sizeof (double)
-              , right_data_available[buffer_id], 1 + i, queue_id, GASPI_BLOCK));
-
+	  write_notify_and_cycle
+	    ( segment_id, array_OFFSET_left (buffer_id, left_halo + 1, 0), LEFT(iProc, nProc) 
+	      , segment_id, array_OFFSET_left (buffer_id, right_halo, 0), VLEN * sizeof (double)
+	      , right_data_available[buffer_id], 1 + i
+	      );
+	  
 	  // wait for data notification
           wait_or_die (segment_id, left_data_available[buffer_id], 1 + i);
 
@@ -107,11 +107,11 @@ int main (int argc, char *argv[])
         if (tid == NTHREADS - 1)
 	{
 	  // issue write
-          wait_for_queue_max_half (&queue_id);
-          SUCCESS_OR_DIE ( gaspi_write_notify
-              ( segment_id, array_OFFSET_right (buffer_id, right_halo - 1, 0), RIGHT(iProc, nProc)
-              , segment_id, array_OFFSET_right (buffer_id, left_halo, 0), VLEN * sizeof (double)
-              , left_data_available[buffer_id], 1 + i, queue_id, GASPI_BLOCK));
+	  write_notify_and_cycle
+	    ( segment_id, array_OFFSET_right (buffer_id, right_halo - 1, 0), RIGHT(iProc, nProc)
+	      , segment_id, array_OFFSET_right (buffer_id, left_halo, 0), VLEN * sizeof (double)
+	      , left_data_available[buffer_id], 1 + i
+	      );
 
 	  // wait for data notification
           wait_or_die (segment_id, right_data_available[buffer_id], 1 + i);

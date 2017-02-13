@@ -1,6 +1,5 @@
 ifndef GPI2_HOME
-#  GPI2_HOME=/opt/GPI2-1.3.0_impi-5.0.3
-  GPI2_HOME=/opt/GPI2-1.3.0
+GPI2_HOME=/opt/GPI2
 endif
 CC = icc
 
@@ -11,7 +10,8 @@ BIN += onesided.exe
 CFLAGS += -Wall
 CFLAGS += -Wextra
 CFLAGS += -Wshadow
-CFLAGS += -O3
+#CFLAGS += -O3 -qopenmp
+CFLAGS += -O3 
 CFLAGS += -std=c99
 
 ###############################################################################
@@ -20,8 +20,8 @@ INCLUDE_DIR += $(GPI2_HOME)/include
 INCLUDE_DIR += ..
 LIBRARY_DIR += $(GPI2_HOME)/lib64
 
+#LDFLAGS += -openmp-link static $(addprefix -L,$(LIBRARY_DIR))
 LDFLAGS += $(addprefix -L,$(LIBRARY_DIR))
-
 CFLAGS += $(addprefix -I,$(INCLUDE_DIR))
 
 #LIB += ibverbs

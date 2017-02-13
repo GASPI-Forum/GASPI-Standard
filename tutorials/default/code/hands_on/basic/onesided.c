@@ -84,6 +84,7 @@ main(int argc,
    TODO
    ====
    - why do we have to wait for the queue here ?
+   - use the write_notify_and_cycle function in queue.c
   */
 
   SUCCESS_OR_DIE(gaspi_wait (queue_id,

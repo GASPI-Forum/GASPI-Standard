@@ -6,7 +6,7 @@ CFLAGS += -Wall
 CFLAGS += -Wextra
 CFLAGS += -Wshadow
 CFLAGS += -O3 -debug
-CFLAGS += -openmp
+CFLAGS += -qopenmp
 CFLAGS += -std=c99
 CFLAGS += -DUSE_ALIGNMENT
 #CFLAGS += -DDEBUG
@@ -20,7 +20,7 @@ LIBRARY_DIR += $(MPI_DIR)/lib
 LDFLAGS += $(addprefix -L,$(LIBRARY_DIR))
 
 ifeq "$(CC)" "mpiicc"
-  LDFLAGS += -openmp-link static
+  LDFLAGS += -qopenmp-link=static
 endif
 
 CFLAGS += $(addprefix -I,$(INCLUDE_DIR))
