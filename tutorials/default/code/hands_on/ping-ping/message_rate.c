@@ -26,8 +26,7 @@ main (int argc, char *argv[])
   
   gaspi_number_t notification_max;
   SUCCESS_OR_DIE (gaspi_notification_num(&notification_max));
-  notification_max-=1;
-  
+    
   const gaspi_segment_id_t segment_id_dst = 0;
 
   /* dummy allocation, we use notification values as data */
@@ -52,17 +51,9 @@ main (int argc, char *argv[])
 			);
     }
   
-  for (i = 0; i < notification_max; ++i)
-    {
-      gaspi_notification_id_t id;
-      SUCCESS_OR_DIE(gaspi_notify_waitsome (segment_id_dst
-					    , (gaspi_notification_id_t) i
-					    , 1
-					    , &id
-					    , GASPI_BLOCK
-					    ));
-      ASSERT(id == i);
-    }
+  /*
+   * TODO: wait for all notifications. 
+   */
   
   time += now();
   printf("# messages sent/recveived: %8d, total bi-directional message rate [#/sec]: %d\n"
@@ -78,16 +69,10 @@ main (int argc, char *argv[])
       ASSERT(value == 1);
     }
 
-  /* 
-   * make sure that all our sends(notify) have been 
-   * completed locally, before we exit main(). 
-   */
+  /* TODO: Explain: Why do we need to wait for the queues ? */
   wait_for_flush_queues();
 
-  /* 
-   * wait for the local completion 
-   * of our communication partner 
-   */
+  /* TODO: Explain: Why do we need the barrier ? */
   SUCCESS_OR_DIE (gaspi_barrier (GASPI_GROUP_ALL, GASPI_BLOCK));
 
   SUCCESS_OR_DIE (gaspi_proc_term (GASPI_BLOCK));

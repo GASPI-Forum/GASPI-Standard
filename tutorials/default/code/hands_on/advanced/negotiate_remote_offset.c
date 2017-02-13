@@ -264,10 +264,10 @@ static void init_data()
 }
 
 /* 
- * The main reason for using passive communication here is that 
- * passive communication serializes incoming requests, which
- * we need for the memory management of the actual memory segment.
+ * TODO: Explain: Why are we using passive communication for this use case 
+ * of negotiating global remote offsets ? 
  */
+
 int main(int argc, char *argv[])
 {
 
