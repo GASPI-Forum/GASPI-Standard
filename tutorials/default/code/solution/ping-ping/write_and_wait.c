@@ -85,7 +85,10 @@ main (int argc, char *argv[])
     {
       int id =  i / M_SZ;
 
-      /* in queue N, write chunks of 2^N integers */
+      /* 
+       * in queue 'id', write 'M_SZ/elem_size[id]' chunks 
+       * of 'elem_size[id]' integers 
+       */
       if (i % elem_size[id] == 0)
 	{      
 	  gaspi_offset_t offset  = i * sizeof(int);
@@ -100,8 +103,12 @@ main (int argc, char *argv[])
 			   , (gaspi_queue_id_t) id
 			   );
 	  
-	  /* notify complete queues, use send_count as notification value */
-	  if (__sync_add_and_fetch(&send_count[id], 1) == M_SZ/elem_size[id])
+	  /* 
+	   * notify complete queues, use 
+	   * send_count as notification value 
+	   */
+	  if (__sync_add_and_fetch
+	      (&send_count[id], 1) == M_SZ/elem_size[id])
 	    {
 	      notify_and_wait (segment_id_dst
 			       , target
@@ -135,7 +142,8 @@ main (int argc, char *argv[])
 	  ASSERT (dst[id * M_SZ +j] == (int) id);
 	}
 
-      printf("# queue: %8d message size: %8d send_count: %8d\n", id, elem_size[id],value);
+      printf("# queue: %8d message size: %8d send_count: %8d\n"
+	     , id, elem_size[id],value);
       fflush(stdout);
 	  
       received++;
