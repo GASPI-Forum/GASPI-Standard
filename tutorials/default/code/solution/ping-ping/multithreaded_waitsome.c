@@ -4,7 +4,6 @@
 #include "assert.h"
 #include "success_or_die.h"
 #include "constant.h"
-#include "now.h"
 #include "queue.h"
 
 static int *send_count = NULL;
@@ -86,9 +85,7 @@ main (int argc, char *argv[])
     }
 
   SUCCESS_OR_DIE (gaspi_barrier (GASPI_GROUP_ALL, GASPI_BLOCK));
-  
-  double time = -now();
-  
+    
 #pragma omp parallel 
   {
 #pragma omp for nowait

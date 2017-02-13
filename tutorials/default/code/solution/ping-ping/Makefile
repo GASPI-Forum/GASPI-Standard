@@ -4,7 +4,7 @@ endif
 CC = icc
 
 BIN += message_rate.exe
-BIN += bandwidth.exe
+BIN += write_and_wait.exe
 BIN += multithreaded_waitsome.exe
 
 CFLAGS += -Wall
