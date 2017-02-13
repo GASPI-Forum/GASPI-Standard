@@ -26,25 +26,17 @@ main (int argc, char *argv[])
   
   gaspi_number_t notification_max;
   SUCCESS_OR_DIE (gaspi_notification_num(&notification_max));
-  notification_max -= 1;
     
-  const gaspi_segment_id_t segment_id_src = 0;
-  const gaspi_segment_id_t segment_id_dst = 1;
+  const gaspi_segment_id_t segment_id_dst = 0;
 
   /* dummy allocation, we use notification values as data */
-  SUCCESS_OR_DIE (gaspi_segment_create ( segment_id_src
-					 , 1
-					 , GASPI_GROUP_ALL, GASPI_BLOCK
-					 , GASPI_ALLOC_DEFAULT
-					 )
-	  );
   SUCCESS_OR_DIE (gaspi_segment_create ( segment_id_dst
 					 , 1
 					 , GASPI_GROUP_ALL, GASPI_BLOCK
 					 , GASPI_ALLOC_DEFAULT
 					 )
 	  );
-    
+  
   double time = -now();
   
   /* notify target for notification_max integers */
