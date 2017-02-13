@@ -26,7 +26,8 @@ main (int argc, char *argv[])
   
   gaspi_number_t notification_max;
   SUCCESS_OR_DIE (gaspi_notification_num(&notification_max));
-    
+  notification_max-=1;
+  
   const gaspi_segment_id_t segment_id_dst = 0;
 
   /* dummy allocation, we use notification values as data */
@@ -77,9 +78,16 @@ main (int argc, char *argv[])
       ASSERT(value == 1);
     }
 
-    
+  /* 
+   * make sure that all our sends(notify) have been 
+   * completed locally, before we exit main(). 
+   */
   wait_for_flush_queues();
 
+  /* 
+   * wait for the local completion 
+   * of our communication partner 
+   */
   SUCCESS_OR_DIE (gaspi_barrier (GASPI_GROUP_ALL, GASPI_BLOCK));
 
   SUCCESS_OR_DIE (gaspi_proc_term (GASPI_BLOCK));
