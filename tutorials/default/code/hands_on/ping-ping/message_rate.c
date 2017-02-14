@@ -72,7 +72,6 @@ main (int argc, char *argv[])
   /* TODO: Explain: Why do we need to wait for the queues ? */
   wait_for_flush_queues();
 
-  /* TODO: Explain: Why do we need the barrier ? */
   SUCCESS_OR_DIE (gaspi_barrier (GASPI_GROUP_ALL, GASPI_BLOCK));
 
   SUCCESS_OR_DIE (gaspi_proc_term (GASPI_BLOCK));

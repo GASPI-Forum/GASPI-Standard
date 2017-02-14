@@ -4,6 +4,8 @@ endif
 CC = icc
 
 BIN += message_rate.exe
+BIN += ping_pong_bulk.exe
+BIN += ping_pong_fine_grain.exe
 BIN += write_and_wait.exe
 BIN += multithreaded_waitsome.exe
 
@@ -26,14 +28,15 @@ endif
 LDFLAGS += $(addprefix -L,$(LIBRARY_DIR))
 CFLAGS += $(addprefix -I,$(INCLUDE_DIR))
 
-#LIB += ibverbs
 #LIB += GPI2-dbg
+LIB += ibverbs
 LIB += GPI2
 LIB += m
 LIB += pthread
 
 
 OBJ += queue
+OBJ += waitsome
 OBJ += now
 
 ###############################################################################
