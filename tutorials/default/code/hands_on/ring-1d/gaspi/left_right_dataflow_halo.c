@@ -64,9 +64,6 @@ int main (int argc, char *argv[])
     right_data_available[id] = NWAY + id;
   }
 
-  // set queue id
-  gaspi_queue_id_t queue_id = 0;
-
   // initialize slice data structures
   slice *ssl = (slice *) malloc (NTHREADS * sizeof (slice));
   ASSERT (ssl);
@@ -81,18 +78,28 @@ int main (int argc, char *argv[])
 
   // issue initial write to left ngb
   write_notify_and_cycle
-    ( segment_id, array_OFFSET_left (buffer_id, left_halo + 1, 0), LEFT(iProc, nProc) 
-      , segment_id, array_OFFSET_left (buffer_id, right_halo, 0), VLEN * sizeof (double)
-      , right_data_available[buffer_id], 1
-      );
+    ( segment_id
+      , array_OFFSET_left (buffer_id, left_halo + 1, 0)
+      , LEFT(iProc, nProc) 
+      , segment_id
+      , array_OFFSET_left (buffer_id, right_halo, 0)
+      , VLEN * sizeof (double)
+      , right_data_available[buffer_id]
+      , 1
+      ); 
   
   // issue initial write to right ngb
   write_notify_and_cycle
-    ( segment_id, array_OFFSET_right (buffer_id, right_halo - 1, 0), RIGHT(iProc, nProc)
-      , segment_id, array_OFFSET_right (buffer_id, left_halo, 0), VLEN * sizeof (double)
-      , left_data_available[buffer_id], 1
+    ( segment_id
+      , array_OFFSET_right (buffer_id, right_halo - 1, 0)
+      , RIGHT(iProc, nProc)
+      , segment_id
+      , array_OFFSET_right (buffer_id, left_halo, 0)
+      , VLEN * sizeof (double)
+      , left_data_available[buffer_id]
+      , 1
       );
-  
+
   // set total number of iterations per slice
   const int num = nProc * NTHREADS * NITER;
 
@@ -100,15 +107,22 @@ int main (int argc, char *argv[])
 
   double time = -now();
 
-#pragma omp parallel default (none) firstprivate (buffer_id, queue_id)  \
+#pragma omp parallel default (none) firstprivate (buffer_id)  \
   shared (array, left_data_available, right_data_available, ssl, stderr)
   {
     slice* sl;
 
     while ((sl = get_slice_and_lock (ssl, NTHREADS, num)))
     {
-      handle_slice ( sl, array, left_data_available, right_data_available
-        , segment_id, queue_id, NWAY, NTHREADS, num);
+      handle_slice ( sl
+		     , array
+		     , left_data_available
+		     , right_data_available
+		     , segment_id
+		     , NWAY
+		     , NTHREADS
+		     , num
+		     );
       /*
 	TODO
 	====
@@ -117,8 +131,9 @@ int main (int argc, char *argv[])
 	- Discuss.
 	- Bonus question:
           Can we be at different iteration stages for left and right halo ?
-	  if yes: Why ?	
+	  if yes: Why ?
       */
+
       omp_unset_lock (&sl->lock);
     }
 #pragma omp barrier

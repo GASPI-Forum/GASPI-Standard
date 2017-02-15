@@ -5,6 +5,7 @@
 #include "assert.h"
 #include "constant.h"
 #include "now.h"
+#include "waitsome.h"
 #include "queue.h"
 
 int
@@ -28,6 +29,7 @@ main (int argc, char *argv[])
   SUCCESS_OR_DIE (gaspi_notification_num(&notification_max));
   
   const gaspi_segment_id_t segment_id_dst = 0;
+  const gaspi_segment_id_t segment_id_ack = 1;
 
   /* dummy allocation, we use notification values as data */
   SUCCESS_OR_DIE (gaspi_segment_create ( segment_id_dst
@@ -35,52 +37,56 @@ main (int argc, char *argv[])
 					 , GASPI_GROUP_ALL, GASPI_BLOCK
 					 , GASPI_ALLOC_DEFAULT
 					 )
-		  );
+	  );
+  /* dummy allocation, we use notification values as data */
+  SUCCESS_OR_DIE (gaspi_segment_create ( segment_id_ack
+					 , 1
+					 , GASPI_GROUP_ALL, GASPI_BLOCK
+					 , GASPI_ALLOC_DEFAULT
+					 )
+	  );
   
   double time = -now();
-  
-  /* notify target for notification_max integers */
-#pragma omp parallel
-  {
 
-#pragma omp for
-    for (i = 0; i < notification_max; ++i)
-      {
-	/* cycle queues  */
-	notify_and_cycle (segment_id_dst
-			  , target
-			  , (gaspi_notification_id_t) i
-			  , 1
-			  );
-      }
-  
-#pragma omp for
-    for (i = 0; i < notification_max; ++i)
-      {
-	gaspi_notification_id_t id;
-	SUCCESS_OR_DIE(gaspi_notify_waitsome (segment_id_dst
-					      , (gaspi_notification_id_t) i
-					      , 1
-					      , &id
-					      , GASPI_BLOCK
-					      ));
-	ASSERT(id == i);
-      }
-  }
-
-  time += now();
-  printf("# messages sent/recveived: %8d, total bi-directional message rate [#/sec]: %d\n"
-	 , notification_max, (int) ((double) 2*notification_max/time)); 
-
+  /* initial notify */
+#pragma omp parallel for
   for (i = 0; i < notification_max; ++i)
     {
-      gaspi_notification_t value;
-      SUCCESS_OR_DIE(gaspi_notify_reset (segment_id_dst
-					 , (gaspi_notification_id_t) i
-					 , &value
-					 ));
-      ASSERT(value == 1);
+      /* cycle queues  */
+      notify_and_cycle (segment_id_dst
+			, target
+			, (gaspi_notification_id_t) i
+			, 1
+			);
     }
+  
+  int j, niter = 16;
+  gaspi_segment_id_t segment_id = segment_id_dst;
+
+  for (j = 0; j < niter; ++j)
+    {      
+#pragma omp parallel for
+      for (i = 0; i < notification_max; ++i)
+	{
+	  wait_or_die(segment_id, i, 1);
+
+	  if (j < niter - 1)
+	    {
+	      /* notify target for received notifications */
+	      notify_and_cycle (1 - segment_id
+				, target
+				, (gaspi_notification_id_t) i
+				, 1
+				);
+	    }
+	}
+      /* flip segment */
+      segment_id = 1 - segment_id;
+    }
+  
+  time += now();
+  printf("# messages sent/recveived: %8d, total bi-directional message rate [#/sec]: %d\n"
+	 , niter*notification_max, (int) ((double) 2*niter*notification_max/time)); 
 
   /* 
    * make sure that all our sends(notify) have been 

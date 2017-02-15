@@ -1,9 +1,9 @@
 ifndef GPI2_HOME
-  GPI2_HOME=/opt/GPI2_impi-5.1.2
+  GPI2_HOME=$(HOME)/GPI2_intel64_impi-5.1.2
 endif
 
-MPI_HOME=/opt/intel/compilers_and_libraries_2016.1.150/linux/mpi/intel64
-CC=$(MPI_HOME)/bin/mpiicc
+MPI_HOME=/apps/all/impi/5.1.2.150-iccifort-2016.1.150
+CC=$(MPI_HOME)/bin64/mpiicc
 
 
 NAME += Pipelined_transpose_WN
@@ -36,7 +36,7 @@ endif
 
 CFLAGS += $(addprefix -I,$(INCLUDE_DIR))
 
-#LIB += ibverbs
+LIB += ibverbs
 LIB += GPI2
 #LIB += GPI2-dbg
 LIB += pthread

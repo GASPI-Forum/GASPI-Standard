@@ -13,10 +13,9 @@ static const int CL=1;
 #endif
 
 /* dimensions */
-static const int nThreads  = 12;
-static const int M_SZ      = 12*32*64;
+static const int nThreads  = 2;
+static const int M_SZ      = 2*32*2;
 static const int BL_SZ     = 32;
 static const int NITER     = 250;
-static const int NUM_READS = 4;
 
 #endif

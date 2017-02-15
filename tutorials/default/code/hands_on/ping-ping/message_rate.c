@@ -40,21 +40,25 @@ main (int argc, char *argv[])
   double time = -now();
   
   /* notify target for notification_max integers */
-#pragma omp parallel for
-  for (i = 0; i < notification_max; ++i)
-    {
-      /* cycle queues  */
-      notify_and_cycle (segment_id_dst
-			, target
-			, (gaspi_notification_id_t) i
-			, 1
-			);
-    }
+#pragma omp parallel
+  {
+#pragma omp for
+    for (i = 0; i < notification_max; ++i)
+      {
+	/* cycle queues  */
+	notify_and_cycle (segment_id_dst
+			  , target
+			  , (gaspi_notification_id_t) i
+			  , 1
+			  );
+      }
   
-  /*
-   * TODO: wait for all notifications. 
-   */
-  
+    /*
+     * TODO: wait for all notifications. 
+     */
+    
+  }
+    
   time += now();
   printf("# messages sent/recveived: %8d, total bi-directional message rate [#/sec]: %d\n"
 	 , notification_max, (int) ((double) 2*notification_max/time)); 
@@ -72,7 +76,6 @@ main (int argc, char *argv[])
   /* TODO: Explain: Why do we need to wait for the queues ? */
   wait_for_flush_queues();
 
-  /* TODO: Explain: Why do we need the barrier ? */
   SUCCESS_OR_DIE (gaspi_barrier (GASPI_GROUP_ALL, GASPI_BLOCK));
 
   SUCCESS_OR_DIE (gaspi_proc_term (GASPI_BLOCK));

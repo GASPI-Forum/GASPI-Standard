@@ -1,11 +1,13 @@
 ifndef GPI2_HOME
-GPI2_HOME=/opt/GPI2
+GPI2_HOME=$(HOME)/GPI2_intel64
 endif
 CC = icc
 
 BIN += message_rate.exe
-BIN += write_and_wait.exe
-BIN += multithreaded_waitsome.exe
+BIN += ping_pong_bulk.exe
+BIN += ping_pong_gaspi.exe
+BIN += write_and_wait_bulk.exe
+BIN += write_and_wait_gaspi.exe
 
 CFLAGS += -Wall
 CFLAGS += -Wextra
@@ -26,14 +28,15 @@ endif
 LDFLAGS += $(addprefix -L,$(LIBRARY_DIR))
 CFLAGS += $(addprefix -I,$(INCLUDE_DIR))
 
-#LIB += ibverbs
-#LIB += GPI2-dbg
-LIB += GPI2
+LIB += ibverbs
+LIB += GPI2-dbg
+#LIB += GPI2
 LIB += m
 LIB += pthread
 
 
 OBJ += queue
+OBJ += waitsome
 OBJ += now
 
 ###############################################################################

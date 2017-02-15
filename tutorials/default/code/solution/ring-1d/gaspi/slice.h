@@ -21,8 +21,9 @@ void handle_slice ( slice *sl, double*
 		    , gaspi_notification_id_t* left_data_available
 		    , gaspi_notification_id_t* right_data_available
 		    , gaspi_segment_id_t
-		    , gaspi_queue_id_t
-		    , int NWAY, int NTHREADS, int num
+		    , int NWAY
+		    , int NTHREADS
+		    , int num
 		    );
 
 
@@ -32,9 +33,7 @@ static inline int get_ctr(volatile int *ptr){
 }
 
 static inline int increment_ctr(volatile int *ptr){
-#pragma omp flush 
   __sync_fetch_and_add(ptr, 1);
-#pragma omp flush 
   return *ptr;
 }
 
