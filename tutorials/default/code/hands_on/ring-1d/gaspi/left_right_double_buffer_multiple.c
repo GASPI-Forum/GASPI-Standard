@@ -64,9 +64,6 @@ int main (int argc, char *argv[])
     right_data_available[id] = NWAY + id;
   }
 
-  // set queue id
-  gaspi_queue_id_t queue_id = 0;
-
   // initialize data
   data_init (NTHREADS, iProc, buffer_id, array);
 
@@ -92,9 +89,14 @@ int main (int argc, char *argv[])
 	{
 	  // issue write
 	  write_notify_and_cycle
-	    ( segment_id, array_OFFSET_left (buffer_id, left_halo + 1, 0), LEFT(iProc, nProc) 
-	      , segment_id, array_OFFSET_left (buffer_id, right_halo, 0), VLEN * sizeof (double)
-	      , right_data_available[buffer_id], 1 + i
+	    ( segment_id
+	      , array_OFFSET_left (buffer_id, left_halo + 1, 0)
+	      , LEFT(iProc, nProc) 
+	      , segment_id
+	      , array_OFFSET_left (buffer_id, right_halo, 0)
+	      , VLEN * sizeof (double)
+	      , right_data_available[buffer_id]
+	      , 1 + i
 	      );
 	  
 	  // wait for data notification
@@ -108,9 +110,14 @@ int main (int argc, char *argv[])
 	{
 	  // issue write
 	  write_notify_and_cycle
-	    ( segment_id, array_OFFSET_right (buffer_id, right_halo - 1, 0), RIGHT(iProc, nProc)
-	      , segment_id, array_OFFSET_right (buffer_id, left_halo, 0), VLEN * sizeof (double)
-	      , left_data_available[buffer_id], 1 + i
+	    ( segment_id
+	      , array_OFFSET_right (buffer_id, right_halo - 1, 0)
+	      , RIGHT(iProc, nProc)
+	      , segment_id
+	      , array_OFFSET_right (buffer_id, left_halo, 0)
+	      , VLEN * sizeof (double)
+	      , left_data_available[buffer_id]
+	      , 1 + i
 	      );
 
 	  // wait for data notification
@@ -127,7 +134,6 @@ int main (int argc, char *argv[])
         }
 
 #pragma omp barrier
-
 	// alternate the buffer
 	buffer_id = 1 - buffer_id;
 

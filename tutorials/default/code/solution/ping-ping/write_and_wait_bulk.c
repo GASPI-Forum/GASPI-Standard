@@ -79,7 +79,6 @@ main (int argc, char *argv[])
 
   SUCCESS_OR_DIE (gaspi_barrier (GASPI_GROUP_ALL, GASPI_BLOCK));
   
-  
 #pragma omp parallel for 
   for (i = 0; i < queue_num * M_SZ; ++i)
     {
@@ -101,8 +100,7 @@ main (int argc, char *argv[])
 			   , offset
 			   , size
 			   , (gaspi_queue_id_t) id
-			   );
-	  
+			   );	  
 	  /* 
 	   * notify complete queues, use 
 	   * send_count as notification value 

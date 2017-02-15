@@ -1,5 +1,5 @@
 ifndef GPI2_HOME
-GPI2_HOME=/opt/GPI2
+GPI2_HOME=$(HOME)/GPI2_intel64
 endif
 CC=icc
 

@@ -26,7 +26,6 @@ main (int argc, char *argv[])
   
   gaspi_number_t notification_max;
   SUCCESS_OR_DIE (gaspi_notification_num(&notification_max));
-  notification_max-=1;
   
   const gaspi_segment_id_t segment_id_dst = 0;
 
@@ -36,13 +35,14 @@ main (int argc, char *argv[])
 					 , GASPI_GROUP_ALL, GASPI_BLOCK
 					 , GASPI_ALLOC_DEFAULT
 					 )
-	  );
+		  );
   
   double time = -now();
   
   /* notify target for notification_max integers */
 #pragma omp parallel
   {
+
 #pragma omp for
     for (i = 0; i < notification_max; ++i)
       {

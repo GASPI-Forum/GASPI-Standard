@@ -64,9 +64,6 @@ int main (int argc, char *argv[])
     right_data_available[id] = NWAY + id;
   }
 
-  // set queue id
-  gaspi_queue_id_t queue_id = 0;
-
   // initialize data
   data_init (NTHREADS, iProc, buffer_id, array);
 
@@ -100,13 +97,12 @@ int main (int argc, char *argv[])
 	  */
 
         }
+	
 #pragma omp barrier
-
 	// compute data, read from id "buffer_id", write to id "1 - buffer_id"
 	data_compute ( NTHREADS, array, 1 - buffer_id, buffer_id, slice_id);
 
 #pragma omp barrier
-
 	// alternate the buffer
 	buffer_id = 1 - buffer_id;
 

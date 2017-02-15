@@ -27,7 +27,6 @@ main (int argc, char *argv[])
   
   gaspi_number_t notification_max;
   SUCCESS_OR_DIE (gaspi_notification_num(&notification_max));
-  notification_max-=1;
   
   const gaspi_segment_id_t segment_id_dst = 0;
   const gaspi_segment_id_t segment_id_ack = 1;
@@ -66,7 +65,6 @@ main (int argc, char *argv[])
 
   for (j = 0; j < niter; ++j)
     {      
-
 #pragma omp parallel for
       for (i = 0; i < notification_max; ++i)
 	{
@@ -84,7 +82,6 @@ main (int argc, char *argv[])
 	}
       /* flip segment */
       segment_id = 1 - segment_id;
-
     }
   
   time += now();

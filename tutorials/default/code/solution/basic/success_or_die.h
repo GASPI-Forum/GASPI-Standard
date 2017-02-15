@@ -3,17 +3,14 @@
 
 #include <GASPI.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 #define SUCCESS_OR_DIE(f...)                                            \
   do                                                                    \
   {                                                                     \
     const gaspi_return_t r = f;                                         \
-                                                                        \
     if (r != GASPI_SUCCESS)                                             \
     {                                                                   \
-      printf ("Error: '%s' [%s:%i]: %i\n", #f, __FILE__, __LINE__, r); \
-                                                                        \
+      printf ("Error: '%s' [%s:%i]: %i\n", #f, __FILE__, __LINE__, r);  \
       exit (EXIT_FAILURE);                                              \
     }                                                                   \
   } while (0)

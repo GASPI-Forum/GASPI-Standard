@@ -26,8 +26,9 @@ void handle_slice( slice *sl, double* array
 		   , gaspi_notification_id_t* left_data_available
 		   , gaspi_notification_id_t* right_data_available
 		   , gaspi_segment_id_t segment_id
-		   , gaspi_queue_id_t queue_id
-		   , int NWAY, int NTHREADS, int num
+		   , int NWAY
+		   , int NTHREADS
+		   , int num
 		   )
 {
 
@@ -82,9 +83,14 @@ void handle_slice( slice *sl, double* array
     SUCCESS_OR_DIE (gaspi_proc_num (&nProc));
 
     write_notify_and_cycle
-      ( segment_id, array_OFFSET_left (new_buffer_id, left_halo + 1, 0), LEFT (iProc, nProc)
-	, segment_id, array_OFFSET_left (new_buffer_id, right_halo, 0), VLEN * sizeof (double)
-	, right_data_available[new_buffer_id], 1
+      ( segment_id
+	, array_OFFSET_left (new_buffer_id, left_halo + 1, 0)
+	, LEFT (iProc, nProc)
+	, segment_id
+	, array_OFFSET_left (new_buffer_id, right_halo, 0)
+	, VLEN * sizeof (double)
+	, right_data_available[new_buffer_id]
+	, 1
       );
   }
   if (sl->index == right_halo - 1)
@@ -94,9 +100,14 @@ void handle_slice( slice *sl, double* array
     SUCCESS_OR_DIE (gaspi_proc_num (&nProc));
 
     write_notify_and_cycle
-      ( segment_id, array_OFFSET_right (new_buffer_id, right_halo - 1, 0), RIGHT (iProc, nProc)
-	, segment_id, array_OFFSET_right (new_buffer_id, left_halo, 0), VLEN * sizeof (double)
-	, left_data_available[new_buffer_id], 1
+      ( segment_id
+	, array_OFFSET_right (new_buffer_id, right_halo - 1, 0)
+	, RIGHT (iProc, nProc)
+	, segment_id
+	, array_OFFSET_right (new_buffer_id, left_halo, 0)
+	, VLEN * sizeof (double)
+	, left_data_available[new_buffer_id]
+	, 1
 	);
   }
 
