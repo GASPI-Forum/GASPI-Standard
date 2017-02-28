@@ -4,8 +4,8 @@ endif
 CC = icc
 
 BIN += message_rate.exe
-BIN += ping_pong.exe
-BIN += ping_ping.exe
+BIN += message_ping_pong.exe
+BIN += message_ping_ping.exe
 BIN += fairness_between_queues.exe
 BIN += using_GASPI_TEST.exe
 

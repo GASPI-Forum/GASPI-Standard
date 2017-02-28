@@ -7,7 +7,14 @@
 #include "queue.h"
 
 static int *send_count = NULL;
-  
+static int num_received = 0;
+
+static int get_received(void)
+{
+#pragma omp flush
+  return num_received;
+}
+
 int
 main (int argc, char *argv[])
 {  
@@ -77,77 +84,84 @@ main (int argc, char *argv[])
 	}
     }
 
-  /* TODO: Explain: Why do we need the barrier ? */
   SUCCESS_OR_DIE (gaspi_barrier (GASPI_GROUP_ALL, GASPI_BLOCK));
-  
-  
-#pragma omp parallel for 
-  for (i = 0; i < queue_num * M_SZ; ++i)
-    {
-      int id =  i / M_SZ;
+    
+#pragma omp parallel 
+  {
+#pragma omp for nowait
+    for (i = 0; i < queue_num * M_SZ; ++i)
+      {
+	int id =  i / M_SZ;
 
-      /* 
-       * in queue 'id', write 'M_SZ/elem_size[id]' chunks 
-       * of 'elem_size[id]' integers 
-       */
-      if (i % elem_size[id] == 0)
-	{      
-	  gaspi_offset_t offset  = i * sizeof(int);
-	  gaspi_size_t size = elem_size[id] * sizeof(int);
-
-	  /* 
-	   * TODO: write chunks per designated queue_id.
-	   * Wait wherever reuqired. (Hint: use write_and_wait) 
-	   */
-
-
-	  
-	  /* 
-	   * notify complete queues, use 
-	   * send_count as notification value 
-	   */
-	  if (__sync_add_and_fetch
-	      (&send_count[id], 1) == M_SZ/elem_size[id])
-	    {
-	      notify_and_wait (segment_id_dst
-			       , target
-			       , (gaspi_notification_id_t) id
-			       , send_count[id]
-			       , (gaspi_queue_id_t) id
-			       );
-	    }
-	}
-    }
-  
-  int received = 0;
-  while (received < queue_num)
-    {
-      gaspi_notification_id_t id;
-      SUCCESS_OR_DIE(gaspi_notify_waitsome (segment_id_dst
-					    , 0
-					    , queue_num
-					    , &id
-					    , GASPI_BLOCK
-					    ));
-      gaspi_notification_t value;
-      SUCCESS_OR_DIE(gaspi_notify_reset (segment_id_dst
-					 , id
-					 , &value
-					 ));
+	/* 
+	 * in queue 'id', write 'M_SZ/elem_size[id]' chunks 
+	 * of 'elem_size[id]' integers 
+	 */
+	if (i % elem_size[id] == 0)
+	  {      
+	    gaspi_offset_t offset  = i * sizeof(int);
+	    gaspi_size_t size = elem_size[id] * sizeof(int);
       
-      ASSERT(elem_size[id] * value == M_SZ);
-      for (j = 0; j < M_SZ; ++j)
-	{
-	  ASSERT (dst[id * M_SZ +j] == (int) id);
-	}
+	    write_and_wait ( segment_id_src
+			     , offset
+			     , target
+			     , segment_id_dst
+			     , offset
+			     , size
+			     , (gaspi_queue_id_t) id
+			     );	  
+	    /* 
+	     * notify complete queues, use 
+	     * send_count as notification value 
+	     */
+	    if (__sync_add_and_fetch
+		(&send_count[id], 1) == M_SZ/elem_size[id])
+	      {
+		notify_and_wait (segment_id_dst
+				 , target
+				 , (gaspi_notification_id_t) id
+				 , send_count[id]
+				 , (gaspi_queue_id_t) id
+				 );		
+	      }
+	  }
+      }
+    
+    /* multithreaded waitsome */
+    volatile int received;
+    while ((received = get_received()) < queue_num)
+      {
+	gaspi_notification_id_t id;
+	gaspi_return_t ret;
+	
+	/* 
+	 * TODO: How should gaspi_notify_waitsome look like ?
+	 * Why can't we use GASPI_BLOCK in this situation  ?
+	 */
 
-      printf("# queue: %8d message size: %8d send_count: %8d\n"
-	     , id, elem_size[id],value);
-      fflush(stdout);
-	  
-      received++;
-    }
-
+	if ((ret = (/* ...*/) == GASPI_SUCCESS)
+	  {
+	    gaspi_notification_t value;
+	    SUCCESS_OR_DIE(gaspi_notify_reset (segment_id_dst
+					       , id
+					       , &value
+					       ));
+	    if (value != 0)
+	      {
+		ASSERT(elem_size[id] * value == M_SZ);
+		for (j = 0; j < M_SZ; ++j)
+		  {
+		    ASSERT (dst[id * M_SZ +j] == (int) id);
+		  }
+		__sync_add_and_fetch(&num_received, 1);
+		
+		printf("# queue: %8d message size: %8d send_count: %8d\n"
+		       , id, elem_size[id],value);
+		fflush(stdout);		
+	      }
+	  }
+      }
+  }
   
   wait_for_flush_queues();
   
