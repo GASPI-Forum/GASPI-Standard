@@ -166,14 +166,9 @@ int main (int argc, char *argv[])
 		const int soffset = target * mSize;
 		const gaspi_notification_id_t data_available = iProc;
 		write_notify_and_cycle
-		  ( source_id
-		    , array_OFFSET (0, soffset)
-		    , target
-		    , work_id
-		    , array_OFFSET (0, toffset)
-		    , len
-		    , data_available
-		    , 1
+		  ( source_id, array_OFFSET (0, soffset)
+		    , target, work_id, array_OFFSET (0, toffset)
+		    , len, data_available, 1
 		    );
 	      }
 	  }
