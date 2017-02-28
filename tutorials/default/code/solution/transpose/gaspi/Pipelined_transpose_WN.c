@@ -304,6 +304,8 @@ int main (int argc, char *argv[])
       fflush(stdout);
     }
 
+  SUCCESS_OR_DIE (gaspi_proc_term (GASPI_BLOCK));
+
   MPI_Finalize();
 
 
