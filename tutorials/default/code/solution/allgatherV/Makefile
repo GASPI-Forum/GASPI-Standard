@@ -1,19 +1,18 @@
 ifndef GPI2_HOME
-GPI2_HOME=$(HOME)/GPI2_intel64
+#GPI2_HOME=$(HOME)/GPI2_intel64
+GPI2_HOME=$(HOME)/GPI2_intel64_impi-5.1.2
 endif
-CC = icc
 
-BIN += message_rate.exe
-BIN += ping_pong.exe
-BIN += ping_ping.exe
-BIN += fairness_between_queues.exe
-BIN += using_GASPI_TEST.exe
+CC = mpiicc
+
+BIN += allgatherV_MPI.exe
+BIN += allgatherV_roundrobin.exe
+BIN += allgatherV_pipelined.exe
 
 CFLAGS += -Wall
 CFLAGS += -Wextra
 CFLAGS += -Wshadow
-CFLAGS += -O3 -qopenmp
-#CFLAGS += -O3 
+CFLAGS += -O3 
 CFLAGS += -std=c99
 
 ###############################################################################
@@ -34,9 +33,8 @@ LIB += GPI2
 LIB += m
 LIB += pthread
 
-
 OBJ += queue
-OBJ += waitsome
+OBJ += testsome
 OBJ += now
 
 ###############################################################################

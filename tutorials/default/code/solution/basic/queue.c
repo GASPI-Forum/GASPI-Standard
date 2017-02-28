@@ -31,33 +31,6 @@ notify_and_wait ( gaspi_segment_id_t const segment_id_remote
   ASSERT (ret == GASPI_SUCCESS);  
 }
 
-
-void
-notify_and_cycle ( gaspi_segment_id_t const segment_id_remote
-		   , gaspi_rank_t const rank
-		   , gaspi_notification_id_t const notification_id
-		   , gaspi_notification_t const notification_value
-		   )
-{
-  gaspi_number_t queue_num;
-  SUCCESS_OR_DIE(gaspi_queue_num (&queue_num));
-
-  gaspi_timeout_t const timeout = GASPI_BLOCK;
-  gaspi_return_t ret;
-
-  /* notify, cycle if required and re-submit */
-  while ((ret = ( gaspi_notify (segment_id_remote, rank, 
-				notification_id, notification_value, 
-				my_queue, timeout)
-		  )) == GASPI_QUEUE_FULL)
-    {
-      my_queue = (my_queue + 1) % queue_num;
-      SUCCESS_OR_DIE (gaspi_wait (my_queue,
-				  GASPI_BLOCK));
-    }
-  ASSERT (ret == GASPI_SUCCESS);
-}
-
 void
 write_and_wait ( gaspi_segment_id_t const segment_id_local
 	       , gaspi_offset_t const offset_local
