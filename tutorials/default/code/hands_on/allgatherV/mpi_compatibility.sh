@@ -1,0 +1,1 @@
+export I_MPI_COMPATIBILITY=4
