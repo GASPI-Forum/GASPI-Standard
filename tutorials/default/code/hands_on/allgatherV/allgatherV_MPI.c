@@ -120,9 +120,9 @@ main (int argc, char *argv[])
 
   SUCCESS_OR_DIE (gaspi_barrier (GASPI_GROUP_ALL, GASPI_BLOCK));
 
-  MPI_Finalize();
-
   SUCCESS_OR_DIE (gaspi_proc_term (GASPI_BLOCK));
+
+  MPI_Finalize();
 
   return EXIT_SUCCESS;
 }
