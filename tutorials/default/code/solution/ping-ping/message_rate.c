@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <GASPI.h>
-#include <omp.h>
 #include "success_or_die.h"
 #include "assert.h"
 #include "constant.h"
@@ -21,7 +20,6 @@ main (int argc, char *argv[])
   SUCCESS_OR_DIE (gaspi_proc_num (&nProc));
   ASSERT (nProc == 2);
 
-  omp_set_num_threads(nThreads);
   gaspi_rank_t target = 1 - iProc;  
   
   gaspi_number_t notification_max;
@@ -40,33 +38,27 @@ main (int argc, char *argv[])
   double time = -now();
   
   /* notify target for notification_max integers */
-#pragma omp parallel
-  {
-
-#pragma omp for
-    for (i = 0; i < notification_max; ++i)
-      {
-	/* cycle queues  */
-	notify_and_cycle (segment_id_dst
-			  , target
-			  , (gaspi_notification_id_t) i
-			  , 1
-			  );
-      }
+  for (i = 0; i < notification_max; ++i)
+    {
+      /* cycle queues  */
+      notify_and_cycle (segment_id_dst
+			, target
+			, (gaspi_notification_id_t) i
+			, 1
+			);
+    }
   
-#pragma omp for
-    for (i = 0; i < notification_max; ++i)
-      {
-	gaspi_notification_id_t id;
-	SUCCESS_OR_DIE(gaspi_notify_waitsome (segment_id_dst
-					      , (gaspi_notification_id_t) i
-					      , 1
-					      , &id
-					      , GASPI_BLOCK
-					      ));
-	ASSERT(id == i);
-      }
-  }
+  for (i = 0; i < notification_max; ++i)
+    {
+      gaspi_notification_id_t id;
+      SUCCESS_OR_DIE(gaspi_notify_waitsome (segment_id_dst
+					    , (gaspi_notification_id_t) i
+					    , 1
+					    , &id
+					    , GASPI_BLOCK
+					    ));
+      ASSERT(id == i);
+    }
 
   time += now();
   printf("# messages sent/recveived: %8d, total bi-directional message rate [#/sec]: %d\n"

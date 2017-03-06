@@ -1,6 +1,6 @@
 ifndef GPI2_HOME
 #GPI2_HOME=$(HOME)/GPI2_intel64
-GPI2_HOME=$(HOME)/GPI2_intel64_impi-5.1.2
+GPI2_HOME=$(HOME)/GPI-2.IT4I.impi
 endif
 
 CC = mpiicc

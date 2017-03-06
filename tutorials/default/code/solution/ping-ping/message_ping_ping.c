@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <GASPI.h>
-#include <omp.h>
 #include "success_or_die.h"
 #include "assert.h"
 #include "constant.h"
@@ -22,7 +21,6 @@ main (int argc, char *argv[])
   SUCCESS_OR_DIE (gaspi_proc_num (&nProc));
   ASSERT (nProc == 2);
 
-  omp_set_num_threads(nThreads);
   gaspi_rank_t target = 1 - iProc;  
   
   gaspi_number_t notification_max;
@@ -49,7 +47,6 @@ main (int argc, char *argv[])
   double time = -now();
 
   /* initial notify */
-#pragma omp parallel for
   for (i = 0; i < notification_max; ++i)
     {
       /* cycle queues  */
@@ -65,7 +62,6 @@ main (int argc, char *argv[])
 
   for (j = 0; j < niter; ++j)
     {      
-#pragma omp parallel for
       for (i = 0; i < notification_max; ++i)
 	{
 	  wait_or_die(segment_id, i, 1);

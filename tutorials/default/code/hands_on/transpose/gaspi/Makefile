@@ -36,7 +36,7 @@ endif
 
 CFLAGS += $(addprefix -I,$(INCLUDE_DIR))
 
-#LIB += ibverbs
+LIB += ibverbs
 LIB += GPI2
 #LIB += GPI2-dbg
 LIB += pthread
