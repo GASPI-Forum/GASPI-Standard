@@ -24,7 +24,7 @@ LIBRARY_DIR += $(GPI2_HOME)/lib64
 LDFLAGS += $(addprefix -L,$(LIBRARY_DIR))
 CFLAGS += $(addprefix -I,$(INCLUDE_DIR))
 
-#LIB += ibverbs
+LIB += ibverbs
 LIB += GPI2-dbg
 LIB += m
 LIB += pthread
