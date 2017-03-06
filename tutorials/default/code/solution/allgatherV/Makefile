@@ -1,5 +1,4 @@
 ifndef GPI2_HOME
-#GPI2_HOME=$(HOME)/GPI2_intel64
 GPI2_HOME=$(HOME)/GPI-2.IT4I.impi
 endif
 
@@ -12,7 +11,8 @@ BIN += allgatherV_pipelined.exe
 CFLAGS += -Wall
 CFLAGS += -Wextra
 CFLAGS += -Wshadow
-CFLAGS += -O3 
+CFLAGS += -O3 -DRAND
+#CFLAGS += -O3 
 CFLAGS += -std=c99
 
 ###############################################################################

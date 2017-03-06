@@ -4,6 +4,7 @@
 #include "assert.h"
 #include "success_or_die.h"
 #include "topology.h"
+#include "constant.h"
 #include "now.h"
 #include "testsome.h"
 #include "queue.h"
@@ -76,8 +77,6 @@ main (int argc, char *argv[])
   ASSERT(iProc == iProc_MPI);
   ASSERT(nProc == nProc_MPI);
 
-  int const B_SZ = 2;
-  int const M_SZ = 2048;
   ASSERT(M_SZ % nProc == 0);
 
   gaspi_number_t notification_max;
@@ -90,18 +89,32 @@ main (int argc, char *argv[])
   gaspi_size_t  *size = malloc(nProc*nProc*sizeof(gaspi_size_t));
   ASSERT(size != NULL);
     
-  int vlen = 0;
-  int i, j, k = 1;  
+  int i, j, vlen = 0;
+#ifdef RAND
+  srand(0);
+  for (i = 0; i < nProc; ++i)
+    {
+      int rsize= rand() % M_SZ;
+      for (j = 0; j < nProc; ++j)
+        {
+          offset[i*nProc+j] = vlen;
+          size[i*nProc+j]   = rsize;
+          vlen             += size[i*nProc+j];
+        }
+    }
+#else
+  int k = 1;
   for (i = 0; i < nProc; ++i)
     {
       for (j = 0; j < nProc; ++j)
 	{
 	  offset[i*nProc+j] = vlen;
-	  size[i*nProc+j]   = M_SZ/nProc * k;
+	  size[i*nProc+j]   = M_SZ * k;
 	  vlen             += size[i*nProc+j];
 	}
       k *= B_SZ;
     }
+#endif  
 
   const gaspi_segment_id_t segment_id = 0;
   SUCCESS_OR_DIE (gaspi_segment_create ( segment_id
@@ -164,16 +177,16 @@ main (int argc, char *argv[])
   int received = 0;
   while (received < nProc )
     {
-      for (i = iProc; i < nProc*nProc; i+=nProc)
+      for (i = 0; i < nProc; ++i)
 	{
-	  if ( test_or_die(segment_id, i, 1)) 
+	  gaspi_notification_id_t notification = iProc + i*nProc;
+	  if ( test_or_die(segment_id, notification, 1)) 
 	    {
-	      int rProc = i/nProc;
+	      int rProc = i;
 	      for (j = 0; j < nProc; ++j)
 		{
 		  if (j != rProc && j != iProc)
 		    {
-		      gaspi_notification_id_t notification = i;
 		      gaspi_size_t b_size = size[notification];
 		      gaspi_offset_t b_offset = offset[notification];
 		      gaspi_rank_t target = j;
