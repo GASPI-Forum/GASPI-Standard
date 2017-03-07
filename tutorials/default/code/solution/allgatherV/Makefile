@@ -6,7 +6,7 @@ CC = mpiicc
 
 BIN += allgatherV_MPI.exe
 BIN += allgatherV_roundrobin.exe
-BIN += allgatherV_pipelined.exe
+BIN += allgatherV_roundrobin_N.exe
 
 CFLAGS += -Wall
 CFLAGS += -Wextra
