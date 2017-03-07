@@ -4,6 +4,7 @@
 #include "assert.h"
 #include "success_or_die.h"
 #include "topology.h"
+#include "constant.h"
 #include "now.h"
 #include "queue.h"
 
@@ -63,27 +64,34 @@ main (int argc, char *argv[])
    * TODO: Initialize GASPI. Test for inherited rank id 
    * and number of ranks 
    */
-
-  int const B_SZ = 2;
-  int const M_SZ = 2048;
-
+  
   int *offset = malloc(nProc * sizeof(int));
   ASSERT(offset != NULL);  
 
   int  *size = malloc(nProc * sizeof(int));
   ASSERT(size != NULL);
     
-  int vlen = 0;
-  int i, j, k = 1;
-  
+  int i, vlen = 0;
+#ifdef RAND
+  srand(0);
+  for (i = 0; i < nProc; ++i)
+    {
+      int rsize = rand() % M_SZ;
+      offset[i]   = vlen;
+      size[i]     = rsize * nProc;
+      vlen       += size[i];
+    }
+#else
+  int k = 1;
   for (i = 0; i < nProc; ++i)
     {
       offset[i]   = vlen;
-      size[i]     = M_SZ * k;
+      size[i]     = M_SZ * k * nProc;
       vlen       += size[i];
       k          *= B_SZ;
     }
-  
+#endif
+    
   const gaspi_segment_id_t segment_id = 0;
   SUCCESS_OR_DIE (gaspi_segment_create ( segment_id
 					 , vlen * sizeof(int)

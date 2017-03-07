@@ -9,26 +9,47 @@
 #include "queue.h"
 
 static void init_array(int *array
+		       , int *received
 		       , gaspi_offset_t *offset
 		       , gaspi_size_t *size
 		       , gaspi_rank_t iProc
 		       , gaspi_rank_t nProc
 		       )
 { 
-  int i, j;
+  int i, j, k;
   for (i = 0; i < nProc; ++i)
     {
-      for (j = 0; j < size[i]; ++j)
+      for (j = 0; j < NWAY; ++j)
 	{
-	  array[offset[i] + j] = -1;
+	  for (k = 0; k < size[i*NWAY+j]; ++k)
+	    {
+	      array[offset[i*NWAY+j] + k] = -1;
+	    }
 	}
     }
 
   /* initialize local data */
-  for (j = 0; j < size[iProc]; ++j)
+  for (j = 0; j < NWAY; ++j)
     {
-      array[offset[iProc] + j] = iProc;
+      for (k = 0; k < size[iProc*NWAY+j]; ++k)
+	{
+	  array[offset[iProc*NWAY+j] + k] = iProc;
+	}
     }
+
+  /* initialize receive status for all data chunks */ 
+  for (i = 0; i < nProc; ++i)
+    {
+      for (j = 0; j < NWAY; ++j)
+	{
+	  received[i*NWAY+j] = 0;
+	}
+    }
+  for (j = 0; j < NWAY; ++j)
+    {
+      received[iProc*NWAY+j] = 1;
+    }
+  
 }
 
 static void validate(int *array
@@ -38,14 +59,17 @@ static void validate(int *array
 		       , gaspi_rank_t nProc
 		     )
 {
-  int i, j;
+  int i, j, k;
 
   /* validate */
   for (i = 0; i < nProc; ++i)
     {
-      for (j = 0; j < size[i]; ++j)
-	{	  
-	  ASSERT(array[offset[i] + j] == i);
+      for (j = 0; j < NWAY; ++j)
+	{
+	  for (k = 0; k < size[i*NWAY+j]; ++k)
+	    {
+	      ASSERT(array[offset[i*NWAY+j] + k] == i);
+	    }
 	}
     }
 }
@@ -66,42 +90,44 @@ main (int argc, char *argv[])
 
   ASSERT(iProc == iProc_MPI);
   ASSERT(nProc == nProc_MPI);
-
-  int *received = malloc(nProc * sizeof(int));
+  ASSERT(nProc % NWAY == 0);
+  
+  int *received = malloc(nProc * NWAY * sizeof(int));
   ASSERT(received != NULL);
 
-  gaspi_offset_t *offset = malloc(nProc * sizeof(gaspi_offset_t));
+  gaspi_offset_t *offset = malloc(nProc * NWAY * sizeof(gaspi_offset_t));
   ASSERT(offset != NULL);  
 
-  gaspi_size_t  *size = malloc(nProc * sizeof(gaspi_size_t));
+  gaspi_size_t  *size = malloc(nProc * NWAY * sizeof(gaspi_size_t));
   ASSERT(size != NULL);
     
-  int i, vlen = 0;
+  int i, j, vlen = 0;
 #ifdef RAND
   srand(0);
   for (i = 0; i < nProc; ++i)
     {
-      int rsize = rand() % M_SZ;
-      offset[i]   = vlen;
-      size[i]     = rsize * nProc;
-      vlen       += size[i];
+      int rsize= rand() % M_SZ;
+      for (j = 0; j < NWAY; ++j)
+        {
+          offset[i*NWAY+j] = vlen;
+          size[i*NWAY+j]   = rsize * nProc / NWAY;
+          vlen             += size[i*NWAY+j];
+        }
     }
 #else
   int k = 1;
   for (i = 0; i < nProc; ++i)
     {
-      offset[i]   = vlen;
-      size[i]     = M_SZ * k * nProc;
-      vlen       += size[i];
-      k          *= B_SZ;
+      for (j = 0; j < NWAY; ++j)
+        {
+          offset[i*NWAY+j] = vlen;
+          size[i*NWAY+j]   = M_SZ * k * nProc / NWAY;
+          vlen             += size[i*NWAY+j];
+        }
+      k *= B_SZ;
     }
-#endif
-  for (i = 0; i < nProc; ++i)
-    {
-      received[i] = 0;
-    }
-  received[iProc] = 1;
-  
+#endif  
+
   const gaspi_segment_id_t segment_id = 0;
   SUCCESS_OR_DIE (gaspi_segment_create ( segment_id
 					 , vlen * sizeof(int)
@@ -118,33 +144,38 @@ main (int argc, char *argv[])
   SUCCESS_OR_DIE(gaspi_queue_num (&queue_num));
 
   int *array = (int *) _ptr;
-  init_array(array, offset, size, iProc, nProc);
+  init_array(array, received, offset, size, iProc, nProc);
   
   SUCCESS_OR_DIE (gaspi_barrier (GASPI_GROUP_ALL, GASPI_BLOCK));
 
   /* GASPI write - round-robin */
   double time = -now();
 
-  gaspi_notification_id_t notification = iProc;
-  gaspi_size_t b_size = size[iProc] * sizeof(int);
-  gaspi_offset_t b_offset = offset[iProc] * sizeof(int);
-  gaspi_rank_t target = RIGHT(iProc, nProc);
-
-  /* 
-   * TODO - start the round-robin data shuffle 
-   * via write_notify_and_wait (see queue.c)
-   */
-
-
-  
+  for (j = 0; j < NWAY; ++j)
+    {
+      gaspi_notification_id_t notification = iProc*NWAY+j;
+      gaspi_size_t b_size = size[iProc*NWAY+j] * sizeof(int);
+      gaspi_offset_t b_offset = offset[iProc*NWAY+j] * sizeof(int);
+      gaspi_rank_t target = ((iProc + 1 + nProc) % nProc);      
+      write_notify_and_wait ( segment_id
+			      , b_offset
+			      , target
+			      , segment_id
+			      , b_offset
+			      , b_size
+			      , notification
+			      , 1
+			      , notification % queue_num
+			      );
+    }
   
   /* receive and write until done */
-  for (i = 0; i < nProc - 1; ++i)
+  for (i = 0; i < NWAY * (nProc-1); ++i)
     {
       gaspi_notification_id_t id;
       SUCCESS_OR_DIE(gaspi_notify_waitsome (segment_id
 					    , 0
-					    , nProc
+					    , nProc*NWAY
 					    , &id
 					    , GASPI_BLOCK
 					    ));
@@ -154,30 +185,26 @@ main (int argc, char *argv[])
 					 , &value
 					 ));     
       ASSERT(value == 1);
-      
-      /* 
-       * TODO - Why do we have do keep track of 
-       * received id's here ?
-       */
+      gaspi_rank_t source = id / NWAY;
 
       if (!received[id] )
 	{
-	  if (id != RIGHT(iProc, nProc))
+	  if (source != RIGHT(iProc, nProc))
 	    {
-	      notification = id;
-	      b_size = size[id] * sizeof(int);
-	      b_offset = offset[id] * sizeof(int);
-	      target = RIGHT(iProc, nProc);
-	      write_notify_and_wait ( segment_id
-				      , b_offset
-				      , target
-				      , segment_id
-				      , b_offset
-				      , b_size
-				      , notification
-				      , 1
-				      , id % queue_num
-				      );
+	     gaspi_notification_id_t notification = id;
+	     gaspi_size_t b_size = size[id] * sizeof(int);
+	     gaspi_offset_t b_offset = offset[id] * sizeof(int);
+	     gaspi_rank_t target = RIGHT(iProc, nProc);
+	     write_notify_and_wait ( segment_id
+				     , b_offset
+				     , target
+				     , segment_id
+				     , b_offset
+				     , b_size
+				     , notification
+				     , 1
+				     , id % queue_num
+				     );
 	    }
 	  received[id] = 1;
 	}
@@ -185,17 +212,8 @@ main (int argc, char *argv[])
 
   time += now();
   printf("# RR  : iProc: %4d, size [byte]: %10lu, time: %8.6f, total bandwidth [Mbyte/sec]: %8.0f\n"
-	 , iProc, size[iProc], time, (double)(vlen*sizeof(int))/1024/1024/time); 
+	 , iProc, size[iProc*NWAY]*NWAY, time, (double)(vlen*sizeof(int))/1024/1024/time); 
   
-  /*
-   * TODO: 
-   * Why can we achive "bandwidth" numbers which actually exceed 
-   * the theoretically possible hardware limit ?
-   * 
-   * Why are the timings in this algorithm rather unbalanced ?
-   * How can we remove this imbalance ?
-   */
-
   validate(array, offset, size, iProc, nProc);
       
   wait_for_flush_queues();

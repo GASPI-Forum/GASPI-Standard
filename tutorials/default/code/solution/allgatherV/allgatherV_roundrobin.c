@@ -4,6 +4,7 @@
 #include "assert.h"
 #include "success_or_die.h"
 #include "topology.h"
+#include "constant.h"
 #include "now.h"
 #include "queue.h"
 
@@ -66,9 +67,6 @@ main (int argc, char *argv[])
   ASSERT(iProc == iProc_MPI);
   ASSERT(nProc == nProc_MPI);
 
-  int const B_SZ = 2;
-  int const M_SZ = 2048;
-
   int *received = malloc(nProc * sizeof(int));
   ASSERT(received != NULL);
 
@@ -78,16 +76,29 @@ main (int argc, char *argv[])
   gaspi_size_t  *size = malloc(nProc * sizeof(gaspi_size_t));
   ASSERT(size != NULL);
     
-  int vlen = 0;
-  int i, j, k = 1;
-  
+  int i, vlen = 0;
+#ifdef RAND
+  srand(0);
+  for (i = 0; i < nProc; ++i)
+    {
+      int rsize = rand() % M_SZ;
+      offset[i]   = vlen;
+      size[i]     = rsize * nProc;
+      vlen       += size[i];
+    }
+#else
+  int k = 1;
+  for (i = 0; i < nProc; ++i)
+    {
+      offset[i]   = vlen;
+      size[i]     = M_SZ * k * nProc;
+      vlen       += size[i];
+      k          *= B_SZ;
+    }
+#endif
   for (i = 0; i < nProc; ++i)
     {
       received[i] = 0;
-      offset[i]   = vlen;
-      size[i]     = M_SZ * k;
-      vlen       += size[i];
-      k          *= B_SZ;
     }
   received[iProc] = 1;
   
