@@ -7,7 +7,6 @@ BIN += message_rate.exe
 BIN += message_ping_pong.exe
 BIN += message_ping_ping.exe
 BIN += fairness_between_queues.exe
-BIN += using_GASPI_TEST.exe
 
 CFLAGS += -Wall
 CFLAGS += -Wextra
