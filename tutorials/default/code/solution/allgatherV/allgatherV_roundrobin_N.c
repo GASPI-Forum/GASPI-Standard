@@ -156,7 +156,7 @@ main (int argc, char *argv[])
       gaspi_notification_id_t notification = iProc*NWAY+j;
       gaspi_size_t b_size = size[iProc*NWAY+j] * sizeof(int);
       gaspi_offset_t b_offset = offset[iProc*NWAY+j] * sizeof(int);
-      gaspi_rank_t target = ((iProc + 1 + nProc) % nProc);      
+      gaspi_rank_t target = RIGHT(iProc, nProc);
       write_notify_and_wait ( segment_id
 			      , b_offset
 			      , target
