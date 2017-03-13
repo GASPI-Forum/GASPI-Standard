@@ -137,7 +137,7 @@ main (int argc, char *argv[])
 			  , b_size
 			  , notification
 			  , 1
-			  , 0//iProc % queue_num
+			  , iProc % queue_num
 			  );
   
   /* receive and write until done */
@@ -173,7 +173,7 @@ main (int argc, char *argv[])
 				      , b_size
 				      , notification
 				      , 1
-				      , 0//id % queue_num
+				      , id % queue_num
 				      );
 	    }
 	  received[id] = 1;
