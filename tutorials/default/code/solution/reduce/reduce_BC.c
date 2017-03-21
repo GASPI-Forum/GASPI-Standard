@@ -379,7 +379,7 @@ main (int argc, char *argv[])
     }
 
   time += now();
-  printf("# BC  : iProc: %4d, size [byte]: %10d, time: %8.6f, total bandwidth [Mbyte/sec]: %8.0f NWAY: %d nBlocks: %d nRecv: %d\n", iProc, M_SZ, time, (double)(M_SZ*sizeof(int))/1024/1024/time,NWAY,nBlocks,nRecv[iProc]); 
+  printf("# BC  : iProc: %4d, size [byte]: %10d, time: %8.6f, total bandwidth [Mbyte/sec]: %8.0f\n", iProc, M_SZ, time, (double)(M_SZ*sizeof(int))/1024/1024/time); 
   
   validate(array, M_SZ, nProc, iProc);
 
