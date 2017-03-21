@@ -32,6 +32,7 @@ LIB += GPI2
 LIB += m
 LIB += pthread
 
+OBJ += util
 OBJ += queue
 OBJ += testsome
 OBJ += now
