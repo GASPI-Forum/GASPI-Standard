@@ -13,19 +13,39 @@
 /* initialize local data */
 static void init_array(int *array
 		       , int size
+		       , gaspi_rank_t nProc
 		       , gaspi_rank_t iProc
 		       )
 { 
   int j;
   for (j = 0; j < size; ++j)
     {
+      array[j] = iProc;
+    }
+  for (j = size; j < nProc*size; ++j)
+    {
       array[j] = -1;
     }
+}
+
+/*
+ * validate solution 
+ */
+static void validate(int *array
+		     , int size
+		     , gaspi_rank_t nProc
+		     , gaspi_rank_t iProc
+		     )
+{
+  int i, j;
   if (iProc == 0)
     {
-      for (j = 0; j < size; ++j)
+      for (j = 0; j < nProc; ++j)
 	{
-	  array[j] = 0;
+	  for (i = 0; i < size; ++i)
+	    {
+	      ASSERT(array[j*size+i] == j);
+	    }
 	}
     }
 }
@@ -41,19 +61,22 @@ static void restrict_NWAY(int *NWAY
 {
   if (M_SZ < mSize)
     {
-      *NWAY = 7;
+      *NWAY = 9;
     }
   else if (M_SZ < mSize * N_SZ)
     {
-      *NWAY = 3;
+      *NWAY = 5;
     }
   else
     {
-      *NWAY = 1;
+      *NWAY = 2;
     }
 }
 
-
+/* 
+ * restrict number of blocks (nBlocks), when dropping 
+ * below minimal message size (mSize)
+ */
 static void restrict_nBlocks(int *nBlocks
 			     , int *mSize
 			     , int *lSize
@@ -98,41 +121,46 @@ static void restrict_nBlocks(int *nBlocks
   ASSERT((*nBlocks - 1) * *mSize + *lSize == M_SZ);
 }
 
-/* 
- * validate solution
-*/
-static void validate(int *array
-		     , int size
-		     )
+static int get_n_next(int idx
+		      , int NWAY
+		      , int (*next)[NWAY]
+		      )
 {
-  int i, j;
-
-  for (j = 0; j < size; ++j)
+  int k, i = 1;
+  for (k = 0; k < NWAY; k++)
     {
-      ASSERT(array[j] == 0);
+      int j = next[idx][k];
+      if (j != -1)
+	{
+	  i +=  get_n_next(j, NWAY, next); 
+	}
     }
+  return i;
 }
-
 /* 
- * set up targets for NWAY 
+ * set up source and target for NWAY 
  * dissemination 
  */
-static void get_next(int nProc
-		     , int NWAY
-		     , int (*next)[NWAY]
-		     )
+static void get_p_next(int nProc
+		       , int NWAY
+		       , int *prev
+		       , int (*next)[NWAY]
+		       , int *nRecv
+		       )
 {
   int j, k, i = 0;
   int rnd, width = 1;
 
   for (j = 0; j < nProc; j++)
     {
+      prev[j] = -1;
       for (k = 0; k < NWAY; k++)
 	{
 	  next[j][k] = -1;
 	}
     }
-  
+
+  /* set prev, next */
   while (i < nProc)
     { 
       for (j = 0; j < width; j++)
@@ -141,36 +169,25 @@ static void get_next(int nProc
 	    {
 	      int nx = i+width+NWAY*j+k;
 	      int ix = i+j;
-	      if (nx < nProc && ix < nProc)
+	      if (nx < nProc && ix < nProc )
 		{
+		  ASSERT(prev[nx] == -1);
 		  next[ix][k] = nx;
+		  prev[nx] = ix;
 		}
 	    }
         }
       i += width;
       width *= NWAY;
     }
-  
-}
 
-static void wait_and_reset(gaspi_segment_id_t segment_id
-			   , gaspi_notification_id_t nid
-			   , gaspi_notification_t *val
-			   )
-{
-  gaspi_notification_id_t id;
-  SUCCESS_OR_DIE(gaspi_notify_waitsome (segment_id
-					, nid
-					, 1
-					, &id
-					, GASPI_BLOCK
-					));
-  ASSERT(nid == id);
-  SUCCESS_OR_DIE(gaspi_notify_reset (segment_id
-				     , id
-				     , val
-				     ));     
-}	  
+  /* number of incoming messages */
+  for (j = 0; j < nProc; j++)
+    {
+      nRecv[j] =  get_n_next(j, NWAY, next) - 1; 
+    }
+    
+}
 
 
 int
@@ -190,26 +207,32 @@ main (int argc, char *argv[])
   ASSERT(iProc == iProc_MPI);
   ASSERT(nProc == nProc_MPI);
 
-  int mSize = 8192, N_SZ = 32;
-
   /* restric NWAY dissemination */
-  int NWAY = 1;
+  int NWAY = 2, mSize = 4096, N_SZ = 64;
   restrict_NWAY(&NWAY, mSize, N_SZ);
 
   /* restrict number of blocks */
-  int nBlocks = 512, lSize = 0;
+  int nBlocks = 511, lSize = 0;
   restrict_nBlocks(&nBlocks, &mSize, &lSize);
   
-  /* the root of the broadcast */
+  /* the root of the gather */
   int const b_root = 0;
   int j, k, i;
 
+  /* pointer of incoming recv */
+  int recv_state[nProc];
+  for (i = 0; i < nProc; ++i)
+    {
+      recv_state[i] = 0;
+    }
+  
+  int prev[nProc], nRecv[nProc];
   int next[nProc][NWAY];
-  get_next(nProc, NWAY, next);
-
+  get_p_next(nProc, NWAY, prev, next, nRecv);
+  
   const gaspi_segment_id_t segment_id = 0;
   SUCCESS_OR_DIE (gaspi_segment_create ( segment_id
-					 , M_SZ * sizeof(int)
+					 , nProc * M_SZ * sizeof(int)
 					 , GASPI_GROUP_ALL
 					 , GASPI_BLOCK
 					 , GASPI_ALLOC_DEFAULT
@@ -223,30 +246,62 @@ main (int argc, char *argv[])
   SUCCESS_OR_DIE(gaspi_queue_num (&queue_num));
 
   int *array = (int *) _ptr;
-  init_array(array, M_SZ, iProc);
+  init_array(array, M_SZ, nProc, iProc);
 
   SUCCESS_OR_DIE (gaspi_barrier (GASPI_GROUP_ALL, GASPI_BLOCK));
 
-  /* GASPI NWAY round-robin broadcast */
+  /* GASPI pipelined NWAY gather */
   double time = -now();
 
-  for (j = 0; j < nBlocks; ++j)
+  int target = prev[iProc];
+  if (target != -1)
     {
-      gaspi_notification_t val = 1;
-      if (iProc != 0)
+      for (j = 0; j < nBlocks; ++j)
 	{
-	  wait_and_reset(segment_id, j, &val);
+	  int sz = (j == nBlocks-1) ? lSize : mSize;
+	  gaspi_notification_id_t notification = iProc * nBlocks + j;
+	  gaspi_size_t b_size = sz * sizeof(int);
+	  gaspi_offset_t l_offset =  j * mSize * sizeof(int);
+	  gaspi_offset_t r_offset = (j * mSize + iProc * M_SZ) * sizeof(int);
+	  write_notify_and_wait ( segment_id
+				  , l_offset
+				  , (gaspi_rank_t) target
+				  , segment_id
+				  , r_offset
+				  , b_size
+				  , notification
+				  , 1
+				  , target % queue_num
+				  );	  
 	}
+    }
 
-      for (i = 0; i < NWAY; ++i)
-	{	      
-	  int target = next[iProc][i];
+  int recv_count = 0;
+  for (i = 0; recv_count < nRecv[iProc] * nBlocks; i = (i + 1) % nProc)
+    {
+      gaspi_notification_id_t nid = recv_state[i] + i * nBlocks;   
+      gaspi_notification_t val;
+      
+      /* test for incoming messages, forward if required */
+      if (recv_state[i] < nBlocks && test_or_die(segment_id, nid, &val))
+	{
+	  ASSERT(val == 1);
+
+	  gaspi_rank_t source = nid / nBlocks;
+	  gaspi_notification_id_t sid = nid % nBlocks;	  
+	  ASSERT(source == i);
+
+	  /* increment recv counter .. */
+	  recv_count++;
+	  recv_state[i]++;
+	  
+	  /* .. and forward */
 	  if (target != -1)
 	    {
-	      int sz = (j == nBlocks-1) ? lSize : mSize;
-	      gaspi_notification_id_t notification = j;
+	      int sz = (sid == nBlocks-1) ? lSize : mSize;
+	      gaspi_notification_id_t notification = nid;
 	      gaspi_size_t b_size = sz * sizeof(int);
-	      gaspi_offset_t b_offset = j * mSize * sizeof(int);
+	      gaspi_offset_t b_offset = (source * M_SZ + sid * mSize) * sizeof(int);
 	      write_notify_and_wait ( segment_id
 				      , b_offset
 				      , (gaspi_rank_t) target
@@ -254,7 +309,7 @@ main (int argc, char *argv[])
 				      , b_offset
 				      , b_size
 				      , notification
-				      , val
+				      , 1
 				      , target % queue_num
 				      );	  
 	    }
@@ -265,14 +320,14 @@ main (int argc, char *argv[])
   printf("# BC  : iProc: %4d, size [byte]: %10d, time: %8.6f, total bandwidth [Mbyte/sec]: %8.0f\n"
 	 , iProc, M_SZ, time, (double)(M_SZ*sizeof(int))/1024/1024/time); 
   
-  validate(array, M_SZ);
+  validate(array, M_SZ, nProc, iProc);
 
   wait_for_flush_queues();
-
+  
   SUCCESS_OR_DIE (gaspi_barrier (GASPI_GROUP_ALL, GASPI_BLOCK));
 
   MPI_Finalize();
-
+  
   SUCCESS_OR_DIE (gaspi_proc_term (GASPI_BLOCK));
 
   return EXIT_SUCCESS;
