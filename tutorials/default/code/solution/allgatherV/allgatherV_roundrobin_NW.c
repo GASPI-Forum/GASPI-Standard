@@ -193,8 +193,6 @@ main (int argc, char *argv[])
   validate(array, offset, bSize, iProc, nProc);
       
   wait_for_flush_queues();
-#if 0
-#endif
 
   SUCCESS_OR_DIE (gaspi_barrier (GASPI_GROUP_ALL, GASPI_BLOCK));
 
