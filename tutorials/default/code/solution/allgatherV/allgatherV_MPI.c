@@ -10,7 +10,7 @@
 
 static void init_array(int *array
 		       , int *offset
-		       , int *size
+		       , int *bSize
 		       , gaspi_rank_t iProc
 		       , gaspi_rank_t nProc
 		       )
@@ -18,14 +18,14 @@ static void init_array(int *array
   int i, j;
   for (i = 0; i < nProc; ++i)
     {
-      for (j = 0; j < size[i]; ++j)
+      for (j = 0; j < bSize[i]; ++j)
 	{
 	  array[offset[i] + j] = -1;
 	}
     }
 
   /* initialize local data */
-  for (j = 0; j < size[iProc]; ++j)
+  for (j = 0; j < bSize[iProc]; ++j)
     {
       array[offset[iProc] + j] = iProc;
     }
@@ -33,7 +33,7 @@ static void init_array(int *array
 
 static void validate(int *array
 		       , int *offset
-		       , int *size
+		       , int *bSize
 		       , gaspi_rank_t iProc
 		       , gaspi_rank_t nProc
 		     )
@@ -43,7 +43,7 @@ static void validate(int *array
   /* validate */
   for (i = 0; i < nProc; ++i)
     {
-      for (j = 0; j < size[i]; ++j)
+      for (j = 0; j < bSize[i]; ++j)
 	{	  
 	  ASSERT(array[offset[i] + j] == i);
 	}
@@ -70,29 +70,19 @@ main (int argc, char *argv[])
   int *offset = malloc(nProc * sizeof(int));
   ASSERT(offset != NULL);  
 
-  int  *size = malloc(nProc * sizeof(int));
-  ASSERT(size != NULL);
+  int  *bSize = malloc(nProc * sizeof(int));
+  ASSERT(bSize != NULL);
     
   int i, vlen = 0;
-#ifdef RAND
+
   srand(0);
   for (i = 0; i < nProc; ++i)
     {
-      int rsize = rand() % M_SZ;
+      int rSize = rand() % M_SZ;
       offset[i]   = vlen;
-      size[i]     = rsize * nProc;
-      vlen       += size[i];
+      bSize[i]     = rSize;
+      vlen       += bSize[i];
     }
-#else
-  int k = 1;
-  for (i = 0; i < nProc; ++i)
-    {
-      offset[i]   = vlen;
-      size[i]     = M_SZ * k * nProc;
-      vlen       += size[i];
-      k          *= B_SZ;
-    }
-#endif
     
   const gaspi_segment_id_t segment_id = 0;
   SUCCESS_OR_DIE (gaspi_segment_create ( segment_id
@@ -107,26 +97,26 @@ main (int argc, char *argv[])
   SUCCESS_OR_DIE (gaspi_segment_ptr (segment_id, &_ptr));
 
   int *array = (int *) _ptr;
-  init_array(array, offset, size, iProc, nProc);
+  init_array(array, offset, bSize, iProc, nProc);
 
   SUCCESS_OR_DIE (gaspi_barrier (GASPI_GROUP_ALL, GASPI_BLOCK));
 
   /* MPI reference */
   double time = -now();
   MPI_Allgatherv(&array[offset[iProc]]
-		 , size[iProc]
+		 , bSize[iProc]
 		 , MPI_INT
 		 , array
-		 , size
+		 , bSize
 		 , offset
 		 , MPI_INT
 		 , MPI_COMM_WORLD);
 
   time += now();
   printf("# REF : iProc: %4d, size [byte]: %10d, time: %8.6f, total bandwidth [Mbyte/sec]: %8.0f\n"
-	 , iProc, size[iProc], time, (double)(vlen*sizeof(int))/1024/1024/time); 
+	 , iProc, bSize[iProc], time, (double)(vlen*sizeof(int))/1024/1024/time); 
   
-  validate(array, offset, size, iProc, nProc);
+  validate(array, offset, bSize, iProc, nProc);
 
   SUCCESS_OR_DIE (gaspi_barrier (GASPI_GROUP_ALL, GASPI_BLOCK));
 
