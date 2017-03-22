@@ -10,7 +10,7 @@
 
 static void init_array(int *array
 		       , gaspi_offset_t *offset
-		       , gaspi_size_t *size
+		       , int *bSize
 		       , gaspi_rank_t iProc
 		       , gaspi_rank_t nProc
 		       )
@@ -18,14 +18,14 @@ static void init_array(int *array
   int i, j;
   for (i = 0; i < nProc; ++i)
     {
-      for (j = 0; j < size[i]; ++j)
+      for (j = 0; j < bSize[i]; ++j)
 	{
 	  array[offset[i] + j] = -1;
 	}
     }
 
   /* initialize local data */
-  for (j = 0; j < size[iProc]; ++j)
+  for (j = 0; j < bSize[iProc]; ++j)
     {
       array[offset[iProc] + j] = iProc;
     }
@@ -33,7 +33,7 @@ static void init_array(int *array
 
 static void validate(int *array
 		       , gaspi_offset_t *offset
-		       , gaspi_size_t *size
+		       , int *bSize
 		       , gaspi_rank_t iProc
 		       , gaspi_rank_t nProc
 		     )
@@ -43,7 +43,7 @@ static void validate(int *array
   /* validate */
   for (i = 0; i < nProc; ++i)
     {
-      for (j = 0; j < size[i]; ++j)
+      for (j = 0; j < bSize[i]; ++j)
 	{	  
 	  ASSERT(array[offset[i] + j] == i);
 	}
@@ -67,40 +67,30 @@ main (int argc, char *argv[])
   ASSERT(iProc == iProc_MPI);
   ASSERT(nProc == nProc_MPI);
 
-  int *received = malloc(nProc * sizeof(int));
-  ASSERT(received != NULL);
+  int *recv_state = malloc(nProc * sizeof(int));
+  ASSERT(recv_state != NULL);
 
   gaspi_offset_t *offset = malloc(nProc * sizeof(gaspi_offset_t));
   ASSERT(offset != NULL);  
 
-  gaspi_size_t  *size = malloc(nProc * sizeof(gaspi_size_t));
-  ASSERT(size != NULL);
+  int  *bSize = malloc(nProc * sizeof(int));
+  ASSERT(bSize != NULL);
     
   int i, vlen = 0;
-#ifdef RAND
   srand(0);
   for (i = 0; i < nProc; ++i)
     {
-      int rsize = rand() % M_SZ;
+      int rSize = rand() % M_SZ;
       offset[i]   = vlen;
-      size[i]     = rsize * nProc;
-      vlen       += size[i];
+      bSize[i]     = rSize;
+      vlen       += bSize[i];
     }
-#else
-  int k = 1;
+
   for (i = 0; i < nProc; ++i)
     {
-      offset[i]   = vlen;
-      size[i]     = M_SZ * k * nProc;
-      vlen       += size[i];
-      k          *= B_SZ;
+      recv_state[i] = 0;
     }
-#endif
-  for (i = 0; i < nProc; ++i)
-    {
-      received[i] = 0;
-    }
-  received[iProc] = 1;
+  recv_state[iProc] = 1;
   
   const gaspi_segment_id_t segment_id = 0;
   SUCCESS_OR_DIE (gaspi_segment_create ( segment_id
@@ -118,7 +108,7 @@ main (int argc, char *argv[])
   SUCCESS_OR_DIE(gaspi_queue_num (&queue_num));
 
   int *array = (int *) _ptr;
-  init_array(array, offset, size, iProc, nProc);
+  init_array(array, offset, bSize, iProc, nProc);
   
   SUCCESS_OR_DIE (gaspi_barrier (GASPI_GROUP_ALL, GASPI_BLOCK));
 
@@ -126,7 +116,7 @@ main (int argc, char *argv[])
   double time = -now();
 
   gaspi_notification_id_t notification = iProc;
-  gaspi_size_t b_size = size[iProc] * sizeof(int);
+  gaspi_size_t b_size = bSize[iProc] * sizeof(int);
   gaspi_offset_t b_offset = offset[iProc] * sizeof(int);
   gaspi_rank_t target = RIGHT(iProc, nProc);
   write_notify_and_wait ( segment_id
@@ -157,12 +147,12 @@ main (int argc, char *argv[])
 					 ));     
       ASSERT(value == 1);
       
-      if (!received[id] )
+      if (!recv_state[id] )
 	{
 	  if (id != RIGHT(iProc, nProc))
 	    {
 	      notification = id;
-	      b_size = size[id] * sizeof(int);
+	      b_size = bSize[id] * sizeof(int);
 	      b_offset = offset[id] * sizeof(int);
 	      target = RIGHT(iProc, nProc);
 	      write_notify_and_wait ( segment_id
@@ -176,15 +166,15 @@ main (int argc, char *argv[])
 				      , id % queue_num
 				      );
 	    }
-	  received[id] = 1;
+	  recv_state[id] = 1;
 	}
     }
 
   time += now();
-  printf("# RR  : iProc: %4d, size [byte]: %10lu, time: %8.6f, total bandwidth [Mbyte/sec]: %8.0f\n"
-	 , iProc, size[iProc], time, (double)(vlen*sizeof(int))/1024/1024/time); 
+  printf("# RR  : iProc: %4d, size [byte]: %10d, time: %8.6f, total bandwidth [Mbyte/sec]: %8.0f\n"
+	 , iProc, bSize[iProc], time, (double)(vlen*sizeof(int))/1024/1024/time); 
   
-  validate(array, offset, size, iProc, nProc);
+  validate(array, offset, bSize, iProc, nProc);
       
   wait_for_flush_queues();
 

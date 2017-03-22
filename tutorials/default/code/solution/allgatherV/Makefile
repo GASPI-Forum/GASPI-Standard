@@ -6,7 +6,7 @@ CC = mpiicc
 
 BIN += allgatherV_MPI.exe
 BIN += allgatherV_roundrobin.exe
-BIN += allgatherV_roundrobin_N.exe
+BIN += allgatherV_roundrobin_NW.exe
 
 CFLAGS += -Wall
 CFLAGS += -Wextra
@@ -33,6 +33,7 @@ LIB += GPI2
 LIB += m
 LIB += pthread
 
+OBJ += util
 OBJ += queue
 OBJ += testsome
 OBJ += now
