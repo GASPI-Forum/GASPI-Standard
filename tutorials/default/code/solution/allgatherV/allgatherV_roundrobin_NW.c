@@ -162,7 +162,6 @@ main (int argc, char *argv[])
           /* increment recv counter .. */
           recv_count++;
           recv_state[i]++;
-	  //printf("iProc: %d count: %d i: %d state: %d\n",iProc,recv_count,i,recv_state[i]);
           
           /* .. and forward */
 	  if (source != RIGHT(iProc, nProc))
