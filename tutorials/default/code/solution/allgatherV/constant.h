@@ -5,7 +5,7 @@
 
 #define MIN(x,y) ((x)<(y)?(x):(y))
 
-int const M_SZ = 1024*768;
+int const M_SZ = 1024*4096;
 int const nBlocksMax = 512;
 
 #endif
