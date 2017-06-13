@@ -26,7 +26,7 @@ static void init_array(int *array
     {
       for (j = 0; j < size; ++j)
 	{
-	  array[j] = 0;
+	  array[j] = j;
 	}
     }
 }
@@ -42,7 +42,7 @@ static void validate(int *array
 
   for (j = 0; j < size; ++j)
     {
-      ASSERT(array[j] == 0);
+      ASSERT(array[j] == j);
     }
 }
 
